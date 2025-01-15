@@ -2,11 +2,17 @@
 export default {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{html,js,ts,jsx,tsx}",
+    "./snComponents/*.{html,js,ts,jsx,tsx}",
   ],
 
   theme: {
-    extend: {},
+    extend: {
+      gridTemplateColumns: {
+        // Ensure you haven't overwritten default values
+        7: 'repeat(7, minmax(0, 1fr))',
+      },
+    },
   },
   plugins: [],
 }
