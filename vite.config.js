@@ -21,5 +21,17 @@ export default defineConfig(({ command, mode }) => {
         define: {
           'import.meta.env.VITE_SERVE_URL': JSON.stringify(env.VITE_SERVER_URL),
         },
+        esbuild: {
+            include: /\.[jt]sx?$/,
+            exclude: [],
+            loader: "jsx",
+        },
+        optimizeDeps: {
+            esbuildOptions: {
+                loader: {
+                    '.js':'jsx',
+                },  
+            },
+        },
     };
 });

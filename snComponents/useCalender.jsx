@@ -11,8 +11,8 @@ import dayjs from "dayjs";
 
 
  function useCalendar(initialYear = 2025, initialMonth = 1) {
-  const [year, setYear] = useState(initialYear);
-  const [month, setMonth] = useState(initialMonth);
+  const [year, setYear] = useState(dayjs().year());
+  const [month, setMonth] = useState(dayjs().month() + 1);
 
   const addOneMonth = () => {
     setMonth((prev) => {

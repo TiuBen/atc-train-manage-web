@@ -1,5 +1,8 @@
+
 import React, { useEffect, useState } from "react";
 import { Route, useLoaderData, Outlet } from "react-router-dom";
+import Sheet from './Sheet/Sheet.jsx'
+
 
 const _testData = {
     "2025-01-01": () => <div>新年快乐！</div>,
@@ -9,7 +12,7 @@ const _testData = {
 function Page2() {
     return (
         <div className="relative flex-1">
-            <div>ddddddddddddddddd </div>
+            <Sheet />
             <Outlet />
         </div>
     );

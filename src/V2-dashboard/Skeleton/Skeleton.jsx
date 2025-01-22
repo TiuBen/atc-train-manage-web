@@ -30,22 +30,29 @@ function Skeleton({
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left Sidebar */}
                     <aside
-                        className={`relative  duration-200 overflow-visible  z-10 ${
+                        className={`relative  duration-200 overflow-visible   ${
                             isLeftSidebarOpen ? "w-[8rem]" : "w-[4rem]"
-                        }  `}
+                        }  flex flex-row `}
                         style={{ backgroundColor: "var(--accent-9)", color: "var(--accent-6)" }}
                     >
                         <>{LeftSidebar}</>
 
                         {/* Button */}
                         <button
-                            className={`flex items-center justify-center content-center absolute top-[1rem] transform right-0 translate-x-[50%] max-h-[2rem] max-w-[2rem] min-h-[2rem] min-w-[2rem] rounded-full bg-white border-blue-500 shadow-md duration-200 `}
+                            className={`z-10 flex items-center justify-center content-center absolute top-[1rem] transform right-0 translate-x-[50%] max-h-[2rem] max-w-[2rem] min-h-[2rem] min-w-[2rem] rounded-full bg-white border-blue-500 shadow-md duration-200 `}
                             onClick={() => {
                                 setLeftSidebarOpen(!isLeftSidebarOpen);
                             }}
                         >
                             <AlignJustify />
                         </button>
+                          {/* <button
+                            className={`max-w-[1rem]  min-w-[1rem] w-[1rem] hover:cursor-ew-resize  bg-white border-blue-800 shadow-md duration-200 `}
+                            onClick={() => {
+                                setLeftSidebarOpen(!isLeftSidebarOpen);
+                            }}
+                        >
+                        </button> */}
                     </aside>
 
                     {/* Main Content */}
