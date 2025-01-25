@@ -3,7 +3,17 @@ import useSWR from "swr";
 import {SERVER_URL,FETCHER} from "@utils" 
 
 function DefaultPage() {
-    const { data, error, isLoading } = useSWR(`${SERVER_URL}/query?all`, FETCHER);
+
+    const q=new URLSearchParams();
+    // 添加或设置参数
+    q.set('position', 'all');
+    q.append('year', '2025');  // append 可以添加多个相同名称的参数
+    q.append('month', '1');  // append 可以添加多个相同名称的参数
+
+    const { data, error, isLoading } = useSWR(`${SERVER_URL}/query?${q}`, FETCHER);
+
+
+
     return (
         <div className="">
             <h1 className="text-2xl text-center">2025年整体时间统计</h1>
