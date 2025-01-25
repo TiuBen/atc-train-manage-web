@@ -77,6 +77,7 @@ function LeftBar(props) {
                 },
                 {
                     title: "设置",
+                    href: "/admin/setting",
                     Icon: (props) => <UserRoundCog {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
                 },

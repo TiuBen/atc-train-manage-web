@@ -22,7 +22,7 @@ function Skeleton({
             >
                 {/* Top Navigation */}
                 {
-                    <header className=" sticky w-full top-0 bg-red-500 h-[3rem] " style={{ gridRow: "1" }}>
+                    <header className=" sticky w-full top-0  h-[3rem] text-white bg-blue-900 " style={{ gridRow: "1" }}>
                         {topNav}
                     </header>
                 }
@@ -56,7 +56,7 @@ function Skeleton({
                     </aside>
 
                     {/* Main Content */}
-                    <main className="flex flex-1 overflow-auto relative border border-red-500">{main}</main>
+                    <main className="flex flex-1 overflow-auto relative">{main}</main>
 
                     {/* Right Sidebar */}
                     {rightSidebar && (
@@ -67,7 +67,7 @@ function Skeleton({
                 </div>
 
                 {/* Bottom Bar */}
-                {bottomBar && <footer className="w-full bg-gray-800 text-white ">{bottomBar}</footer>}
+                {bottomBar && <footer className="w-full bg-blue-900 text-white flex flex-row flex-1 items-center ">{bottomBar}</footer>}
 
                 {/* Floating Action Button */}
                 {/* {floatingAction && (
