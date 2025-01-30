@@ -18,7 +18,7 @@ function AppVSkeleton() {
                     <Skeleton
                         topNav={<div>Top Na嘀嘀嘀vigation</div>}
                         LeftSidebar={<LeftBar isExpanded={isLeftSidebarOpen} />}
-                        rightSidebar={<div>Right Sidebar</div>}
+                        rightSidebar={<Outlet />}
                         main={<Outlet />}
                         bottomBar={<div>Bottom Bar</div>}
                         floatingAction={<span>+</span>}

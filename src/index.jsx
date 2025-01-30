@@ -12,7 +12,7 @@ import AppV2 from './V2-dashboard/AppV2.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {/* <App /> */}
-    {/* <AppSkeleton /> */}
-    <AppV2 />
+    <AppSkeleton />
+    {/* <AppV2 /> */}
   </StrictMode>
 )

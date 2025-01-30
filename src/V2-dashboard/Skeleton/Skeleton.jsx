@@ -61,7 +61,8 @@ function Skeleton({
                     {/* Right Sidebar */}
                     {rightSidebar && (
                         <aside className="w-64 bg-gray-100 border-l border-gray-200 ">
-                            {rightSidebar && "rightSidebar"}
+                            {rightSidebar}
+                            
                         </aside>
                     )}
                 </div>
