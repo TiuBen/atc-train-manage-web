@@ -1,4 +1,4 @@
-import Skeleton from "./src/skeleton";
+import { Skeleton } from "./src/skeleton";
 import "./AppSkeleton.css";
 import { Link, Routes, Route, BrowserRouter } from "react-router-dom";
 const Home = () => (
@@ -40,6 +40,7 @@ const routes = [
             <p>
                 This is your settings page. You can change your name, image, and anything else associated with your
                 account.
+                <Link to={"/"}>Back to Home</Link>
             </p>
         ),
     },
@@ -48,29 +49,38 @@ const routes = [
 function AppSkeleton() {
     return (
         <BrowserRouter>
-            <div>
-                <ul className="nav">
-                    <li>
-                        <Link to="/">Home</Link>
-                    </li>
-                    <li>
-                        <Link to="/profile">Profile</Link>
-                    </li>
-                    <li>
-                        <Link to="/settings">Settings</Link>
-                    </li>
-                </ul>
-                <Routes>
-                    {routes.map(({ path, sidebar }) => (
-                        <Route key={path} path={path} element={sidebar()} />
-                    ))}
-                </Routes>
-                <Routes>
-                    {routes.map(({ path, main }) => (
-                        <Route key={path} path={path} element={main()} />
-                    ))}
-                </Routes>
-            </div>
+            <Skeleton
+                leftSidebar={
+                    <ul className="nav">
+                        <li>
+                            <Link to="/">Home</Link>
+                        </li>
+                        <li>
+                            <Link to="/profile">Profile</Link>
+                        </li>
+                        <li>
+                            <Link to="/settings">Settings</Link>
+                        </li>
+                    </ul>
+                }
+                rightSidebar={
+                    <div className="border border-red-300">
+                        <Routes>
+                            {routes.map(({ path, sidebar }) => (
+                                <Route key={path} path={path} element={sidebar()} />
+                            ))}
+                        </Routes>
+                    </div>
+                }
+            >
+                <div className="border bg-slate-500">
+                    <Routes>
+                        {routes.map(({ path, main }) => (
+                            <Route key={path} path={path} element={main()} />
+                        ))}
+                    </Routes>
+                </div>
+            </Skeleton>
         </BrowserRouter>
 
         // <Skeleton
