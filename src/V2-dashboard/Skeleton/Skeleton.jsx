@@ -30,29 +30,28 @@ function Skeleton({
                 <div className="flex flex-1 overflow-hidden">
                     {/* Left Sidebar */}
                     <aside
-                        className={`relative  duration-200 overflow-visible   ${
+                        className={`relative overflow-visible   ${
                             isLeftSidebarOpen ? "w-[8rem]" : "w-[4rem]"
-                        }  flex flex-row `}
-                        style={{ backgroundColor: "var(--accent-9)", color: "var(--accent-6)" }}
+                        }  flex flex-row bg-blue-600  text-blue-50`}
+                        // style={{ backgroundColor: "var(--accent-9)", color: "var(--accent-6)" }}
                     >
                         <>{LeftSidebar}</>
 
                         {/* Button */}
-                        <button
+                        {/* <button
                             className={`z-10 flex items-center justify-center content-center absolute top-[1rem] transform right-0 translate-x-[50%] max-h-[2rem] max-w-[2rem] min-h-[2rem] min-w-[2rem] rounded-full bg-white border-blue-500 shadow-md duration-200 `}
                             onClick={() => {
                                 setLeftSidebarOpen(!isLeftSidebarOpen);
                             }}
                         >
                             <AlignJustify />
-                        </button>
-                          {/* <button
-                            className={`max-w-[1rem]  min-w-[1rem] w-[1rem] hover:cursor-ew-resize  bg-white border-blue-800 shadow-md duration-200 `}
+                        </button> */}
+                        <button
+                            className={` w-[1rem] hover:cursor-ew-resize  bg-blue-600 shadow-md  `}
                             onClick={() => {
                                 setLeftSidebarOpen(!isLeftSidebarOpen);
                             }}
-                        >
-                        </button> */}
+                        ></button>
                     </aside>
 
                     {/* Main Content */}
@@ -60,15 +59,16 @@ function Skeleton({
 
                     {/* Right Sidebar */}
                     {rightSidebar && (
-                        <aside className="w-64 bg-gray-100 border-l border-gray-200 ">
-                            {rightSidebar}
-                            
-                        </aside>
+                        <aside className="w-64 bg-gray-100 border-l border-gray-200 ">{rightSidebar}</aside>
                     )}
                 </div>
 
                 {/* Bottom Bar */}
-                {bottomBar && <footer className="w-full bg-blue-900 text-white flex flex-row flex-1 items-center ">{bottomBar}</footer>}
+                {bottomBar && (
+                    <footer className="w-full bg-blue-900 text-white flex flex-row flex-1 items-center ">
+                        {bottomBar}
+                    </footer>
+                )}
 
                 {/* Floating Action Button */}
                 {/* {floatingAction && (

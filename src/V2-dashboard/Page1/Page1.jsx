@@ -8,7 +8,7 @@ import UserListDialog from "./OnDutyPage/Dialog/UserListDialog";
 function Page1() {
     return (
         <>
-            <div className="relative flex-1 flex">
+            <div className="relative flex-1 flex ">
                 <Outlet />
             </div>
 
@@ -20,6 +20,7 @@ function Page1() {
 function Page1Route() {
     return (
         <Route path="duty" element={<Page1 />}>
+            <Route index element={<MonthPage/>} />
             <Route path="order-by-position" element={<DutyPage />} />
             <Route path="order-by-month" element={<MonthPage/>} />
         </Route>

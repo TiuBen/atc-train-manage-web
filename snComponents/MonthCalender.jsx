@@ -24,11 +24,11 @@ function MonthCalender(props) {
     useEffect(() => {
         const generateMonthDates = () => {
             const daysInMonth = new Date(year, month, 0).getDate(); // 获取当前月份的天数
-            const thisMonthStartDaysDay = new Date(year, month-1, 0).getDay(); // 获取当前月份的天数
+            const thisMonthStartDaysDay = new Date(year, month - 1, 0).getDay(); // 获取当前月份的天数
             const datesArray = [];
 
             for (let day = 1; day <= 7 * 5; day++) {
-                const _day = dayjs(new Date(year, month-1, day - thisMonthStartDaysDay)).format("YYYY-MM-DD");
+                const _day = dayjs(new Date(year, month - 1, day - thisMonthStartDaysDay)).format("YYYY-MM-DD");
 
                 datesArray.push(_day);
             }
@@ -55,11 +55,12 @@ function MonthCalender(props) {
             {thisMonthDateArray.map((date, index) => {
                 // const content = data[date] ? ()=>cellRender(data[data]) : null; // 如果 data 中有对应日期的内容，则渲染
                 const content = cellRender(date);
-               
+
                 return (
                     <div key={index} className=" outline outline-1  outline-gray-100  ">
-                        {dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("D")}
-                        ----
+                        {dayjs().get('month') !== dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).get('month')
+                            ? dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("M月D")
+                            : dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("D")}
                         {content}
                     </div>
                 );
