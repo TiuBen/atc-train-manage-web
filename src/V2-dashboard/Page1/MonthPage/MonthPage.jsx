@@ -8,8 +8,6 @@ import { useCalendar } from "@sn/useCalender";
 import { Button } from "@radix-ui/themes";
 import dayjs from "dayjs";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { VerticalTimeline, VerticalTimelineElement } from "react-vertical-timeline-component";
-import "react-vertical-timeline-component/style.min.css";
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 function DayCellElement({ date, onClick }) {

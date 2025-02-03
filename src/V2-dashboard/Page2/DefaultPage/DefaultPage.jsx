@@ -12,7 +12,8 @@ const StyledLikeExcel = styled.table`
 
     td {
         border: 1px solid black;
-
+        padding-left: 0.2rem;
+        padding-right: 0.2rem;
         &:hover {
             background-color: #e0e0e0;
         }
@@ -23,87 +24,173 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
-function UserRow({ query, usernames }) {
-}
+function UserRow({ month, username }) {
+    const [dutyStatics, setDutyStatics] = useState([]);
 
+    useEffect(() => {
+        // append 可以添加多个相同名称的参数
 
-function MonthStatistics({ query }) {
+        let q = new URLSearchParams();
+        q.append("username", username);
+        // Append startDate and startTime
+        q.append("startDate", dayjs().month(month).date(1).format("YYYY-MM-DD"));
+        q.append("startTime", "00:00:00");
 
+        // Append endDate and endTime
+        q.append(
+            "endDate",
+            dayjs()
+                .month(month + 1)
+                .date(1)
+                .format("YYYY-MM-DD")
+        );
+        q.append("endTime", "00:00:01");
+        q.append("year", dayjs().get("year"));
+        q.append("month", dayjs().get("month"));
 
-    const { data, error, isLoading } = useSWR(`${SERVER_URL}/query/all?${query}`, FETCHER);
-
-
-
-
+        fetch(`${SERVER_URL}/query/statics?${q}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setDutyStatics(data);
+            });
+    }, [month, username]);
 
     return (
-        <div className="w-1/6 border border-slate-300 rounded-lg p-4">
-            <h2 className="text-xl text-center">{query.get("month")}月</h2>
+        <>
+            <tr>
+                <td>{username}</td>
+                <td>
+                    {Math.floor(dutyStatics?.totalCommanderTime?.dayShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalCommanderTime?.dayShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalPositionTime?.dayShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalPositionTime?.dayShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalTeacherTime?.dayShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalTeacherTime?.dayShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalStudentTime?.dayShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalStudentTime?.dayShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalCommanderTime?.nightShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalCommanderTime?.nightShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalPositionTime?.nightShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalPositionTime?.nightShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalTeacherTime?.nightShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalTeacherTime?.nightShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(dutyStatics?.totalStudentTime?.nightShift * 100) / 100 !== 0 ? (
+                        <>{Math.floor(dutyStatics?.totalStudentTime?.nightShift * 100) / 100}</>
+                    ) : (
+                        <></>
+                    )}
+                </td>
+                <td>
+                    {Math.floor(
+                        (dutyStatics?.totalCommanderTime?.dayShift +
+                            +dutyStatics?.totalPositionTime?.dayShift +
+                            dutyStatics?.totalTeacherTime?.dayShift +
+                            dutyStatics?.totalStudentTime?.dayShift +
+                            dutyStatics?.totalCommanderTime?.nightShift +
+                            dutyStatics?.totalPositionTime?.nightShift +
+                            dutyStatics?.totalTeacherTime?.nightShift +
+                            dutyStatics?.totalStudentTime?.nightShift) *
+                            100
+                    ) / 100}
+                </td>
+            </tr>
+        </>
+    );
+}
 
-            {error ? (
-                <div>failed to load</div>
-            ) : isLoading ? (
-                <div>loading...</div>
-            ) : (
-                <StyledLikeExcel>
-                    <thead className="text-center">
-                        <tr className="text-center">
-                            <th></th>
-                            <th colSpan={3}>白班</th>
-                            <th colSpan={3}>夜班</th>
-                            <th colSpan={3}>总小时数</th>
-                        </tr>
-                        <tr>
-                            <th >姓名</th>
-                            <th >带班</th>
-                            <th >席位</th>
-                            <th >教员</th>
-                            <th >带班</th>
-                            <th >席位</th>
-                            <th >教员</th>
-                            <th ></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-
-                    </tbody>
-                </StyledLikeExcel>
-            )}
+function MonthStatistics({ month, usernames }) {
+    return (
+        <div className=" border border-red-300 rounded-lg p-4">
+            <h2 className="text-xl text-center">{month + 1}月</h2>
+            <StyledLikeExcel>
+                <thead className="text-center">
+                    <tr className="text-center">
+                        <th></th>
+                        <th colSpan={4}>白班</th>
+                        <th colSpan={4}>夜班</th>
+                        <th colSpan={1}>总小时数</th>
+                    </tr>
+                    <tr>
+                        <th>姓名</th>
+                        <th>带班</th>
+                        <th>席位</th>
+                        <th>教员</th>
+                        <th>学员</th>
+                        <th>带班</th>
+                        <th>席位</th>
+                        <th>教员</th>
+                        <th>学员</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {usernames.flat().map((item, index) => {
+                        return <UserRow key={index} month={month} username={item} />;
+                    })}
+                </tbody>
+            </StyledLikeExcel>
         </div>
     );
 }
 
 function DefaultPage() {
-    const [q, setQ] = useState([]);
-    const { data:usernames, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
-
-
-    useEffect(() => {
-        const year = dayjs().year();
-        const month = dayjs().month() + 1;
-
-        let _qs = [];
-        for (let index = 0; index < month; index++) {
-            const q = new URLSearchParams();
-            // 添加或设置参数
-            q.set("position", "all");
-            q.append("year", year); // append 可以添加多个相同名称的参数
-            q.append("month", index);
-
-            _qs.push(q);
-        }
-        setQ(_qs);
-    }, []);
+    const length = dayjs().month() + 1;
+    const { data: usernames, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
 
     return (
-        <div className="">
+        <div className="border border-blue-600 flex-1 my-0">
             <h1 className="text-2xl text-center">2025年整体时间统计</h1>
-            <div className="flex flex-row flex-wrap gap-2">
-                {q.map((item, index) => {
-                    return <MonthStatistics key={index} query={item} usernames={usernames} />;
-                })}
-            </div>
+            {error ? (
+                <div>error</div>
+            ) : isLoading ? (
+                <div>loading....</div>
+            ) : (
+                <div className="flex flex-row flex-1 h-full justify-stretch flex-wrap border border-red-600 gap-2">
+                    {new Array(length).fill(0).map((item, index) => {
+                        return <MonthStatistics key={index} month={index} usernames={usernames} />;
+                    })}
+                </div>
+            )}
         </div>
     );
 }

@@ -75,7 +75,7 @@ function LikeExcel({ selectedMonth, onClick, dutyRows, dutyStatics }) {
                                         <span
                                             className={`text-xs italic ml-2 ${
                                                 x.relatedDutyTableRowId && x.position !== "领班" ? "bg-slate-400" : ""
-                                            }  ${x.roleType ? "bg-slate-400" : ""} `}
+                                            }  ${x.roleType ? "bg-slate-400 line-through" : ""} `}
                                         >
                                             {x.position}
                                         </span>
@@ -83,7 +83,7 @@ function LikeExcel({ selectedMonth, onClick, dutyRows, dutyStatics }) {
                                         {x.relatedDutyTableRowId && (
                                             <span
                                                 className={`text-xs italic ml-2 ${
-                                                    x.position === "领班" ? "bg-slate-400" : ""
+                                                    x.position === "领班" ? "bg-slate-400 line-through" : ""
                                                 }`}
                                             >
                                                 教员
