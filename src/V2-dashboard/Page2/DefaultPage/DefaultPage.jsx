@@ -9,18 +9,20 @@ const StyledLikeExcel = styled.table`
     border-collapse: collapse;
     text-wrap: nowrap;
     font-size: 0.8rem;
-
-    td {
+    border: 1px solid black;
+    td,
+    th {
         border: 1px solid black;
         padding-left: 0.2rem;
         padding-right: 0.2rem;
+    }
+    tr {
+        border: 1px solid black;
+    }
+    tbody > tr {
         &:hover {
             background-color: #e0e0e0;
         }
-    }
-
-    th {
-        border: 1px solid black;
     }
 `;
 
@@ -140,12 +142,11 @@ function UserRow({ month, username }) {
 
 function MonthStatistics({ month, usernames }) {
     return (
-        <div className=" border border-red-300 rounded-lg p-4">
-            <h2 className="text-xl text-center">{month + 1}月</h2>
+        <div className=" px-2 rounded-lg ">
             <StyledLikeExcel>
                 <thead className="text-center">
                     <tr className="text-center">
-                        <th></th>
+                        <th className="bg-blue-600 text-white">{month + 1}月</th>
                         <th colSpan={4}>白班</th>
                         <th colSpan={4}>夜班</th>
                         <th colSpan={1}>总小时数</th>
@@ -178,14 +179,14 @@ function DefaultPage() {
     const { data: usernames, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
 
     return (
-        <div className="border border-blue-600 flex-1 my-0">
-            <h1 className="text-2xl text-center">2025年整体时间统计</h1>
+        <div className=" flex-1 flex flex-col mx-2  overflow-hidden">
+            <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
             {error ? (
                 <div>error</div>
             ) : isLoading ? (
                 <div>loading....</div>
             ) : (
-                <div className="flex flex-row flex-1 h-full justify-stretch flex-wrap border border-red-600 gap-2">
+                <div className="flex flex-row flex-1  flex-nowrap  gap-2 ">
                     {new Array(length).fill(0).map((item, index) => {
                         return <MonthStatistics key={index} month={index} usernames={usernames} />;
                     })}

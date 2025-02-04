@@ -9,7 +9,7 @@ const _testData = {
 
 function Page2() {
     return (
-        <div className="relative flex flex-1 p-4 border border-green-500">
+        <div className="relative">
             <Outlet />
         </div>
     );
