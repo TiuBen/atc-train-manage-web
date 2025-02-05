@@ -14,50 +14,14 @@ import {
 } from "react-router-dom";
 import { DialogContextProvider } from "@/utils/context/DialogContext";
 import { OnDutyUserContextProvider } from "@/utils/context/OnDutyUserContext";
+import {Page1Routes} from "./Page1/Page1"
 import { RouteTestPage } from "./RouteTestPage/RouteTestPage";
-const Home = () => (
-    <div>
-        <h2>Home</h2>
-    </div>
-);
-const Profile = () => (
-    <div>
-        <h2>Profile</h2>
-    </div>
-);
-const Settings = () => (
-    <div>
-        <h2>Settings</h2>
-    </div>
-);
+import  UserListDialog  from "./Dialog/UserListDialog";
+
 
 const routes = [
-    {
-        path: "/",
-        main: () => <Home />,
-        sidebar: () => <p>This is your home page. You'll see your feed which is made up of the people you follow.</p>,
-    },
-    {
-        path: "/profile",
-        main: () => <Profile />,
-        sidebar: () => (
-            <p>
-                This is your profile page. You'll be able to see all your profile information as well as the people you
-                follow.
-            </p>
-        ),
-    },
-    {
-        path: "/test",
-        main: () => <Settings />,
-        sidebar: () => (
-            <p>
-                This is your settings page. You can change your name, image, and anything else associated with your
-                account.
-                <Link to={"/"}>Back to Home</Link>
-            </p>
-        ),
-    },
+    ...Page1Routes,
+    ...RouteTestPage
 ];
 
 function AppVSkeleton() {
@@ -73,11 +37,11 @@ function AppVSkeleton() {
                         main={
                             <>
                                 <Routes>
-                                    {routes.map(({ path, sidebar }) => (
-                                        <Route key={path} path={path} element={sidebar()} />
+                                    {routes.map(({ path, main }) => (
+                                        <Route key={path} path={path} element={main()} />
                                     ))}
                                 </Routes>
-                            "ddd "
+                                
                             </>
                         }
                         rightSidebar={
@@ -97,6 +61,7 @@ function AppVSkeleton() {
                         isLeftSidebarOpen={isLeftSidebarOpen}
                         setLeftSidebarOpen={setLeftSidebarOpen}
                     />
+                    <UserListDialog />
                 </Theme>
             </OnDutyUserContextProvider>
         </DialogContextProvider>

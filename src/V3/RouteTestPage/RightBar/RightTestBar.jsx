@@ -2,7 +2,7 @@ import React from 'react'
 
 function RightTestBar() {
   return (
-    <div>RightTestBar</div>
+    <div>Righ ss tTes  tBar</div>
   )
 }
 

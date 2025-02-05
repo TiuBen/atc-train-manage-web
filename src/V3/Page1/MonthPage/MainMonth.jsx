@@ -114,9 +114,7 @@ function MonthPage() {
                     }}
                 />
             </div>
-            <div className="w-64 flex-shrink-0  px-4 overflow-y-auto">
-                <TimeLineSidebar date={date} />
-            </div>
+          
         </div>
     );
 }

@@ -14,11 +14,7 @@ import dayjs from "dayjs";
 
 function Seat(props) {
     const { position, dutyType } = props;
-    console.log("111");
-    
-console.log(JSON.stringify (props));
-console.log(dutyType===undefined);
-console.log("222");
+
 
 
     const [staffs, setStaffs] = useState([]);
@@ -37,7 +33,6 @@ console.log("222");
         fetch(`${SERVER_URL}/duty?${params}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data);
                 
                 setStaffs([...data]);
             })
@@ -81,6 +76,8 @@ console.log("222");
                     onClick={() => {
                         // setSelectedPosition(position);
                         // setSelectedDutyType(dutyType);
+                        console.log("UserListDialog");
+                        
                         setOpenUserListDialog(true);
 
                         //! 这里只有普通的接班

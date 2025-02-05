@@ -45,19 +45,19 @@ function LeftBar(props) {
     const items = [
         {
             title: "执勤",
-            href: "/duty",
+            href: "/",
             Icon: (props) => <MessageCircle {...props} strokeWidth={1.5} />,
             active: true,
             subNav: [
                 {
                     title: "岗位状态",
-                    href: "/duty/order-by-position",
+                    href: "/duty",
                     Icon: (props) => <BicepsFlexed {...props} strokeWidth={1.5} />,
                     active: true,
                 },
                 {
                     title: "日历",
-                    href: "/duty/order-by-month",
+                    href: "/calendar",
                     Icon: (props) => <CalendarDays {...props} strokeWidth={1.5} />,
                     active: false,
                 },

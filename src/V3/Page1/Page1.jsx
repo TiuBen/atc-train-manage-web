@@ -1,30 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { Outlet, Route, useLoaderData } from "react-router-dom";
 
-import DutyPage from "./OnDutyPage/DutyPage";
-import MonthPage from "./MonthPage/MonthPage";
-import UserListDialog from "./OnDutyPage/Dialog/UserListDialog";
+import MonthPage from "./MonthPage/MainMonth";
+import DutyPageMain from "./OnDutyPage/DutyPageMain";
+import DutyPageRightBar from "./OnDutyPage/DutyPageRightBar";
 
-function Page1() {
-    return (
-        <>
-            <div className="relative flex-1 flex ">
-                <Outlet />
-            </div>
+// function Page1() {
+//     return (
+//         <>
+//             <div className="relative flex-1 flex ">
+//                 <Outlet />
+//             </div>
 
-            <UserListDialog />
-        </>
-    );
-}
+//             {/* <UserListDialog /> */}
+//         </>
+//     );
+// }
 
-function Page1Route() {
-    return (
-        <Route path="duty" element={<Page1 />}>
-            <Route index element={<MonthPage/>} />
-            <Route path="order-by-position" element={<DutyPage />} />
-            <Route path="order-by-month" element={<MonthPage/>} />
-        </Route>
-    );
-}
+// function Page1Route() {
+//     return (
+//         <Route path="duty" element={<Page1 />}>
+//             <Route index element={<MonthPage />} />
+//             <Route path="order-by-position" element={<DutyPage />} />
+//             <Route path="order-by-month" element={<MonthPage />} />
+//         </Route>
+//     );
+// }
 
-export default Page1Route;
+const Page1Routes = [
+    {
+        path: "/",
+        main: () => <MonthPage />,
+        sidebar: () => < >ddd</>,
+    },
+    {
+        path: "duty",
+        main: () => <DutyPageMain />,
+        sidebar: () => <DutyPageRightBar/>,
+    },
+    {
+        path: "/calendar",
+        main: () => <MonthPage />,
+        sidebar: () => <>dddd </>,
+    },
+];
+
+export  {Page1Routes};
