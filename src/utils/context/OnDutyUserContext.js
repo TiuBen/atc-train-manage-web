@@ -1,15 +1,16 @@
 import React, { createContext, useState, useEffect } from "react";
-import {  SERVER_URL } from "@utils";
+import { SERVER_URL, FETCHER } from "@utils";
 import dayjs from "dayjs";
+import  useSWR from 'swr';
 
- const OnDutyUserContext = createContext();
 
- const OnDutyUserContextProvider = ({ children }) => {
+const OnDutyUserContext = createContext();
+
+const OnDutyUserContextProvider = ({ children }) => {
     const [onDutyUser, setOnDutyUser] = useState([]); // ! 必须默认是【】
     // single user on duty data
     const [singleUserOnDutyData, setSingleUserOnDutyData] = useState([]);
     const [needReloadData, setNeedReloadData] = useState({});
-  
 
     function groupDutiesByPositionAndType(position, dutyType) {
         console.log("groupDutiesByPositionAndType");
@@ -19,14 +20,10 @@ import dayjs from "dayjs";
         return _temp;
     }
 
-
     function postToServerUserGetIn(props) {
         console.log("postToServerUserGetIn");
         console.log(props);
-
-           
-        }
-    
+    }
 
     function putToServerUserGetOut(props) {
         console.log("putToServerUserGetOut");
@@ -141,7 +138,6 @@ import dayjs from "dayjs";
                 } else {
                     query.append(key, value);
                 }
-               
             });
             console.log(query.toString());
 
@@ -154,53 +150,18 @@ import dayjs from "dayjs";
         }
     }
 
-    useEffect(() => {
-        async function fetchData() {
-            console.log("fetchData");
-            const _temp = [];
+    // ! 旧方法 需要前端的 员工席位 不方便
 
-            const fetchPromises = [];
+    let todayQ=new URLSearchParams();
+    todayQ.append("startDate", dayjs().format("YYYY-MM-DD"));
+    todayQ.append("startTime","00:00:00" );
+    todayQ.append("endDate", dayjs().add(1,'day').format("YYYY-MM-DD"));
+    todayQ.append("endTime","00:00:01" );
 
-            for (const { position, dutyType } of PositionsWithDutyType) {
-                if (dutyType !== undefined) {
-                    for (const _dutyType of dutyType) {
-                        const params = new URLSearchParams({ position });
-                        params.append("dutyType", _dutyType);
-                        // console.log(params);
-                        const fetchPromise = fetch(`${server}/duty?${params}`)
-                            .then((res) => res.json())
-                            .then((data) => {
-                                _temp.push(...data);
-                            })
-                            .catch((e) => console.log(e));
-                        fetchPromises.push(fetchPromise);
-                    }
-                } else {
-                    const params = new URLSearchParams({ position });
 
-                    const fetchPromise = fetch(`${server}/duty?${params}`)
-                        .then((res) => res.json())
-                        .then((data) => {
-                            _temp.push(...data);
-                        })
-                        .catch((e) => console.log(e));
-                    fetchPromises.push(fetchPromise);
-                }
-            }
+    
 
-            await Promise.all(fetchPromises);
-            const uniqueData = Array.from(new Set(_temp.map((item) => JSON.stringify(item)))).map((item) =>
-                JSON.parse(item)
-            );
-            console.log(_temp);
-            console.log(uniqueData);
-            setOnDutyUser([...uniqueData]);
-            return uniqueData;
-            // setOfflineOnDutyUser(uniqueData);
-        }
-
-       
-    }, [needReloadData]);
+   const { data: todayUsersData, error:todayUsersError, isLoading:todayUsersIsLoading } = useSWR(`${SERVER_URL}/query/statics?${todayQ}`, FETCHER);
 
     // ! this part is the code about offline
     // when is offline the users displayed on page should be the same
@@ -215,6 +176,53 @@ import dayjs from "dayjs";
     //     }
     // }, [online, offlineOnDutyUser]);
 
+    // useEffect(() => {
+    //     async function fetchData() {
+    //         console.log("fetchData");
+    //         const _temp = [];
+
+    //         const fetchPromises = [];
+
+    //         for (const { position, dutyType } of PositionsWithDutyType) {
+    //             if (dutyType !== undefined) {
+    //                 for (const _dutyType of dutyType) {
+    //                     const params = new URLSearchParams({ position });
+    //                     params.append("dutyType", _dutyType);
+    //                     // console.log(params);
+    //                     const fetchPromise = fetch(`${server}/duty?${params}`)
+    //                         .then((res) => res.json())
+    //                         .then((data) => {
+    //                             _temp.push(...data);
+    //                         })
+    //                         .catch((e) => console.log(e));
+    //                     fetchPromises.push(fetchPromise);
+    //                 }
+    //             } else {
+    //                 const params = new URLSearchParams({ position });
+
+    //                 const fetchPromise = fetch(`${server}/duty?${params}`)
+    //                     .then((res) => res.json())
+    //                     .then((data) => {
+    //                         _temp.push(...data);
+    //                     })
+    //                     .catch((e) => console.log(e));
+    //                 fetchPromises.push(fetchPromise);
+    //             }
+    //         }
+
+    //         await Promise.all(fetchPromises);
+    //         const uniqueData = Array.from(new Set(_temp.map((item) => JSON.stringify(item)))).map((item) =>
+    //             JSON.parse(item)
+    //         );
+    //         console.log(_temp);
+    //         console.log(uniqueData);
+    //         setOnDutyUser([...uniqueData]);
+    //         return uniqueData;
+    //         // setOfflineOnDutyUser(uniqueData);
+    //     }
+
+    // }, [needReloadData]);
+
     return (
         <OnDutyUserContext.Provider
             value={{
@@ -226,6 +234,10 @@ import dayjs from "dayjs";
                 putToServerUserGetOut,
                 getDataByUser,
                 singleUserOnDutyData,
+                todayUsersData,
+                todayUsersError,
+                todayUsersIsLoading,
+              
             }}
         >
             {children}
@@ -233,4 +245,4 @@ import dayjs from "dayjs";
     );
 };
 
-export {OnDutyUserContext, OnDutyUserContextProvider}
+export { OnDutyUserContext, OnDutyUserContextProvider };
