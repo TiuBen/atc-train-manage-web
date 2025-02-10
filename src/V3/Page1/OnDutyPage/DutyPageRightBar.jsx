@@ -5,31 +5,58 @@ import { SERVER_URL, FETCHER, useOnDutyUser } from "@utils";
 import dayjs from "dayjs";
 function RightBarSelectDayDetail() {
     const ref = useRef(null);
-    const size = useSize(ref);
+    const size = useSize(ref);414444
     // const { data, error, isLoading } = useSWR(`${SERVER_URL}/query/positions`, FETCHER);
-    const { todayUsersData, todayUsersError, todayUsersLoading } = useOnDutyUser();
+    let todayQ = new URLSearchParams();
+    todayQ.append("startDate", dayjs().format("YYYY-MM-DD"));
+    todayQ.append("startTime", "00:00:00");
+    todayQ.append("endDate", dayjs().add(1, "day").format("YYYY-MM-DD"));
+    todayQ.append("endTime", "00:00:01");
 
-    if (todayUsersError) return <div>failed to load</div>;
-    if (todayUsersLoading) return <div>loading...</div>;
+    const { data, error, isLoading } = useSWR(`${SERVER_URL}/query/statics?${todayQ}`, FETCHER);
+
+    if (error) return <div>failed to load</div>;
+    if (isLoading) return <div>loading...</div>;
+
+    let _l=[];
     return (
         <div className="border border-red-500 flex-1 h-full" ref={ref}>
             <p>Try to resize the preview window </p>
             <p>
                 width: {size?.width}px, height: {size?.height}px
             </p>
-            {todayUsersData.map((item, index) => {
+            <div className="timeline relative h-full w-full">
+            {[]}33333333.
+
+
+            {data.map((item, index) => {
+                if(!_l.includes(item.position+item.dutyType)){
+                    _l.push(item.position+item.dutyType);
+                    console.log(_l);
+                    console.log(_l.indexOf(item.position+item.dutyType));
+                }
+
                 return (
-                    <div key={index} className="relative ">
                         <div
-                            className={`relative before:bg-green-600 before:absolute before:content-['d '] before:w-[4px] before:h-[30px] `}
+                        key={index}
+                            className={`container absolute  bg-white border w-[1.5rem]`}
+                            style={{
+                                left: `${_l.indexOf(item.position+item.dutyType)*30}px`,
+                                top:`${size?.height/24/60* (dayjs(item.inTime).get('h')*60+ dayjs(item.inTime).get('m'))}px`, // Set top position
+                                height: `${size?.height/(24*60)*(dayjs(item.outTime).diff(item.inTime, "m",true))}px`, // Set height
+                            }}
                         >
-                            {dayjs(item.inTime).format("mm:ss")}
+                            <div className="hight-bar absolute left-0 w-[3px] h-full bg-red-300"></div>
+                            <div className="content pl-[1px] writing-mode-vertical-rl text-orientation-upright write" style={{writingMode:"vertical-rl",textOrientation:"upright"}}>
+                                {/* <div className="starttime">{dayjs(item.inTime).format("mm:ss")}</div> */}
+                                <div className="username writing-mode-vertical-rl text-orientation-upright">{item.username}</div>
+                            </div>
                         </div>
-                        <p>{item.position}</p>
-                    </div>
                 );
             })}
         </div>
+        </div>
+
     );
 }
 

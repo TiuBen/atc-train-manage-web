@@ -4,6 +4,7 @@ import { Outlet, Route, useLoaderData } from "react-router-dom";
 import MonthPage from "./MonthPage/MainMonth";
 import DutyPageMain from "./OnDutyPage/DutyPageMain";
 import DutyPageRightBar from "./OnDutyPage/DutyPageRightBar";
+import RightBarSelectDayDetail from "./MonthPage/RightBarSelectDayDetail";
 
 // function Page1() {
 //     return (
@@ -31,7 +32,7 @@ const Page1Routes = [
     {
         path: "/",
         main: () => <MonthPage />,
-        sidebar: () => < >ddd</>,
+        sidebar: () => <RightBarSelectDayDetail/>,
     },
     {
         path: "duty",

@@ -28,7 +28,7 @@ function Seat(props) {
         if (dutyType !== undefined) {
             params.append("dutyType", dutyType);
         }
-        console.log(`${SERVER_URL}/duty?${params}`);
+        // console.log(`${SERVER_URL}/duty?${params}`);
         
         fetch(`${SERVER_URL}/duty?${params}`)
             .then((res) => res.json())

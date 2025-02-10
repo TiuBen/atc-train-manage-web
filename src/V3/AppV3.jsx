@@ -14,25 +14,32 @@ import {
 } from "react-router-dom";
 import { DialogContextProvider } from "@/utils/context/DialogContext";
 import { OnDutyUserContextProvider } from "@/utils/context/OnDutyUserContext";
+import { PageContextProvider } from "@/utils/context/PageContext";
 import {Page1Routes} from "./Page1/Page1"
-import { RouteTestPage } from "./RouteTestPage/RouteTestPage";
+import { Page2Routes } from "./Page2/Page2";
+
 import  UserListDialog  from "./Dialog/UserListDialog";
+import TopNav from "./TopNav/TopNav";
+import BottomBar from "./BottomBar/BottomBar";
+
 
 
 const routes = [
     ...Page1Routes,
-    ...RouteTestPage
+    ...Page2Routes,
 ];
 
 function AppVSkeleton() {
     const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(true);
 
     return (
+        <PageContextProvider>
+
         <DialogContextProvider>
             <OnDutyUserContextProvider>
                 <Theme accentColor="indigo">
                     <Skeleton
-                        topNav={<div>Top Na嘀嘀嘀vigation</div>}
+                        topNav={<TopNav />}
                         LeftSidebar={<LeftBar isExpanded={isLeftSidebarOpen} />}
                         main={
                             <>
@@ -45,18 +52,13 @@ function AppVSkeleton() {
                             </>
                         }
                         rightSidebar={
-                            // <Routes>
-                            //     {RouteTestPage.map(({ path, sidebar }) => (
-                            //         <Route key={path} path={path} element={sidebar()} />
-                            //     ))}
-                            // </Routes>
                             <Routes>
                                 {routes.map(({ path, sidebar }) => (
                                     <Route key={path} path={path} element={sidebar()} />
                                 ))}
                             </Routes>
                         }
-                        bottomBar={<div>Bottom Bar</div>}
+                        bottomBar={<BottomBar />}
                         floatingAction={<span>+</span>}
                         isLeftSidebarOpen={isLeftSidebarOpen}
                         setLeftSidebarOpen={setLeftSidebarOpen}
@@ -65,6 +67,8 @@ function AppVSkeleton() {
                 </Theme>
             </OnDutyUserContextProvider>
         </DialogContextProvider>
+        </PageContextProvider>
+
     );
 }
 

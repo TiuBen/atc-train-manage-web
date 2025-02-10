@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useLocalStorageState } from "ahooks";
 import dayjs from "dayjs";
 import useSWR, { mutate } from "swr";
-import { SERVER_URL, FETCHER } from "@utils";
+import { SERVER_URL, FETCHER, usePage } from "@utils";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -26,9 +26,68 @@ const StyledLikeExcel = styled.table`
 `;
 
 
-function LikeExcel({ selectedMonth, onClick, dutyRows, dutyStatics }) {
+function LikeExcel() {
+    const [selectedMonth, setSelectedMonth] = useState(dayjs().month());
+    const { payload } = usePage();
+    const { queryName } = payload;
+
+    const [dutyRows, setDutyRows] = useState([]);
+    const [dutyStatics, setDutyStatics] = useState([]);
+
+    useEffect(() => {
+        // append 可以添加多个相同名称的参数
+
+        if (selectedMonth !== null && queryName !== "") {
+            let q = new URLSearchParams();
+
+            q.append("username", queryName);
+
+            // Append startDate and startTime
+            q.append("startDate", dayjs().month(selectedMonth).date(1).format("YYYY-MM-DD"));
+            q.append("startTime", "00:00:00");
+
+            // Append endDate and endTime
+            q.append(
+                "endDate",
+                dayjs()
+                    .month(selectedMonth + 1)
+                    .date(1)
+                    .format("YYYY-MM-DD")
+            );
+            q.append("endTime", "00:00:01");
+
+            fetch(`${SERVER_URL}/query/statics?${q}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("data", data);
+                    setDutyRows(data);
+                });
+
+            q.append("year", dayjs().get("year"));
+            q.append("month", dayjs().get("month"));
+
+            fetch(`${SERVER_URL}/query/statics?${q}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setDutyStatics(data);
+                });
+        } else {
+            setDutyRows([]);
+        }
+    }, [selectedMonth, queryName]);
+
     return (
-        <div className="relative  flex flex-col gap-1 text-wrap">
+        <div className="relative  flex flex-col gap-1 text-wrap flex-1 m-2">
             <div className="w-full flex ">
                 {["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"].map(
                     (x, index) => {
@@ -39,7 +98,7 @@ function LikeExcel({ selectedMonth, onClick, dutyRows, dutyStatics }) {
                                     index === selectedMonth ? " bg-inherit font-extrabold  " : "bg-slate-200"
                                 }`}
                                 onClick={() => {
-                                    onClick(index);
+                                    setSelectedMonth(index);
                                 }}
                             >
                                 {x}
@@ -287,13 +346,13 @@ function LikeExcel({ selectedMonth, onClick, dutyRows, dutyStatics }) {
                                 </td>
                                 <td>
                                     {Math.round(
-                                       (dutyStatics?.totalCommanderTime?.dayShift +
-                                        dutyStatics?.totalTowerMainTime?.dayShift +
-                                        dutyStatics?.totalTowerSubTime?.dayShift +
-                                        dutyStatics?.totalGroundTime?.dayShift +
-                                        dutyStatics?.totalDeliveryTime?.dayShift +
-                                        dutyStatics?.totalAOCTime?.dayShift) *
-                                        100
+                                        (dutyStatics?.totalCommanderTime?.dayShift +
+                                            dutyStatics?.totalTowerMainTime?.dayShift +
+                                            dutyStatics?.totalTowerSubTime?.dayShift +
+                                            dutyStatics?.totalGroundTime?.dayShift +
+                                            dutyStatics?.totalDeliveryTime?.dayShift +
+                                            dutyStatics?.totalAOCTime?.dayShift) *
+                                            100
                                     ) / 100}
                                 </td>
                                 <td>

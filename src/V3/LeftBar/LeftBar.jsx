@@ -83,22 +83,6 @@ function LeftBar(props) {
                 },
             ],
         },
-        {
-            title: "测试",
-            href: "/test",
-            Icon: (props) => <ClipboardPenLine {...props} strokeWidth={1.5} />,
-            active: false,
-        },
-        // {
-        //     title: "Products",
-        //     Icon: (props) => <ClipboardPenLine {...props} strokeWidth={2} />,
-        //     active: false,
-        // },
-        // {
-        //     title: "Orders",
-        //     Icon: (props) => <ClipboardPenLine {...props} strokeWidth={2} />,
-        //     active: false,
-        // },
     ];
 
     return (

@@ -12,6 +12,13 @@ export default {
         // Ensure you haven't overwritten default values
         7: 'repeat(7, minmax(0, 1fr))',
       },
+      writingMode: {
+        'vertical-rl': 'vertical-rl',
+        'vertical-lr': 'vertical-lr',
+      },
+      textOrientation: {
+        upright: 'upright',
+      },
     },
   },
   plugins: [],
