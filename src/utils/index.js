@@ -10,6 +10,7 @@ export { default as usePage } from "./hooks/usePage";
 export { DialogContext,DialogContextProvider  } from "./context/DialogContext";
 export {  NotificationContext,NotificationProvider } from "./context/NotificationContext";
 export { OnDutyUserContext, OnDutyUserContextProvider } from "./context/OnDutyUserContext";
+export { PageContext, PageContextProvider } from "./context/PageContext";
 
 
 

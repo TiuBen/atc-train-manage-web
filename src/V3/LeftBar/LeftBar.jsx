@@ -1,6 +1,7 @@
 import { ClipboardPenLine, MessageCircle, Sheet, UserRoundCog, BicepsFlexed, CalendarDays } from "lucide-react";
 import { Theme, Button } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
+import { SERVER_URL, FETCHER } from "@utils";
 
 const LeftNavItem = ({ title, href, Icon, active, isExpanded, subNav }) => {
     if (isExpanded) {
@@ -105,6 +106,28 @@ function LeftBar(props) {
                         />
                     );
                 })}
+
+                <button
+                    className="border border-white"
+                    onClick={() => {
+                        fetch(`${SERVER_URL}/auth/face`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                username: "admin",
+                                password: "admin",
+                            }),
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                console.log(data);
+                            });
+                    }}
+                >
+                    auth
+                </button>
             </div>
         </>
     );

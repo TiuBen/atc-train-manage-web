@@ -1,23 +1,20 @@
 import React, { useContext, useState } from "react";
 import { Button, Dialog } from "@radix-ui/themes";
-import { useDialog,  useOnDutyUser,SERVER_URL } from "@utils";
-import  useSWR from 'swr';
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+import { useDialog, useOnDutyUser, SERVER_URL ,FETCHER} from "@utils";
+import useSWR from "swr";
 
 function UserListDialog() {
     const { openUserListDialog, setOpenUserListDialog, setOpenFaceAuthDialog } = useDialog();
 
-   
     const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
 
     //! dialog payload 写法
     const { dialogPayload } = useDialog();
 
-    const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, fetcher);
+    const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
-
 
     return (
         <Dialog.Root open={openUserListDialog} onOpenChange={() => setOpenUserListDialog(!openUserListDialog)}>
@@ -30,24 +27,43 @@ function UserListDialog() {
                 </Dialog.Title>
                 <Dialog.Description>点击姓名</Dialog.Description>
                 <div className="flex flex-col flex-wrap gap-2">
-                    
                     {orderedusername.map((uRow, index) => {
                         return (
                             <div key={index} className="flex flex-row flex-1 flex-wrap gap-2 border-b-2 pb-1">
                                 {uRow.map((x, key) => {
                                     return (
+                                        // <Button
+                                        //     color="cyan"
+                                        //     variant="soft"
+                                        //     // disabled={onDutyUser.some((item) => item.username === x)}
+                                        //     onClick={() => {
+                                        //         postToServerUserGetIn({ ...dialogPayload, username: x });
+                                        //         setOpenUserListDialog(false);
+                                        //     }}
+                                        //     key={key}
+                                        //     style={{ width: "5rem" }}
+                                        // >
+                                        //     {x}
+                                        // </Button>
+
                                         <Button
                                             color="cyan"
                                             variant="soft"
                                             // disabled={onDutyUser.some((item) => item.username === x)}
                                             onClick={() => {
-                                                postToServerUserGetIn({ ...dialogPayload, username: x });
-                                                setOpenUserListDialog(false);
+                                                // postToServerUserGetIn({ ...dialogPayload, username: x });
+                                                // setOpenUserListDialog(false);
+                                                setOpenFaceAuthDialog({
+                                                    display: true,
+                                                    username: x,
+
+                                                });
                                             }}
                                             key={key}
-                                            style={{ width: "5rem" }}
+                                            style={{ width: "8rem" }}
                                         >
                                             {x}
+                                            人脸识别
                                         </Button>
                                     );
                                 })}

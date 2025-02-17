@@ -1,16 +1,22 @@
 import React, { createContext, useState, useEffect } from "react";
 import { SERVER_URL, FETCHER } from "@utils";
 import dayjs from "dayjs";
-import  useSWR from 'swr';
-
+import useSWR from "swr";
 
 const OnDutyUserContext = createContext();
-
+// 定义一个延迟函数
+function delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
 const OnDutyUserContextProvider = ({ children }) => {
     const [onDutyUser, setOnDutyUser] = useState([]); // ! 必须默认是【】
-    // single user on duty data
-    const [singleUserOnDutyData, setSingleUserOnDutyData] = useState([]);
-    const [needReloadData, setNeedReloadData] = useState({});
+    const [authStatus, setAuthStatus] = useState({
+        canAuth: false,
+        // isVerifying: false,
+        verifyResult: false,
+        verifyResultMsg: "",
+        tryTimes: 0,
+    });
 
     function groupDutiesByPositionAndType(position, dutyType) {
         console.log("groupDutiesByPositionAndType");
@@ -20,208 +26,133 @@ const OnDutyUserContextProvider = ({ children }) => {
         return _temp;
     }
 
-    function postToServerUserGetIn(props) {
-        console.log("postToServerUserGetIn");
-        console.log(props);
+    function purePostToServerUserGetIn(props) {
+        console.log("purePostToServerUserGetIn");
+
+        fetch(`${SERVER_URL}/duty`, {
+            method: "POST", // 或者 "PUT"，根据你的需求
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(props),
+        })
+            .then((response) => response.json())
+            .then((dutyData) => {
+                console.log("Duty request successful:", dutyData);
+                // 处理 duty 请求成功的逻辑
+                if (dutyData?.id) {
+                    // 有这个ID代表创建成功
+                    setAuthStatus({
+                        verifyResult: "SUCCESS",
+                    });
+                } else {
+                    setAuthStatus((prev) => {
+                        return {
+                            verifyResult: "FAIL",
+                            verifyResultMsg: "验证失败",
+                        };
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error("Duty request error:", error);
+                // 处理 duty 请求失败的逻辑
+                setAuthStatus({
+                    verifyResult: "FAIL",
+                    verifyResultMsg: "验证失败",
+                });
+            });
+    }
+
+    async function postFaceImageToServerUserGetIn(props) {
+        console.log("postFaceImageToServerUserGetIn");
+        if (!props) {
+            return;
+        }
+        setAuthStatus({
+            verifyResult: "VERIFYING",
+        });
+
+        try {
+            // 暂停 1 秒
+            await delay(1000);
+
+            // 执行 fetch
+            const response = await fetch(`${SERVER_URL}/auth/face/verify`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(props),
+            });
+
+            const result = await response.json();
+
+            if (result?.body?.data?.confidence >= 75) {
+                console.log("验证成功");
+                purePostToServerUserGetIn(props);
+            } else {
+                setAuthStatus((prev) => ({
+                    ...prev,
+                    tryTimes: prev.tryTimes + 1,
+                    verifyResult: "FAIL",
+                    verifyResultMsg: "人脸可信度不够,验证失败",
+                }));
+                setTimeout(() => {
+                    setAuthStatus((prev) => ({
+                        ...prev,
+                        canAuth: true,
+                    }));
+                }, 500);
+            }
+        } catch (error) {
+            console.log("Error:", error);
+
+            setAuthStatus((prev) => ({
+                ...prev,
+                tryTimes: prev.tryTimes + 1,
+                verifyResult: "FAIL",
+                verifyResultMsg: "FACE服务器错误,验证失败",
+            }));
+
+            setTimeout(() => {
+                setAuthStatus((prev) => ({
+                    ...prev,
+                    canAuth: true,
+                }));
+            }, 500);
+        }
     }
 
     function putToServerUserGetOut(props) {
         console.log("putToServerUserGetOut");
         console.log(props);
-
-        if (props?.id) {
-            if (online) {
-                fetch(`${server}/duty`, {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(props),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        console.log("Success:", data);
-                        setNeedReloadData(new Date());
-                    })
-                    .catch((error) => {
-                        console.error("Error:", error);
-                    });
-            } else {
-                const temp = [...offlineOnDutyUser];
-
-                const userIndex = temp.findIndex((user) => {
-                    return user.id === props.id;
-                });
-
-                if (props.roleType === "教员") {
-                    // first get this user  id
-                    temp[userIndex].outTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[userIndex].roleEndTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[userIndex].roleType = null;
-                    temp[userIndex].status = {
-                        isOffline: "true",
-                        isSync: "false",
-                        modifiedValue: "outTime",
-                    };
-
-                    const ids = temp[userIndex].relatedDutyTableRowId.split(";");
-                    console.log(ids);
-                    const studentId = ids[ids.length - 2];
-                    console.log("studentId");
-                    console.log(studentId);
-
-                    const studentIndex = temp.findIndex((user) => {
-                        return user.id === studentId;
-                    });
-
-                    console.log("studentIndex");
-                    console.log(studentIndex);
-
-                    temp[studentIndex].outTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[studentIndex].roleEndTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[studentIndex].status = {
-                        isOffline: "true",
-                        isSync: "false",
-                        modifiedValue: "outTime",
-                    };
-                } else if (props.roleType === "见习") {
-                    temp[userIndex].outTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[userIndex].roleEndTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-
-                    temp[userIndex].status = {
-                        isOffline: "true",
-                        isSync: "false",
-                        modifiedValue: "outTime",
-                    };
-
-                    // ! find the teacher
-                    const teacherIndex = temp.findIndex((user) => {
-                        return user.id === props.relatedDutyTableRowId;
-                    });
-
-                    temp[teacherIndex].outTime = null;
-                    temp[teacherIndex].roleEndTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[teacherIndex].roleType = null;
-                    temp[teacherIndex].status = {
-                        isOffline: "true",
-                        isSync: "false",
-                        modifiedValue: "outTime",
-                    };
-                } else {
-                    temp[userIndex].outTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
-                    temp[userIndex].status = {
-                        isOffline: "true",
-                        isSync: "false",
-                        modifiedValue: "outTime",
-                    };
-                }
-                setOfflineOnDutyUser(temp);
-            }
-        }
-    }
-
-    // get data by user
-    function getDataByUser(props) {
-        console.log("getDataByUser");
-        console.log(props);
-
-        if (props.username && online) {
-            const query = new URLSearchParams();
-
-            Object.entries(props).forEach(([key, value]) => {
-                // If the value is an array (or any type), it can be serialized differently
-                // In this case, position is an empty array, so we convert it to '[]'
-                if (key === "positions") {
-                    if (Array.isArray(value)) {
-                        query.append(key, JSON.stringify(value.length > 0 ? value.join(";") : ""));
-                    }
-                } else {
-                    query.append(key, value);
-                }
-            });
-            console.log(query.toString());
-
-            fetch(`${server}/duty/?${query}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log("Success:", data);
-                    setSingleUserOnDutyData(data);
-                });
-        }
     }
 
     // ! 旧方法 需要前端的 员工席位 不方便
 
-    let todayQ=new URLSearchParams();
-    todayQ.append("startDate", dayjs().format("YYYY-MM-DD"));
-    todayQ.append("startTime","00:00:00" );
-    todayQ.append("endDate", dayjs().add(1,'day').format("YYYY-MM-DD"));
-    todayQ.append("endTime","00:00:01" );
-
-
-    
-
-   const { data: todayUsersData, error:todayUsersError, isLoading:todayUsersIsLoading } = useSWR(`${SERVER_URL}/query/statics?${todayQ}`, FETCHER);
-
-    // ! this part is the code about offline
-    // when is offline the users displayed on page should be the same
-    // and then
-    // useEffect(() => {
-    //     if (online) {
-    //     } else {
-    //         const onDutyOfflineUser = offlineOnDutyUser.filter((user) => {
-    //             return user.outTime === null;
-    //         });
-    //         setOnDutyUser(onDutyOfflineUser);
-    //     }
-    // }, [online, offlineOnDutyUser]);
-
-    // useEffect(() => {
-    //     async function fetchData() {
-    //         console.log("fetchData");
-    //         const _temp = [];
-
-    //         const fetchPromises = [];
-
-    //         for (const { position, dutyType } of PositionsWithDutyType) {
-    //             if (dutyType !== undefined) {
-    //                 for (const _dutyType of dutyType) {
-    //                     const params = new URLSearchParams({ position });
-    //                     params.append("dutyType", _dutyType);
-    //                     // console.log(params);
-    //                     const fetchPromise = fetch(`${server}/duty?${params}`)
-    //                         .then((res) => res.json())
-    //                         .then((data) => {
-    //                             _temp.push(...data);
-    //                         })
-    //                         .catch((e) => console.log(e));
-    //                     fetchPromises.push(fetchPromise);
-    //                 }
-    //             } else {
-    //                 const params = new URLSearchParams({ position });
-
-    //                 const fetchPromise = fetch(`${server}/duty?${params}`)
-    //                     .then((res) => res.json())
-    //                     .then((data) => {
-    //                         _temp.push(...data);
-    //                     })
-    //                     .catch((e) => console.log(e));
-    //                 fetchPromises.push(fetchPromise);
-    //             }
-    //         }
-
-    //         await Promise.all(fetchPromises);
-    //         const uniqueData = Array.from(new Set(_temp.map((item) => JSON.stringify(item)))).map((item) =>
-    //             JSON.parse(item)
-    //         );
-    //         console.log(_temp);
-    //         console.log(uniqueData);
-    //         setOnDutyUser([...uniqueData]);
-    //         return uniqueData;
-    //         // setOfflineOnDutyUser(uniqueData);
-    //     }
-
-    // }, [needReloadData]);
+    useEffect(() => {
+        // let todayQ = new URLSearchParams();
+        // todayQ.append("startDate", dayjs().format("YYYY-MM-DD"));
+        // todayQ.append("startTime", "00:00:00");
+        // todayQ.append("endDate", dayjs().add(1, "day").format("YYYY-MM-DD"));
+        // todayQ.append("endTime", "00:00:01");
+        // fetch(`${SERVER_URL}/query/statics?${todayQ}`, {
+        fetch(`${SERVER_URL}/query/now`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.json())
+            .then((result) => {
+                console.log("今天正在值班的人员");
+                console.log(result);
+                const outTimeNullUser = result.filter((item) => item.outTime === null);
+                setOnDutyUser(outTimeNullUser);
+                console.log(outTimeNullUser);
+            });
+    }, []);
 
     return (
         <OnDutyUserContext.Provider
@@ -229,15 +160,10 @@ const OnDutyUserContextProvider = ({ children }) => {
                 onDutyUser,
                 setOnDutyUser,
                 groupDutiesByPositionAndType,
-                postToServerUserGetIn,
-
+                postFaceImageToServerUserGetIn,
+                authStatus,
+                setAuthStatus,
                 putToServerUserGetOut,
-                getDataByUser,
-                singleUserOnDutyData,
-                todayUsersData,
-                todayUsersError,
-                todayUsersIsLoading,
-              
             }}
         >
             {children}
