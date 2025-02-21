@@ -14,13 +14,9 @@ function UserSettingPage() {
                             <CheckboxGroup.Item value="1" />
                         </CheckboxGroup.Root>
 
-                        <CheckboxGroup.Root size="2" defaultValue="1">
-                            <CheckboxGroup.Item value="1" />
-                        </CheckboxGroup.Root>
+                      
 
-                        <CheckboxGroup.Root size="3" defaultValue="1">
-                            <CheckboxGroup.Item value="1" />
-                        </CheckboxGroup.Root>
+                     
                     </Flex>
                 </div>
                 <div className="flex flex-1 flex-col">

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Route, useLoaderData, Outlet } from "react-router-dom";
 import Sheet from "./SheetPage/Sheet.jsx";
 
-import RadioButtonUserList from "./SheetPage/RadioButtonUserList/RadioButtonUserList.jsx";
+import RadioButtonUserList from "./RightBar/RadioButtonUserList/RadioButtonUserList.jsx";
 import DefaultPage from "./DefaultPage/DefaultPage.jsx";
 import LikeExcel from "./SheetPage/LikeExcel/LikeExcel.jsx";
 
@@ -49,7 +49,7 @@ const Page2Routes = [
     {
         path: "admin/setting",
         main: () => <UserSettingPage />,
-        sidebar: () => <>dddd </>,
+        sidebar: () => < RadioButtonUserList/>,
     },
 ];
 
