@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')).render(
     {/* <App /> */}
     {/* <AppSkeleton /> */}
     {/* <AppV2 /> */}
-    {/* <AppV3 /> */}
-    <AppMobile />
+    <AppV3 />
+    {/* <AppMobile /> */}
   </StrictMode>
 )

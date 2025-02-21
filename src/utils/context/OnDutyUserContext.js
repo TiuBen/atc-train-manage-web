@@ -1,7 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import { SERVER_URL, FETCHER } from "@utils";
 import dayjs from "dayjs";
-import useSWR from "swr";
 
 const OnDutyUserContext = createContext();
 // 定义一个延迟函数
@@ -11,9 +10,9 @@ function delay(ms) {
 const OnDutyUserContextProvider = ({ children }) => {
     const [onDutyUser, setOnDutyUser] = useState([]); // ! 必须默认是【】
     const [authStatus, setAuthStatus] = useState({
-        canAuth: false,
-        // isVerifying: false,
-        verifyResult: false,
+        canAuth: true,
+        // isVERIFYING: false,
+        verifyResult: "NOT_START",
         verifyResultMsg: "",
         tryTimes: 0,
     });
@@ -28,6 +27,11 @@ const OnDutyUserContextProvider = ({ children }) => {
 
     function purePostToServerUserGetIn(props) {
         console.log("purePostToServerUserGetIn");
+
+        setAuthStatus({
+            verifyResult: "VERIFYING",
+            verifyResultMsg: "正在验证...",
+        });
 
         fetch(`${SERVER_URL}/duty`, {
             method: "POST", // 或者 "PUT"，根据你的需求
@@ -44,12 +48,13 @@ const OnDutyUserContextProvider = ({ children }) => {
                     // 有这个ID代表创建成功
                     setAuthStatus({
                         verifyResult: "SUCCESS",
+                        verifyResultMsg: "登录成功",
                     });
                 } else {
                     setAuthStatus((prev) => {
                         return {
                             verifyResult: "FAIL",
-                            verifyResultMsg: "验证失败",
+                            verifyResultMsg: "登录失败",
                         };
                     });
                 }
@@ -64,18 +69,42 @@ const OnDutyUserContextProvider = ({ children }) => {
             });
     }
 
+    // useEffect(() => {
+    //     if (authStatus.tryTimes >= 3) {
+        
+    //         setAuthStatus((prev) => {
+    //             return {
+    //                 ...prev,
+    //                 canAuth: false,
+    //                 verifyResultMsg: "验证失败次数过多,请更换验证方式",
+    //             };
+    //         });
+    //     }
+    // }, [authStatus]);
+
     async function postFaceImageToServerUserGetIn(props) {
         console.log("postFaceImageToServerUserGetIn");
+        setAuthStatus((prev) => {
+            return {
+                ...prev,
+                tryTimes: prev.tryTimes + 1,
+            };
+        });
         if (!props) {
             return;
         }
-        setAuthStatus({
-            verifyResult: "VERIFYING",
-        });
 
         try {
             // 暂停 1 秒
-            await delay(1000);
+            // await delay(1000);
+            setAuthStatus((prev) => {
+                console.log("222222222222");
+                return {
+                    ...prev,
+                    verifyResult: "VERIFYING",
+                    verifyResultMsg: "正在脸识别中...",
+                };
+            });
 
             // 执行 fetch
             const response = await fetch(`${SERVER_URL}/auth/face/verify`, {
@@ -92,35 +121,27 @@ const OnDutyUserContextProvider = ({ children }) => {
                 console.log("验证成功");
                 purePostToServerUserGetIn(props);
             } else {
-                setAuthStatus((prev) => ({
-                    ...prev,
-                    tryTimes: prev.tryTimes + 1,
-                    verifyResult: "FAIL",
-                    verifyResultMsg: "人脸可信度不够,验证失败",
-                }));
-                setTimeout(() => {
-                    setAuthStatus((prev) => ({
+                setAuthStatus((prev) => {
+                    console.log("3333333333333");
+                    return {
                         ...prev,
                         canAuth: true,
-                    }));
-                }, 500);
+                        verifyResult: "FAIL",
+                        verifyResultMsg: "人脸可信度不够,验证失败",
+                    };
+                });
             }
         } catch (error) {
             console.log("Error:", error);
+            setAuthStatus((prev) => {
+                console.log("4444444444");
 
-            setAuthStatus((prev) => ({
-                ...prev,
-                tryTimes: prev.tryTimes + 1,
-                verifyResult: "FAIL",
-                verifyResultMsg: "FACE服务器错误,验证失败",
-            }));
-
-            setTimeout(() => {
-                setAuthStatus((prev) => ({
+                return {
                     ...prev,
-                    canAuth: true,
-                }));
-            }, 500);
+                    verifyResult: "FAIL",
+                    verifyResultMsg: "FACE服务器错误,验证失败",
+                };
+            });
         }
     }
 

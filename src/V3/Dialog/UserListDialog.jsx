@@ -32,39 +32,39 @@ function UserListDialog() {
                             <div key={index} className="flex flex-row flex-1 flex-wrap gap-2 border-b-2 pb-1">
                                 {uRow.map((x, key) => {
                                     return (
-                                        // <Button
-                                        //     color="cyan"
-                                        //     variant="soft"
-                                        //     // disabled={onDutyUser.some((item) => item.username === x)}
-                                        //     onClick={() => {
-                                        //         postToServerUserGetIn({ ...dialogPayload, username: x });
-                                        //         setOpenUserListDialog(false);
-                                        //     }}
-                                        //     key={key}
-                                        //     style={{ width: "5rem" }}
-                                        // >
-                                        //     {x}
-                                        // </Button>
-
                                         <Button
                                             color="cyan"
                                             variant="soft"
                                             // disabled={onDutyUser.some((item) => item.username === x)}
                                             onClick={() => {
-                                                // postToServerUserGetIn({ ...dialogPayload, username: x });
-                                                // setOpenUserListDialog(false);
-                                                setOpenFaceAuthDialog({
-                                                    display: true,
-                                                    username: x,
-
-                                                });
+                                                postToServerUserGetIn({ ...dialogPayload, username: x });
+                                                setOpenUserListDialog(false);
                                             }}
                                             key={key}
-                                            style={{ width: "8rem" }}
+                                            style={{ width: "5rem" }}
                                         >
                                             {x}
-                                            人脸识别
                                         </Button>
+
+                                        // <Button
+                                        //     color="cyan"
+                                        //     variant="soft"
+                                        //     // disabled={onDutyUser.some((item) => item.username === x)}
+                                        //     onClick={() => {
+                                        //         // postToServerUserGetIn({ ...dialogPayload, username: x });
+                                        //         // setOpenUserListDialog(false);
+                                        //         setOpenFaceAuthDialog({
+                                        //             display: true,
+                                        //             username: x,
+
+                                        //         });
+                                        //     }}
+                                        //     key={key}
+                                        //     style={{ width: "8rem" }}
+                                        // >
+                                        //     {x}
+                                        //     人脸识别
+                                        // </Button>
                                     );
                                 })}
                             </div>

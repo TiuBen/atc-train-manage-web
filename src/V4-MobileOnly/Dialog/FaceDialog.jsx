@@ -2,29 +2,32 @@ import { Button, Dialog } from "@radix-ui/themes";
 import React, { useState, useEffect, useContext, createContext, useRef } from "react";
 import { useDialog, useOnDutyUser, SERVER_URL } from "@utils";
 import Webcam from "react-webcam";
-import {X} from "lucide-react"
+import { X } from "lucide-react";
+import { use } from "react";
 const Camera = ({ onCapture }) => {
     const webcamRef = useRef(null);
     const [imageSrc, setImageSrc] = useState(null);
 
     const [isCameraReady, setIsCameraReady] = useState(false); // 新增状态，表示摄像头是否准备好
 
-    const { authStatus } = useOnDutyUser();
-
+    const { authStatus,setAuthStatus } = useOnDutyUser();
+    const [tooManyTimes,setTooManyTimes]=useState(null);
     const capture = () => {
         const imageSrc = webcamRef.current.getScreenshot();
         setImageSrc(imageSrc);
         onCapture(imageSrc); // 将捕获的图像传递给父组件
     };
 
-
     useEffect(() => {
         console.log(authStatus);
-        
-    }, [authStatus])
-    
-
-
+        if (authStatus.tryTimes > 6) {
+            setIsCameraReady(false);
+            // setAuthStatus((prev) => {
+            //     return { ...prev, verifyResultMsg: "验证失败次数过多,请更换验证方式dd" };
+            // });
+            setTooManyTimes("验证失败次数过多,请更换验证方式dd");
+        }
+    }, [authStatus]);
 
     return (
         <>
@@ -45,20 +48,21 @@ const Camera = ({ onCapture }) => {
                         ref={webcamRef}
                         screenshotFormat="image/jpeg"
                         height={360}
-                        onUserMedia={() => setIsCameraReady(true)} // 摄像头准备好后设置状态为 true
+                        onUserMedia={() => {
+                            setIsCameraReady(true);
+                            setAuthStatus({
+                                canAuth: true,
+                                verifyResult: "NOT_START",
+                                verifyResultMsg: "",
+                                tryTimes: 0,
+                            });
+                        }} // 摄像头准备好后设置状态为 true
                     />
                 </div>
 
-                <Button
-                    className=" flex-1"
-                    onClick={capture}
-                    disabled={authStatus?.verifyResult || authStatus?.canAuth || !isCameraReady}
-                >
-                    {authStatus?.verifyResult === "VERIFYING"
-                        ? "正在验证..."
-                        : authStatus?.canAuth
-                        ? "验证失败，重新拍照"
-                        : "拍照"}
+                <Button className=" flex-1" onClick={capture} disabled={!isCameraReady}>
+                    {/* {tooManyTimes||authStatus?.tryTimes > 2 ? "验证失败次数过多,请更换验证方式dd" : "验证身份"} */}
+                    {authStatus?.tryTimes > 6 ? "验证失败次数过多,请更换验证方式" : `验证身份${authStatus?.tryTimes===0?"":`${authStatus?.tryTimes}次`}`}
                 </Button>
             </div>
         </>
@@ -68,7 +72,7 @@ const Camera = ({ onCapture }) => {
 function FaceDialog(props) {
     const { dialogPayload, setDialogPayload } = useDialog();
     // const [capturedImage, setCapturedImage] = useState(null);
-    const { authStatus, postFaceImageToServerUserGetIn } = useOnDutyUser();
+    const { authStatus, setAuthStatus, postFaceImageToServerUserGetIn } = useOnDutyUser();
     const handleCapture = (imageSrc) => {
         // setCapturedImage(imageSrc);
         // if (imageSrc) {
@@ -76,14 +80,31 @@ function FaceDialog(props) {
         postFaceImageToServerUserGetIn({ ...dialogPayload, image: imageSrc });
     };
 
+    useEffect(() => {
+        setAuthStatus({
+            canAuth: true,
+            // isVERIFYING: false,
+            verifyResult: "NOT_START",
+            verifyResultMsg: "",
+            tryTimes: 0,
+        });
+    }, []);
+
     return (
         <Dialog.Root
             open={dialogPayload?.faceDialogDisplay}
-            onOpenChange={() =>
+            onOpenChange={() => {
                 setDialogPayload((prev) => {
                     return { ...prev, faceDialogDisplay: false };
-                })
-            }
+                });
+                setAuthStatus({
+                    canAuth: true,
+                    // isVERIFYING: false,
+                    verifyResult: "NOT_START",
+                    verifyResultMsg: "",
+                    tryTimes: 0,
+                });
+            }}
         >
             <Dialog.Content
                 style={{
@@ -99,15 +120,21 @@ function FaceDialog(props) {
                             {dialogPayload?.username}
                         </h1>
 
-                        <h1 className="text-2xl font-bold text-red-600 text-center flex-1">
-                            {authStatus.verifyResultMsg}
-                        </h1>
+                        <h1 className="text-2xl font-bold text-red-600 text-center ">{authStatus.verifyResultMsg}</h1>
                         <Button
                             color="red"
                             onClick={() => {
                                 setDialogPayload((prev) => {
                                     return { ...prev, faceDialogDisplay: false };
-                                })
+                                });
+
+                                setAuthStatus({
+                                    canAuth: true,
+                                    // isVERIFYING: false,
+                                    verifyResult: "NOT_START",
+                                    verifyResultMsg: "",
+                                    tryTimes: 0,
+                                });
                             }}
                             className="flex-grow-0 flex-shrink-0  self-end"
                         >

@@ -107,7 +107,7 @@ function LeftBar(props) {
                     );
                 })}
 
-                <button
+                {/* <button
                     className="border border-white"
                     onClick={() => {
                         fetch(`${SERVER_URL}/auth/face`, {
@@ -127,7 +127,7 @@ function LeftBar(props) {
                     }}
                 >
                     auth
-                </button>
+                </button> */}
             </div>
         </>
     );

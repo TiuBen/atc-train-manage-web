@@ -8,7 +8,7 @@ import Camera from "@sn/Camera";
 function FaceDialog(props) {
     const { username, onClick } = props;
 
-    const { openFaceAuthDialog, setOpenFaceAuthDialog } = useDialog();
+    const { dialogPayload, setDialogPayload } = useDialog();
 
     const [captureImage, setCaptureImage] = useState(null);
 
@@ -18,25 +18,26 @@ function FaceDialog(props) {
 
     return (
         <Dialog.Root
-            open={openFaceAuthDialog.display}
-            onOpenChange={() =>
-                setOpenFaceAuthDialog({
-                    display: true,
-                })
+            open={dialogPayload?.display}
+            onOpenChange={() =>{}
+                // setDialogPayload
+                // setOpenFaceAuthDialog({
+                //     display: true,
+                // })
             }
         >
             {/* <Dialog.Trigger>
                 <Button>{username}</Button>
             </Dialog.Trigger> */}
             <Dialog.Content style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                <Dialog.Title>{openFaceAuthDialog.username} </Dialog.Title>
+                <Dialog.Title>{dialogPayload.username} </Dialog.Title>
                 <Dialog.Description></Dialog.Description>
                 <div className="flex flex-row items-center mb-2">
                     <label className="flex-1 text-center text-3xl ">请正面摄像头</label>
                     <Button
                         color="red"
                         onClick={() => {
-                            setOpenFaceAuthDialog({
+                            setDialogPayload({
                                 display: false,
                             });
                         }}
@@ -49,7 +50,7 @@ function FaceDialog(props) {
                     onClick={() => {
                       
                         if (openFaceAuthDialog.username) {
-                            console.log("openFaceAuthDialog.username", openFaceAuthDialog.username);
+                            console.log("openFaceAuthDialog.username", dialogPayload.username);
 
                             fetch(`${SERVER_URL}/auth/face`, {
                                 method: "POST",
@@ -57,7 +58,7 @@ function FaceDialog(props) {
                                     "Content-Type": "application/json",
                                 },
                                 body: JSON.stringify({
-                                    username: openFaceAuthDialog.username,
+                                    username: dialogPayload.username,
                                     face: captureImage,
                                 }),
                             })

@@ -5,6 +5,9 @@ import Sheet from "./SheetPage/Sheet.jsx";
 import RadioButtonUserList from "./SheetPage/RadioButtonUserList/RadioButtonUserList.jsx";
 import DefaultPage from "./DefaultPage/DefaultPage.jsx";
 import LikeExcel from "./SheetPage/LikeExcel/LikeExcel.jsx";
+
+import UserSettingPage from "./UserSettingPage/UserSettingPage.jsx";
+
 const _testData = {
     "2025-01-01": () => <div>新年快乐！</div>,
     "2025-01-15": () => <div>今天是特别的日子！</div>,
@@ -45,7 +48,7 @@ const Page2Routes = [
     },
     {
         path: "admin/setting",
-        main: () => <TestPage />,
+        main: () => <UserSettingPage />,
         sidebar: () => <>dddd </>,
     },
 ];

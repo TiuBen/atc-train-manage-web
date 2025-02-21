@@ -51,10 +51,11 @@ function UserListDialog() {
                                             onClick={() => {
                                                 setDialogPayload((prev) => {
                                                     return {
-                                                        ...prev,
                                                         userListDialogDisplay: true,
                                                         faceDialogDisplay: true,
-                                                        username:x
+                                                        username: x,
+                                                        position: prev?.position,
+                                                        dutyType: prev?.dutyType,
                                                     };
                                                 });
                                             }}
