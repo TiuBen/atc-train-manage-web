@@ -10,6 +10,7 @@ function UserSettingPage() {
                     <label htmlFor="">岗位权限</label>
 
                     <Flex align="center" gap="2">
+                        
                         <CheckboxGroup.Root size="1" defaultValue="1">
                             <CheckboxGroup.Item value="1" />
                         </CheckboxGroup.Root>

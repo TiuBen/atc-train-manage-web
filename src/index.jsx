@@ -12,11 +12,11 @@ import AppMobile from './V4-MobileOnly/AppMobile.jsx';
 
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    {/* <App /> */}
-    {/* <AppSkeleton /> */}
-    {/* <AppV2 /> */}
-    <AppV3 />
-    {/* <AppMobile /> */}
-  </StrictMode>
+  // <StrictMode>
+  //   <App />
+  //   <AppSkeleton />
+  //   <AppV2 />
+  //   <AppV3 />
+  // </StrictMode>
+    <AppMobile />
 )
