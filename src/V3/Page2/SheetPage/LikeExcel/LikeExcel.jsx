@@ -4,6 +4,8 @@ import { useLocalStorageState } from "ahooks";
 import dayjs from "dayjs";
 import useSWR, { mutate } from "swr";
 import { SERVER_URL, FETCHER, usePage } from "@utils";
+import { Settings, Edit3 } from "lucide-react";
+import EditDutyRecordSheet from "../../../Dialog/EditDutyRecordSheet";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -25,11 +27,10 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
-
 function LikeExcel() {
     const [selectedMonth, setSelectedMonth] = useState(dayjs().month());
-    const { payload } = usePage();
-    const { queryName } = payload;
+    const { payload, setPayload } = usePage();
+    const { queryName, editSheetDisplay } = payload;
 
     const [dutyRows, setDutyRows] = useState([]);
     const [dutyStatics, setDutyStatics] = useState([]);
@@ -111,6 +112,7 @@ function LikeExcel() {
                 <StyledLikeExcel>
                     <thead>
                         <tr>
+                            <td className="border border-slate-600 px-2 text-nowrap text-center">修改</td>
                             <td className="border border-slate-600 px-2 text-nowrap text-center">日 期</td>
                             <td className="border border-slate-600 px-2 text-nowrap text-center">岗 位</td>
                             <td className="border border-slate-600 px-2 text-nowrap text-center">上岗时刻</td>
@@ -127,6 +129,19 @@ function LikeExcel() {
                         {dutyRows.map((x, index) => {
                             return (
                                 <tr key={index} className="text-sm font-bold">
+                                    <td className="border border-slate-600 px-2 text-nowrap text-center ">
+                                        <button
+                                            onClick={() => {
+                                                setPayload({
+                                                    ...payload,
+                                                    editSheetDisplay: true,
+                                                    editSheetRowId: x.id,
+                                                });
+                                            }}
+                                        >
+                                            <Edit3 size={16} />
+                                        </button>
+                                    </td>
                                     <td className="border border-slate-600 px-2 text-nowrap text-center">
                                         {dayjs(x.inTime).format("YYYY-MM-DD")}
                                     </td>

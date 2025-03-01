@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, Route, useLoaderData } from "react-router-dom";
 import useSWR from "swr";
 import { SERVER_URL } from "@utils";
 

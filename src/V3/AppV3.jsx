@@ -13,14 +13,15 @@ import {
 } from "react-router-dom";
 import { OnDutyUserContextProvider, DialogContextProvider, PageContextProvider } from "@utils";
 import Skeleton from "./Skeleton/Skeleton";
-import LeftBar from "./LeftBar/LeftBar";
+import LeftBar from "./BarLeft/LeftBar";
+import BottomBar from "./BarBottom/BottomBar";
 import { Page1Routes } from "./Page1/Page1";
 import { Page2Routes } from "./Page2/Page2";
 
 import UserListDialog from "./Dialog/UserListDialog";
 import TopNav from "./TopNav/TopNav";
-import BottomBar from "./BottomBar/BottomBar";
 import FaceDialog from "./Dialog/FaceDialog";
+import EditDutyRecordSheet from "./Dialog/EditDutyRecordSheet";
 const routes = [...Page1Routes, ...Page2Routes];
 
 function AppVSkeleton() {
@@ -55,8 +56,10 @@ function AppVSkeleton() {
                             isLeftSidebarOpen={isLeftSidebarOpen}
                             setLeftSidebarOpen={setLeftSidebarOpen}
                         />
+                        <EditDutyRecordSheet />
                         <FaceDialog />
                         <UserListDialog />
+                        
                     </Theme>
                 </OnDutyUserContextProvider>
             </DialogContextProvider>

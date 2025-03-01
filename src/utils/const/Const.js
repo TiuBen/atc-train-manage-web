@@ -1,4 +1,7 @@
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+// const SERVER_URL = "http://localhost:3105/api";
+// const SERVER_URL = "/api";
+
 const FETCHER = (...args) => fetch(...args).then((res) => res.json());
 
 const POSITIONS = [
@@ -19,5 +22,14 @@ const POSITIONS = [
     "进近低扇",
 ];
 
+const API_URL= {
+    "query_statics": `${SERVER_URL}/query/statics`,
+    "query_now": `${SERVER_URL}/query/now`,
+    "query_positions": `${SERVER_URL}/query/positions`,
+    "query_roles": `${SERVER_URL}/query/roles`,
 
-export { SERVER_URL,FETCHER,POSITIONS };
+
+}; 
+
+
+export { SERVER_URL,FETCHER,POSITIONS,API_URL };

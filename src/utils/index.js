@@ -16,4 +16,4 @@ export { PageContext, PageContextProvider } from "./context/PageContext";
 
 // const
 
- export { SERVER_URL,FETCHER } from "./const/Const";
+ export { SERVER_URL,FETCHER ,API_URL} from "./const/Const";

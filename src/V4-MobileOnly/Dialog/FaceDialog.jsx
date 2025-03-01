@@ -1,9 +1,8 @@
 import { Button, Dialog } from "@radix-ui/themes";
 import React, { useState, useEffect, useContext, createContext, useRef } from "react";
-import { useDialog, useOnDutyUser, SERVER_URL } from "@utils";
+import { useDialog, useOnDutyUser } from "@utils";
 import Webcam from "react-webcam";
 import { X } from "lucide-react";
-import { use } from "react";
 const Camera = ({ onCapture }) => {
     const webcamRef = useRef(null);
     const [imageSrc, setImageSrc] = useState(null);
