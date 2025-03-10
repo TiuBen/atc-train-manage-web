@@ -1,10 +1,11 @@
-import { Button, Flex, Checkbox, CheckboxGroup, Text, TextField } from "@radix-ui/themes";
-import React, { useState } from "react";
+import { Button, Flex, Checkbox, CheckboxGroup, Text, TextField, Radio, RadioGroup } from "@radix-ui/themes";
+import React, { useState, useEffect } from "react";
 import { usePage, SERVER_URL, FETCHER } from "@utils";
 import useSWR from "swr";
 import { API_URL } from "../../../../utils/const/Const.js";
 import { Theme } from "@radix-ui/themes";
-import { Input } from "@/components/ui/input"
+import { Input } from "@/components/ui/input";
+import dayjs from "dayjs";
 
 const initDutyRecord = {
     id: 3499,
@@ -25,23 +26,40 @@ const initDutyRecord = {
 };
 
 function EditDutyRecord() {
-    // const { payload, setPayload } = usePage();
+    const { payload, setPayload } = usePage();
     // const { editSheetDisplay } = payload;
     const { data: positions, error, isLoading } = useSWR(API_URL.query_positions, FETCHER);
+
+    // const { data: selectedDutyRow } = useSWR(API_URL.query_id + payload?.editSheetRowId, FETCHER);
     const { data: roles } = useSWR(API_URL.query_roles, FETCHER);
 
-    const [record, setRecord] = useState(initDutyRecord);
+    // const [record, setRecord] = useState(selectedDutyRow[0]);
+
+    const [selectedDutyRow, setSelectedDutyRow] = useState({});
+
+    useEffect(() => {
+        fetch(API_URL.query_id + payload?.editSheetRowId)
+            .then((res) => {
+                return res.json();
+            })
+            .then((data) => {
+                setSelectedDutyRow(data[0]);
+            })
+            .catch(() => {
+                console.log("error");
+            });
+    }, [payload]);
 
     return (
         <Theme accentColor="indigo">
-            <div className="w-[300px] border border-green-600 text-nowrap flex flex-col gap-2" onChange={() => {}}>
-                <div className="grid gap-4 py-4 border text-nowrap ">
+            <div className="m-auto  text-nowrap flex flex-col gap-2 py-2" onChange={() => {}}>
+                <div className="grid gap-2   text-nowrap ">
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Text size="3" weight="bold" htmlFor="name" className=" text-justify">
                             数据库 ID
                         </Text>
                         <TextField.Root
-                            placeholder={initDutyRecord.id}
+                            placeholder={selectedDutyRow?.id}
                             readOnly={true}
                             className="col-span-3"
                         ></TextField.Root>
@@ -51,7 +69,7 @@ function EditDutyRecord() {
                             姓名
                         </Text>
                         <TextField.Root
-                            placeholder={initDutyRecord.username}
+                            placeholder={selectedDutyRow?.username}
                             readOnly={true}
                             className="col-span-3"
                         ></TextField.Root>
@@ -61,22 +79,45 @@ function EditDutyRecord() {
                             席位
                         </Text>
                         {
-                            <div id="username" value="@peduarte" className="col-span-3 flex flex-row gap-2 flex-wrap">
+                            <RadioGroup.Root
+                                id="username"
+                                value={selectedDutyRow?.position}
+                                className="col-span-3 flex flex-row gap-2 flex-wrap"
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                }}
+                                onValueChange={(e) => {
+                                    setSelectedDutyRow((prev) => {
+                                        
+                                        return {
+                                            ...prev,
+                                            position: e,
+                                        };
+                                    });
+                                }}
+                            >
                                 {positions?.map((item) => (
-                                    <Text as="label" size="2" key={item.id}>
-                                        <Flex gap="1" className="flex justify-center items-center">
-                                            <Checkbox
+                                    <Text
+                                        as="label"
+                                        size="2"
+                                        key={item.id}
+                                        value={item.position}
+                                        className="max-w-[100px]"
+                                        
+                                    >
+                                        <Flex gap="2">
+                                            <RadioGroup.Item
+                                                size="2"
+                                                key={item.id}
                                                 value={item.position}
-                                                checked={item.position === record.position}
-                                                onChange={(e) => {
-                                                    setRecord({ ...record, position: e.target.value });
-                                                }}
-                                            />{" "}
+                                             
+                                            />
                                             {item.position}
                                         </Flex>
                                     </Text>
                                 ))}
-                            </div>
+                            </RadioGroup.Root>
                         }
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
@@ -84,47 +125,105 @@ function EditDutyRecord() {
                             角色
                         </label>
                         {
-                            <div id="username" value="@peduarte" className="col-span-3 flex flex-row gap-2 flex-wrap">
+                            <RadioGroup.Root
+                                id="username"
+                                value={selectedDutyRow?.dutyType}
+                                className="col-span-3 flex flex-row gap-2 flex-wrap"
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                }}
+                            >
                                 {roles?.map((item, index) => (
-                                    <label
+                                    <Text
+                                        as="label"
+                                        size="2"
                                         key={index}
-                                        className="flex flex-row flex-nowrap gap-1 justify-center items-center"
+                                        value={item.dutyType}
+                                        className="max-w-[100px]"
                                     >
-                                        <input
-                                            type="checkbox"
-                                            value={item}
-                                            checked={item === record.dutyType}
-                                            onChange={(e) => {
-                                                setRecord({ ...record, dutyType: e.target.value });
-                                            }}
-                                        />
-                                        {item}
-                                    </label>
+                                        <Flex gap="2">
+                                            <RadioGroup.Item size="2" value={item} />
+                                            {item}
+                                        </Flex>
+                                    </Text>
                                 ))}
-                            </div>
+                            </RadioGroup.Root>
                         }
                     </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                    <label htmlFor="username" className="text-justify  self-start">
-                        开始时间
-                    </label>
-                    <input id="username" value="2020-11-03 34：23：22" className="col-span-3" />
+                <div className="grid grid-cols-4 items-center gap-4 ">
+                    <label className="text-justify  self-center font-semibold">开始时间</label>
+                    <div className="flex flex-col col-span-3">
+                        <Text
+                            as="label"
+                            size="2"
+                            style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}
+                        >
+                            日期
+                            <input
+                                className="border rounded-sm p-1 text-base"
+                                type="date"
+                                value={dayjs(selectedDutyRow.inTime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")}
+                            />
+                        </Text>
+                        <Text
+                            as="label"
+                            size="2"
+                            style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}
+                        >
+                            时刻
+                            <input
+                                className="border rounded-sm p-1 text-base"
+                                type="time"
+                                step="1"
+                                value={dayjs(selectedDutyRow.inTime, "YYYY-MM-DD HH:mm:ss").format("HH:mm:ss")}
+                            />
+                        </Text>
+                    </div>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <label htmlFor="username" className="text-justify  self-start">
-                        结束时间
-                    </label>
-                    <input id="username" value="2020-11-03 34：23：22" className="col-span-3" />
+                    <label className="text-justify  self-center  font-semibold">结束时间</label>
+                    <div className="flex flex-col col-span-3">
+                        <Text
+                            as="label"
+                            size="2"
+                            style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}
+                        >
+                            日期
+                            <input
+                                className="border rounded-sm p-1 text-base"
+                                type="date"
+                                value={dayjs(selectedDutyRow.outTime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD")}
+                            />
+                        </Text>
+                        <Text
+                            as="label"
+                            size="2"
+                            style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "0.5rem" }}
+                        >
+                            时刻
+                            <input
+                                className="border rounded-sm p-1 text-base"
+                                type="time"
+                                step="1"
+                                value={dayjs(selectedDutyRow.outTime, "YYYY-MM-DD HH:mm:ss").format("HH:mm:ss")}
+                            />
+                        </Text>
+                    </div>
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <label htmlFor="username" className="text-justify  self-start">
+                    <label htmlFor="username" className="text-justify  self-start font-semibold">
                         关联数据
                     </label>
-                    <input id="username" value="" className="col-span-3" />
+                    <div className="flex flex-col col-span-3">
+                        {JSON.stringify(selectedDutyRow.relatedDutyTableRowId)}
+                    </div>
                 </div>
-                <Input type="time" step="1" />
-
+                <Button className="border  border-red-600">保存修改</Button>
+                <Button color="red" className="border  border-red-600">
+                    删除此条目
+                </Button>
             </div>
         </Theme>
     );

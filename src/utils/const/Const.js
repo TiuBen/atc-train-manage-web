@@ -27,7 +27,7 @@ const API_URL= {
     "query_now": `${SERVER_URL}/query/now`,
     "query_positions": `${SERVER_URL}/query/positions`,
     "query_roles": `${SERVER_URL}/query/roles`,
-
+    "query_id":`${SERVER_URL}/query?id=`
 
 }; 
 

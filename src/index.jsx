@@ -11,12 +11,21 @@ import AppMobile from "./V4-MobileOnly/AppMobile.jsx";
 import EditDutyRecord from "./V3/Page2/SheetPage/LikeExcel/EditDutyRecord.jsx";
 
 createRoot(document.getElementById("root")).render(
-    <StrictMode>
-        {/* <App /> */}
-        {/* <AppSkeleton /> */}
-        {/* <AppV2 /> */}
-        {/* <AppV3 /> */}
-        <EditDutyRecord />
-    </StrictMode>
     // <AppMobile />
+    <AppV3 />
 );
+
+// <StrictMode>
+{
+    /* <App /> */
+}
+{
+    /* <AppSkeleton /> */
+}
+{
+    /* <AppV2 /> */
+}
+{
+    /* <EditDutyRecord /> */
+}
+// </StrictMode>
