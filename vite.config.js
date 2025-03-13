@@ -36,11 +36,17 @@ export default defineConfig(({ command, mode }) => {
         base: "./",
         build: {
             outDir: "dist",
-            assetsDir: "assets",
+            assetsDir: "src",
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, "index.html"),
                 },
+                output:{
+                    entryFileNames:'index.js',
+                    assetFileNames:'assets/[name][extname]',
+                    chunkFileNames:'[name].js'
+                  }
+            
             },
         },
     };

@@ -38,19 +38,36 @@ function AppVSkeleton() {
                             main={
                                 <>
                                     <Routes>
-                                        {routes.map(({ path, main }) => (
-                                            <Route key={path} path={path} element={main()} />
+                                        {routes.map(({ path, main, sidebar }, index) => (
+                                            <Route
+                                                key={path}
+                                                path={path}
+                                                element={
+                                                    <>
+                                                        {main()}
+
+                                                        {sidebar() && (
+                                                            <aside className="w-64 bg-gray-400 border-l border-gray-200 ">
+                                                                {sidebar()}
+                                                            </aside>
+                                                        )}
+                                                    </>
+                                                }
+                                            />
                                         ))}
                                     </Routes>
                                 </>
                             }
-                            rightSidebar={
-                                <Routes>
-                                    {routes.map(({ path, sidebar }) => (
-                                        <Route key={path} path={path} element={sidebar()} />
-                                    ))}
-                                </Routes>
-                            }
+                            // rightSidebar={
+                            //     <Routes>
+                            //         {routes.map(({ path, sidebar }, index) => {
+                            //             if (sidebar) {
+
+                            //                 return <Route key={index} path={path} element={sidebar()} />;
+                            //             }
+                            //         })}
+                            //     </Routes>
+                            // }
                             bottomBar={<BottomBar />}
                             floatingAction={<span>+</span>}
                             isLeftSidebarOpen={isLeftSidebarOpen}
@@ -59,7 +76,6 @@ function AppVSkeleton() {
                         <EditDutyRecordSheet />
                         <FaceDialog />
                         <UserListDialog />
-                        
                     </Theme>
                 </OnDutyUserContextProvider>
             </DialogContextProvider>

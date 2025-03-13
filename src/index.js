@@ -9,10 +9,12 @@ import AppV2 from "./V2-dashboard/AppV2.jsx";
 import AppV3 from "./V3/AppV3.jsx";
 import AppMobile from "./V4-MobileOnly/AppMobile.jsx";
 import EditDutyRecord from "./V3/Page2/SheetPage/LikeExcel/EditDutyRecord.jsx";
+import AppV5 from "./V5-new-skeleton/routes.js";
 
 createRoot(document.getElementById("root")).render(
     // <AppMobile />
     <AppV3 />
+    // <AppV5 />
 );
 
 // <StrictMode>

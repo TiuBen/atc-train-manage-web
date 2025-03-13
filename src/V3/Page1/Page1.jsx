@@ -37,12 +37,12 @@ const Page1Routes = [
     {
         path: "duty",
         main: () => <DutyPageMain />,
-        sidebar: () => <DutyPageRightBar/>,
+        sidebar: () => null,
     },
     {
         path: "/calendar",
         main: () => <MonthPage />,
-        sidebar: () => <>dddd </>,
+        sidebar: () => null,
     },
 ];
 

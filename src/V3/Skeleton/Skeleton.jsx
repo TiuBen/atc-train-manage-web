@@ -59,9 +59,9 @@ function Skeleton({
                     <main className="flex flex-1 overflow-auto relative">{main}</main>
 
                     {/* Right Sidebar */}
-                    {rightSidebar && (
-                        <aside className="w-64 bg-gray-400 border-l border-gray-200 ">{rightSidebar}</aside>
-                    )}
+                    {/* {rightSidebar!==null ? (
+                        <aside className="w-64 bg-gray-400 border-l border-gray-200 ">ddd {rightSidebar}</aside>
+                    ):<></>} */}
                 </div>
 
                 {/* Bottom Bar */}

@@ -39,7 +39,8 @@ const Page2Routes = [
     {
         path: "admin",
         main: () => <DefaultPage />,
-        sidebar: () => <>ddd</>,
+        // sidebar: ()=><></>,
+        sidebar: ()=>null,
     },
     {
         path: "admin/sheet",
@@ -49,7 +50,7 @@ const Page2Routes = [
     {
         path: "admin/setting",
         main: () => <UserSettingPage />,
-        sidebar: () => < RadioButtonUserList/>,
+        sidebar: () => null,
     },
 ];
 

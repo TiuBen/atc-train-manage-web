@@ -179,7 +179,7 @@ function DefaultPage() {
     const { data: usernames, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
 
     return (
-        <div className=" flex-1 flex flex-col mx-2  overflow-hidden">
+        <div className=" flex-1 flex flex-col mx-2  overflow-auto">
             <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
             {error ? (
                 <div>error</div>
