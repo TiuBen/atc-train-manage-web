@@ -10,7 +10,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { API_URL } from "../../../utils/const/Const";
+import { API_URL } from "../../../../utils/const/Const";
 import useSWR from "swr";
 import { usePage, SERVER_URL, FETCHER } from "@utils";
 
@@ -25,8 +25,8 @@ function UserSettingPage() {
     console.log(positions);
 
     return (
-        <div className="outline flex-1 items-center content-start p-4">
-            <h1 className="text-2xl font-bold">用户管理</h1>
+        <div className=" flex-1 items-center content-start">
+            {/* <h1 className="text-2xl font-bold">用户管理</h1> */}
             <form className="flex flex-col gap-4">
                 <fieldset className="border  rounded-md  p-2">
                     <legend className="text-lg font-bold">选择用户</legend>

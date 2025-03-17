@@ -24,6 +24,7 @@ import FaceDialog from "./Dialog/FaceDialog";
 import EditDutyRecordSheet from "./Dialog/EditDutyRecordSheet";
 const routes = [...Page1Routes, ...Page2Routes];
 
+
 function AppVSkeleton() {
     const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(true);
 
