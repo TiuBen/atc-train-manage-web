@@ -12,6 +12,8 @@ function PositionSetting() {
     const [editRow, setEditRow] = useState(null);
     const [editedData, setEditedData] = useState({});
 
+    const [newPosition, setNewPosition] = useState(null);
+
     const handleEdit = (position) => {
         setEditRow(position.id);
         setEditedData({ ...position });
@@ -95,7 +97,7 @@ function PositionSetting() {
                                                         setEditedData((prev) => {
                                                             return {
                                                                 ...prev,
-                                                                "description": `主班,副班`,
+                                                                description: `主班,副班`,
                                                             };
                                                         });
                                                     } else {
@@ -144,28 +146,131 @@ function PositionSetting() {
                                     {editRow === position.id ? (
                                         <Button onClick={() => handleSave(position.id)}>
                                             <Check />
+                                            保存
                                         </Button>
                                     ) : (
                                         <Button color="gray" onClick={() => handleEdit(position)}>
                                             <PencilLine />
+                                            修改
                                         </Button>
                                     )}
                                 </td>
                             </tr>
                         );
                     })}
+                    {newPosition && (
+                        <tr  style={{ gap: "0.25rem" }}>
+                            <td className="border border-gray-300 px-2 py-1"></td>
+                            <td className="border border-gray-300 px-2 py-1">
+                                <input
+                                    className="border-2 border-blue-600 rounded-lg px-2 py-1"
+                                    type="text"
+                                    value={newPosition?.name}
+                                    onChange={(e) => {
+                                        setNewPosition((prev) => {
+                                            return {
+                                                ...prev,
+                                                name: e.target.value,
+                                            };
+                                        });
+                                    }}
+                                />
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1">
+                                <label
+                                    htmlFor={`new-description`}
+                                    className="flex justify-items-center gap-1 text-blue-600 font-bold"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`new-description`}
+                                        value={newPosition?.description}
+                                        checked={newPosition?.description !== null}
+                                        onChange={(e) => {
+                                            if (newPosition?.description === null) {
+                                                setNewPosition((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        description: `主班,副班`,
+                                                    };
+                                                });
+                                            } else {
+                                                setNewPosition((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        description: null,
+                                                    };
+                                                });
+                                            }
+                                        }}
+                                    />
+                                    配置主副班
+                                </label>
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1">
+                             
+                                    <label
+                                        htmlFor={`new-display`}
+                                        className="flex justify-items-center gap-1 text-blue-600 font-bold"
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            id={`new-display`}
+                                            value={newPosition?.display}
+                                            onChange={(e) => {
+                                                setNewPosition((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        display: prev.display === 1 ? 0 : 1,
+                                                    };
+                                                });
+                                            }}
+                                            checked={newPosition?.display}
+                                        />
+                                        显示
+                                    </label>
+                              
+                            </td>
+                            <td className="border border-gray-300 px-2 py-1">
+                                <Button onClick={() => {
+                                    fetch(`${SERVER_URL}/positions`, {
+                                        method: "POST",
+                                        headers: {
+                                            "Content-Type": "application/json",
+                                        },
+                                        body: JSON.stringify(newPosition),
+                                    })
+                                        .then((response) => response.json())
+                                        .then((data) => {
+                                            console.log("Data updated successfully:", data);
+                                            setNewPosition(null);
+                                        })
+                                        .then(() => {
+                                            mutate(API_URL.query_positions);
+                                        });
+
+
+
+                                }}>
+                                    <Check />
+                                    保存
+                                </Button>
+                            </td>
+                        </tr>
+                    )}
                 </tbody>
             </table>
             <div className="flex justify-end">
-                <Button color="green" onClick={() =>{
-                    setEditedData({
-                        name: "",
-                        description: null,
-                        display: 1,
-                    });
-
-                    set
-                }}>
+                <Button
+                    color="green"
+                    onClick={() => {
+                        setNewPosition({
+                            name: "",
+                            description: null,
+                            display: 0,
+                        });
+                    }}
+                >
                     <SquarePlus />
                     新建
                 </Button>
