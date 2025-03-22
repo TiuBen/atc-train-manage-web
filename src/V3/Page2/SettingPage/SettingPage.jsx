@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { TabNav, Tabs } from "@radix-ui/themes";
 import UserSettingPage from "./UserSettingPage/UserSettingPage";
 import PositionSetting from "./PositionSettingPage/PositionSetting";
+import TeamSettingPage from "./TeamSettingPage/TeamSettingPage";
 
 function SettingPage() {
     // 根据当前路径匹配路由
 
-    const [first, setfirst] = useState(2);
+    const [first, setfirst] = useState(1);
     useEffect(() => {
         console.log(`Type changed to: ${first}`);
     }, [first]);
@@ -14,9 +15,12 @@ function SettingPage() {
         switch (first) {
             case 1:
                 return <UserSettingPage />;
-                case 2:
-                    return <PositionSetting />;
+            case 2:
+                return <PositionSetting />;
+                case 3:
+                    return <TeamSettingPage />;
     
+
             default:
                 return <div>Unknown Type</div>;
         }
@@ -38,13 +42,22 @@ function SettingPage() {
                 <TabNav.Link
                     href="/admin/setting/2"
                     active={first === 2}
-
                     onClick={(e) => {
                         setfirst(2);
                         e.preventDefault();
                     }}
                 >
-                     <label className="text-2xl font-bold">席位管理</label>
+                    <label className="text-2xl font-bold">席位管理</label>
+                </TabNav.Link>
+                <TabNav.Link
+                    href="/admin/setting/3"
+                    active={first === 3}
+                    onClick={(e) => {
+                        setfirst(3);
+                        e.preventDefault();
+                    }}
+                >
+                    <label className="text-2xl font-bold">班组管理</label>
                 </TabNav.Link>
             </TabNav.Root>
             <div className=" p-4">{renderComponent()}</div>

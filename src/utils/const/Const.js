@@ -28,7 +28,8 @@ const API_URL= {
     "query_positions": `${SERVER_URL}/positions`,
     "query_roles": `${SERVER_URL}/query/roles`,
     "query_id":`${SERVER_URL}/query?id=`,
-    "query_users":`${SERVER_URL}/query/users`
+    "query_users":`${SERVER_URL}/query/users`,
+    "users":`${SERVER_URL}/users`
 
 }; 
 

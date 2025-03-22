@@ -74,37 +74,37 @@ function PositionSetting() {
                                         <input
                                             className="border-2 border-blue-600 rounded-lg px-2 py-1"
                                             type="text"
-                                            value={editedData.name}
+                                            value={editedData.position}
                                             onChange={(e) => handleChange(e, "name")}
                                         />
                                     ) : (
-                                        position.name
+                                        position.position
                                     )}
                                 </td>
                                 <td className="border border-gray-300 px-2 py-1">
                                     {editRow === position.id ? (
                                         <label
-                                            htmlFor={`${position.id}description`}
+                                            htmlFor={`${position.id}dutyType`}
                                             className="flex justify-items-center gap-1 text-blue-600 font-bold"
                                         >
                                             <input
                                                 type="checkbox"
-                                                id={`${position.id}description`}
-                                                value={editedData.description}
-                                                checked={editedData.description !== null}
+                                                id={`${position.id}dutyType`}
+                                                value={editedData.dutyType}
+                                                checked={editedData.dutyType !== null}
                                                 onChange={(e) => {
-                                                    if (editedData.description === null) {
+                                                    if (editedData.dutyType === null) {
                                                         setEditedData((prev) => {
                                                             return {
                                                                 ...prev,
-                                                                description: `主班,副班`,
+                                                                dutyType: `主班,副班`,
                                                             };
                                                         });
                                                     } else {
                                                         setEditedData((prev) => {
                                                             return {
                                                                 ...prev,
-                                                                description: null,
+                                                                dutyType: null,
                                                             };
                                                         });
                                                     }
@@ -113,7 +113,7 @@ function PositionSetting() {
                                             配置主副班
                                         </label>
                                     ) : (
-                                        position.description
+                                        position.dutyType
                                     )}
                                 </td>
                                 <td className="border border-gray-300 px-2 py-1">
@@ -165,12 +165,12 @@ function PositionSetting() {
                                 <input
                                     className="border-2 border-blue-600 rounded-lg px-2 py-1"
                                     type="text"
-                                    value={newPosition?.name}
+                                    value={newPosition?.position}
                                     onChange={(e) => {
                                         setNewPosition((prev) => {
                                             return {
                                                 ...prev,
-                                                name: e.target.value,
+                                                position: e.target.value,
                                             };
                                         });
                                     }}
@@ -178,27 +178,27 @@ function PositionSetting() {
                             </td>
                             <td className="border border-gray-300 px-2 py-1">
                                 <label
-                                    htmlFor={`new-description`}
+                                    htmlFor={`new-dutyType`}
                                     className="flex justify-items-center gap-1 text-blue-600 font-bold"
                                 >
                                     <input
                                         type="checkbox"
-                                        id={`new-description`}
-                                        value={newPosition?.description}
-                                        checked={newPosition?.description !== null}
+                                        id={`new-dutyType`}
+                                        value={newPosition?.dutyType}
+                                        checked={newPosition?.dutyType !== null}
                                         onChange={(e) => {
-                                            if (newPosition?.description === null) {
+                                            if (newPosition?.dutyType === null) {
                                                 setNewPosition((prev) => {
                                                     return {
                                                         ...prev,
-                                                        description: `主班,副班`,
+                                                        dutyType: `主班,副班`,
                                                     };
                                                 });
                                             } else {
                                                 setNewPosition((prev) => {
                                                     return {
                                                         ...prev,
-                                                        description: null,
+                                                        dutyType: null,
                                                     };
                                                 });
                                             }
@@ -265,8 +265,8 @@ function PositionSetting() {
                     color="green"
                     onClick={() => {
                         setNewPosition({
-                            name: "",
-                            description: null,
+                            position: "",
+                            dutyType: null,
                             display: 0,
                         });
                     }}
@@ -275,7 +275,6 @@ function PositionSetting() {
                     新建
                 </Button>
             </div>
-            {JSON.stringify(editedData)}
         </div>
     );
 }
