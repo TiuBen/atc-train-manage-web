@@ -3,11 +3,12 @@ import { TabNav, Tabs } from "@radix-ui/themes";
 import UserSettingPage from "./UserSettingPage/UserSettingPage";
 import PositionSetting from "./PositionSettingPage/PositionSetting";
 import TeamSettingPage from "./TeamSettingPage/TeamSettingPage";
+import StatisticSetting from "./StatisticSettingPage/StatisticSetting";
 
 function SettingPage() {
     // 根据当前路径匹配路由
 
-    const [first, setfirst] = useState(1);
+    const [first, setfirst] = useState(3);
     useEffect(() => {
         console.log(`Type changed to: ${first}`);
     }, [first]);
@@ -17,9 +18,10 @@ function SettingPage() {
                 return <UserSettingPage />;
             case 2:
                 return <PositionSetting />;
-                case 3:
-                    return <TeamSettingPage />;
-    
+            case 3:
+                return <TeamSettingPage />;
+            case 4:
+                return <StatisticSetting />;
 
             default:
                 return <div>Unknown Type</div>;
@@ -58,6 +60,16 @@ function SettingPage() {
                     }}
                 >
                     <label className="text-2xl font-bold">班组管理</label>
+                </TabNav.Link>
+                <TabNav.Link
+                    href="/admin/setting/4"
+                    active={first === 4}
+                    onClick={(e) => {
+                        setfirst(4);
+                        e.preventDefault();
+                    }}
+                >
+                    <label className="text-2xl font-bold">小时统计管理</label>
                 </TabNav.Link>
             </TabNav.Root>
             <div className=" p-4">{renderComponent()}</div>

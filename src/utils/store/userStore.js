@@ -1,0 +1,65 @@
+// store.js
+import { create } from 'zustand';
+
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
+const API_URL= {
+    "query_statics": `${SERVER_URL}/query/statics`,
+    "query_now": `${SERVER_URL}/query/now`,
+    "query_positions": `${SERVER_URL}/positions`,
+    "query_roles": `${SERVER_URL}/query/roles`,
+    "query_id":`${SERVER_URL}/query?id=`,
+    "query_users":`${SERVER_URL}/query/users`,
+    "users":`${SERVER_URL}/users`,
+    "duty":`${SERVER_URL}/duty`,
+    "roles":`${SERVER_URL}/roles`,
+
+
+}; 
+
+// 创建 store
+const useStore = create((set) => ({
+  users: [1,1,2],
+  isLoading: true,
+  error: null,
+  
+  // 获取用户数据
+  fetchUsers: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch(API_URL.users);
+      if (!response.ok) throw new Error('Network response was not ok');
+      const users = await response.json();
+      set({ users, isLoading: false });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+  
+  // 更新用户数据
+  updateUser: async (userId, updatedData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await fetch(`${API_URL.users}/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      });
+      if (!response.ok) throw new Error('Network response was not ok');
+      const updatedUser = await response.json();
+      
+      set((state) => ({
+        users: state.users.map(user => 
+          user.id === userId ? { ...user, ...updatedUser } : user
+        ),
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: error.message, loading: false });
+    }
+  },
+}));
+
+export default useStore;

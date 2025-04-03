@@ -22,7 +22,6 @@ const DynamicPage = () => {
                 const page = pages.find((p) => p.path === pathname);
                 console.log(page);
                 if (page) {
-
                     const { component } = page;
                     // 动态导入组件（例如：Page1.jsx、Page2.jsx 等）
                     const Component = React.lazy(() => import(`./pages/${component}.jsx`));
@@ -58,24 +57,18 @@ const DynamicPage = () => {
 //     </Router>
 // );
 
-
-
-
 function AppV5() {
-  return (
-    <AdminLayout sideNavBar={<SideNavBar />} horizontalNavBar={<HorizontalNavBar />}>
-      <Routes>
-        <Route path="/" element={<DynamicPage />} />
-        <Route path="/page1" element={<DynamicPage />} />
-        <Route path="/page2" element={<DynamicPage />} />
-      </Routes>
-    </AdminLayout>
-    
-  )
+    return (
+        <AdminLayout sideNavBar={<SideNavBar />} horizontalNavBar={<HorizontalNavBar />}>
+            <Routes>
+                <Route path="/" element={<DynamicPage />} />
+                <Route path="/page1" element={<DynamicPage />} />
+                <Route path="/page2" element={<DynamicPage />} />
+            </Routes>
+        </AdminLayout>
+    );
 }
 
 export default AppV5;
-
-
 
 // export default routes

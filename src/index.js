@@ -10,11 +10,13 @@ import AppV3 from "./V3/AppV3.jsx";
 import AppMobile from "./V4-MobileOnly/AppMobile.jsx";
 import EditDutyRecord from "./V3/Page2/SheetPage/LikeExcel/EditDutyRecord.jsx";
 import AppV5 from "./V5-new-skeleton/routes.js";
+import AppV6 from "./V6-store/AppV6.jsx";
 
 createRoot(document.getElementById("root")).render(
     // <AppMobile />
     <AppV3 />
     // <AppV5 />
+    // <AppV6 />
 );
 
 // <StrictMode>

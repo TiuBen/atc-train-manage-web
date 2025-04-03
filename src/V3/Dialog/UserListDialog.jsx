@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Button, Dialog } from "@radix-ui/themes";
 import { useDialog, useOnDutyUser, SERVER_URL ,FETCHER} from "@utils";
 import useSWR from "swr";
+import { API_URL } from "../../utils/const/Const";
 
 function UserListDialog() {
     const { openUserListDialog, setOpenUserListDialog, setOpenFaceAuthDialog } = useDialog();
@@ -11,10 +12,12 @@ function UserListDialog() {
     //! dialog payload 写法
     const { dialogPayload } = useDialog();
 
-    const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
+    const { data:orderedusername, error, isLoading } = useSWR(`${API_URL.users}/?orderBy=team`, FETCHER);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
+
+    // const {data:orderedusername}=data;
 
     return (
         <Dialog.Root open={openUserListDialog} onOpenChange={() => setOpenUserListDialog(!openUserListDialog)}>

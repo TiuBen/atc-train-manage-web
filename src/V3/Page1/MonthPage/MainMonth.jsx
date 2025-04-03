@@ -104,7 +104,6 @@ function MonthPage() {
                                 <DayCellElement
                                     date={props}
                                     onClick={(date) => {
-                                        console.log(date);
                                         setDate(date);
                                     }}
                                 />

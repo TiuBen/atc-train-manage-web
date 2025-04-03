@@ -1,11 +1,8 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { Theme } from "@radix-ui/themes";
 
 import {
-    createBrowserRouter,
-    createRoutesFromElements,
     Route,
-    RouterProvider,
     Outlet,
     BrowserRouter,
     Routes,
@@ -22,13 +19,20 @@ import UserListDialog from "./Dialog/UserListDialog";
 import TopNav from "./TopNav/TopNav";
 import FaceDialog from "./Dialog/FaceDialog";
 import EditDutyRecordSheet from "./Dialog/EditDutyRecordSheet";
+import useStore from "../utils/store/userStore";
+
+
 const routes = [...Page1Routes, ...Page2Routes];
+
 
 
 function AppVSkeleton() {
     const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(true);
 
+    const {users} =useStore();
+
     return (
+      
         <PageContextProvider>
             <DialogContextProvider>
                 <OnDutyUserContextProvider>
@@ -59,24 +63,17 @@ function AppVSkeleton() {
                                     </Routes>
                                 </>
                             }
-                            // rightSidebar={
-                            //     <Routes>
-                            //         {routes.map(({ path, sidebar }, index) => {
-                            //             if (sidebar) {
 
-                            //                 return <Route key={index} path={path} element={sidebar()} />;
-                            //             }
-                            //         })}
-                            //     </Routes>
-                            // }
+                            // main={JSON.stringify(users)}
+                        
                             bottomBar={<BottomBar />}
                             floatingAction={<span>+</span>}
                             isLeftSidebarOpen={isLeftSidebarOpen}
                             setLeftSidebarOpen={setLeftSidebarOpen}
                         />
-                        <EditDutyRecordSheet />
+                        {/* <EditDutyRecordSheet />
                         <FaceDialog />
-                        <UserListDialog />
+                        <UserListDialog /> */}
                     </Theme>
                 </OnDutyUserContextProvider>
             </DialogContextProvider>
@@ -86,7 +83,10 @@ function AppVSkeleton() {
 
 function AppV3() {
     const [isLeftSidebarOpen, setLeftSidebarOpen] = useState(true);
-
+    const {fetchUsers} =useStore();
+    useEffect(() => {
+        fetchUsers();
+      }, [fetchUsers]);
     return (
         // <BrowserRouter>
         //     <Skeleton

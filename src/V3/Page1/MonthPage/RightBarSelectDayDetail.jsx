@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import { SERVER_URL, FETCHER } from "@utils";
 import dayjs from "dayjs";
+import { API_URL } from "../../../utils/const/Const";
+import useStore from "../../../utils/store/userStore";
 
 function UserRow({ month, username }) {
     const [dutyStatics, setDutyStatics] = useState([]);
@@ -27,7 +29,7 @@ function UserRow({ month, username }) {
         q.append("year", dayjs().get("year"));
         q.append("month", dayjs().get("month"));
 
-        fetch(`${SERVER_URL}/query/statics?${q}`, {
+        fetch(`${API_URL.duty}?${q}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -64,7 +66,7 @@ function UserRow({ month, username }) {
 }
 
 function RightBarSelectDayDetail() {
-    const { data: usernames, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
+    const {users,isLoading,error}=useStore();
 
     return (
         <div>
@@ -74,8 +76,8 @@ function RightBarSelectDayDetail() {
                 <div>loading....</div>
             ) : (
                 <div className="flex flex-col flex-1  flex-nowrap text-sm  ">
-                    {usernames.flat().map((item, index) => {
-                        return <UserRow key={index} month={dayjs().get("month")} username={item} />;
+                    {users.map((item, index) => {
+                        return <UserRow key={index} month={dayjs().get("month")} username={item.username} />;
                     })}
                 </div>
             )}

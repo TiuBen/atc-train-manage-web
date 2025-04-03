@@ -19,8 +19,8 @@ import EditDutyRecord from "../Page2/SheetPage/LikeExcel/EditDutyRecord";
 function EditDutyRecordSheet() {
     const { payload, setPayload } = usePage();
     const { editSheetDisplay } = payload;
-    const { data: positions, error, isLoading } = useSWR(API_URL.query_positions, FETCHER);
-    const { data: roles } = useSWR(API_URL.query_roles, FETCHER);
+    // const { data: positions, error, isLoading } = useSWR(API_URL.query_positions, FETCHER);
+    // const { data: roles } = useSWR(API_URL.query_roles, FETCHER);
 
     return (
         <Sheet
@@ -39,9 +39,9 @@ function EditDutyRecordSheet() {
                     <SheetTitle>修改执勤记录</SheetTitle>
                     <SheetDescription>
                         此功能仅能修改执勤记录,如果此条目具备教员资格,请先检查或修改学员记录。
-                        <EditDutyRecord />
                     </SheetDescription>
                 </SheetHeader>
+                        <EditDutyRecord />
 
                 <SheetFooter  className="border  border-red-600   mx-auto">
                     <SheetClose >

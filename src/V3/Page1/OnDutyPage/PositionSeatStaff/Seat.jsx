@@ -15,8 +15,6 @@ import dayjs from "dayjs";
 function Seat(props) {
     const { position, dutyType } = props;
 
-
-
     const [staffs, setStaffs] = useState([]);
     const { setDialogPayload, setOpenUserListDialog } = useDialog();
 
@@ -28,6 +26,8 @@ function Seat(props) {
         if (dutyType !== undefined) {
             params.append("dutyType", dutyType);
         }
+        params.append("outTime", null);
+
         // console.log(`${SERVER_URL}/duty?${params}`);
         
         fetch(`${SERVER_URL}/duty?${params}`)

@@ -33,6 +33,7 @@ const Page1Routes = [
         path: "/",
         main: () => <MonthPage />,
         sidebar: () => <RightBarSelectDayDetail/>,
+
     },
     {
         path: "duty",
