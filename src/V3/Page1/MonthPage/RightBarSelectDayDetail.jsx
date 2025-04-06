@@ -29,7 +29,7 @@ function UserRow({ month, username }) {
         q.append("year", dayjs().get("year"));
         q.append("month", dayjs().get("month"));
 
-        fetch(`${API_URL.duty}?${q}`, {
+        fetch(`${API_URL.query_statics}?${q}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -69,7 +69,7 @@ function RightBarSelectDayDetail() {
     const {users,isLoading,error}=useStore();
 
     return (
-        <div>
+        <div className="overflow-y-auto w-64 bg-gray-400 border-l border-gray-200 px-2 py-2">
             {error ? (
                 <div>error</div>
             ) : isLoading ? (

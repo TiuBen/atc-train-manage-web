@@ -13,60 +13,43 @@ function TeamSettingPage() {
 
     const [teams, setTeams] = useState([]);
 
-    useEffect(() => {
-        const maxTeam = Math.max(...users.map((item) => item.team));
-        setTeamCount(maxTeam);
-    }, [users]);
+    const [editedUser, setEditedUser] = useState(users);
+    const [dragUser, setDragUser] = useState(null);
 
+    
     // 根据团队数量初始化团队
     // 根据团队数量和用户现有团队分配初始化团队
     useEffect(() => {
-        if (users.length === 0) return;
-
-        // 创建团队结构
-        const initialTeams = Array.from({ length: teamCount }, (_, i) => ({
-            id: i + 1, // 团队ID与用户数据中的team字段对应
-            name: `班组 ${i + 1}`,
-            members: users.filter((user) => user.team === i + 1).map((user) => user.id),
-        }));
-
-        setTeams(initialTeams);
-    }, [users, teamCount]);
+        if (users) {
+            setEditedUser(users);
+            const maxTeam = Math.max(...users.map((item) => item.team));
+            setTeamCount(maxTeam+1);
+        }
+    }, [users]);
 
     // 处理拖拽开始
-    const handleDragStart = (e, userId) => {
-        e.dataTransfer.setData("text/plain", userId);
-        e.currentTarget.style.opacity = "0.4";
-    };
+    const handleDragStart = (user) => {
+        console.log("handleDragStart", user);
 
+        setDragUser(user);
+    };
     // 处理拖拽结束
-    const handleDragEnd = (e) => {
-        e.currentTarget.style.opacity = "1";
-    };
-
-    // 处理拖拽悬停
-    const handleDragOver = (e) => {
-        e.preventDefault();
-    };
-
-    // 处理放置
-    const handleDrop = (e, teamId) => {
-        e.preventDefault();
-        const userId = e.dataTransfer.getData("text/plain");
-
-        // 从所有团队中移除该用户
-        const updatedTeams = teams.map((team) => ({
-            ...team,
-            members: team.members.filter((memberId) => memberId !== userId),
-        }));
-
-        // 将用户添加到目标团队
-        const targetTeamIndex = updatedTeams.findIndex((team) => team.id === teamId);
-        if (targetTeamIndex !== -1) {
-            updatedTeams[targetTeamIndex].members.push(userId);
+    const handleDrop = (teamId) => {
+        if (dragUser) {
+            setEditedUser((prevData) =>
+                prevData.map((u) => (u.username === dragUser.username ? { ...u, team: teamId } : u))
+            );
+            setDragUser(null);
         }
+    };
 
-        setTeams(updatedTeams);
+    const handleUnassignedDrop = () => {
+        if (dragUser) {
+            setEditedUser((prevData) =>
+                prevData.map((u) => (u.username === dragUser.username ? { ...u, team: "" } : u))
+            );
+            setDragUser(null);
+        }
     };
 
     // 提交分配结果
@@ -83,9 +66,44 @@ function TeamSettingPage() {
     //   };
 
     // 获取未分配的用户   // 获取未分配的用户
-    const getUnassignedUsers = () => {
-        return users.filter((user) => !user.team);
+    const getUnassignedUsers = (teamCount) => {
+        return editedUser
+        .filter((user) => user.team >= teamCount)
+        .map((user) => (
+            <div
+                key={user.username}
+                draggable
+                onDragStart={(e) => {
+                    e.dataTransfer.setData("text/plain", user.username);
+
+                    handleDragStart(user);
+                }}
+                className="bg-blue-200 hover:bg-blue-700 hover:cursor-grabbing text-white font-bold py-1 px-2   text-base rounded"
+            >
+                {user.username}
+            </div>
+        ));
     };
+
+    const renderUsers = (teamId) => {
+        return editedUser
+            .filter((user) => user.team === teamId)
+            .map((user) => (
+                <div
+                    key={user.username}
+                    draggable
+                    onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", user.username);
+
+                        handleDragStart(user);
+                    }}
+                    className="bg-blue-200 hover:bg-blue-700 hover:cursor-grabbing text-white font-bold py-1 px-2   text-base rounded"
+                >
+                    {user.username}
+                </div>
+            ));
+    };
+
     return (
         <div className="flex flex-col gap-2">
             <h1 className="text-xl font-bold text-gray-300">此处修改执勤界面</h1>
@@ -95,16 +113,41 @@ function TeamSettingPage() {
                     <div>
                         <label className="text-lg font-bold">当前班组数：{teamCount}</label>
                         <div>
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4   text-lg rounded">
+                            <button
+                                type="button"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4   text-lg rounded"
+                                disabled={teamCount <= 1}
+                                onClick={() => {
+                                    if (teamCount > 1) {
+                                        setTeamCount((prev) => prev - 1);
+                                    }
+                                }}
+                            >
                                 <Minus />
                             </button>
                             <input
                                 type="range"
                                 max={8}
                                 value={teamCount}
+                                onChange={(e) => {
+                                    e.preventDefault();
+                                    const value = parseInt(e.target.value);
+                                    if (!isNaN(value) && value >= 1 && value <= 8) {
+                                        setTeamCount(value);
+                                    }
+                                }}
                                 className="border border-1 border-green-500  rounded-md px-1 py-1 text-lg   text-center"
                             />
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4   text-lg rounded">
+                            <button
+                                type="button"
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4   text-lg rounded"
+                                disabled={teamCount >= 8}
+                                onClick={() => {
+                                    if (teamCount < 8) {
+                                        setTeamCount((prev) => prev + 1);
+                                    }
+                                }}
+                            >
                                 <Plus />
                             </button>
                         </div>
@@ -126,97 +169,34 @@ function TeamSettingPage() {
                                     </div>
                                 );
                             })}
-
-                        {/* <label className="text-lg font-bold">当前班组数：{teamCount}</label>
-                        <div>
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4   text-lg rounded">
-                                <Minus />
-                            </button>
-                            <input
-                                type="range"
-                                max={8}
-                                value={teamCount}
-                                className="border border-1 border-green-500  rounded-md px-1 py-1 text-lg   text-center"
-                            />
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-4   text-lg rounded">
-                                <Plus />
-                            </button>
-                        </div> */}
                     </div>
                 </fieldset>
                 {/* 未分配用户区域 */}
-                <fieldset className="border  rounded-md  p-2">
-                    <legend className="text-lg font-bold">未分配用户</legend>
-                    <div className="flex flex-row gap-2 text-nowrap flex-wrap">
-                        {getUnassignedUsers().length === 0 ? (
-                            <p>所有用户已分配</p>
-                        ) : (
-                            getUnassignedUsers().map((user) => (
-                                <div
-                                    key={user.id}
-                                    draggable
-                                    onDragStart={(e) => handleDragStart(e, String(user.id))}
-                                    onDragEnd={handleDragEnd}
-                                    style={{
-                                        padding: "8px",
-                                        margin: "5px 0",
-                                        background: "#e3f2fd",
-                                        cursor: "move",
-                                        borderRadius: "4px",
-                                    }}
-                                >
-                                    {user.username}
-                                </div>
-                            ))
-                        )}
-                    </div>
+
+                <fieldset
+                    onDragOver={(e) =>{ e.stopPropagation();e.preventDefault()}}
+                    onDrop={handleUnassignedDrop}
+                    className="border p-4 rounded"
+                >
+                    <legend className="font-bold">未分组</legend>
+                    {/* <div className="flex flex-row gap-2 text-nowrap flex-wrap">{renderUsers("")}</div> */}
+                    <div className="flex flex-row gap-2 text-nowrap flex-wrap">{getUnassignedUsers(teamCount)}</div>
                 </fieldset>
+
                 {/* 团队区域 */}
-                {teams.map((team) => (
+                {[...Array(teamCount).keys()].map((i) => (
                     <fieldset
-                        key={team.id}
-                        onDragOver={handleDragOver}
-                        onDrop={(e) => handleDrop(e, team.id)}
-                        className="border  rounded-md bg-slate-300  p-2"
+                        key={i}
+                        onDragOver={(e) =>{ e.stopPropagation();e.preventDefault()}}
+                        onDrop={() => {
+                            handleDrop(i);
+                        }}
+                        className="border p-4 rounded"
                     >
-                        <legend  className="text-lg font-bold">
-                            {team.name} ({team.members.length}人)
-                        </legend>
-                        <div className="flex flex-row gap-2 text-nowrap flex-wrap">
-                            {team.members.length === 0 ? (
-                                <p style={{ color: "#999" }}>拖拽用户到这里加入团队</p>
-                            ) : (
-                                team.members.map((memberId) => {
-                                    const user = users.find((u) => u.id === memberId);
-                                    return (
-                                        <div
-                                            key={memberId}
-                                            draggable
-                                            onDragStart={(e) => handleDragStart(e, memberId)}
-                                            onDragEnd={handleDragEnd}
-                                            style={{
-                                                padding: "10px",
-                                                margin: "8px 0",
-                                                background: "#e3f2fd",
-                                                cursor: "move",
-                                                borderRadius: "4px",
-                                                display: "flex",
-                                                alignItems: "center",
-                                            }}
-                                        >
-                                            <span style={{ marginRight: "10px" }}>👥</span>
-                                            <div>
-                                                <div style={{ fontWeight: "bold" }}>{user?.username || "未知用户"}</div>
-                                                <div style={{ fontSize: "0.8em", color: "#666" }}>{user?.roleType }</div>
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                            )}
-                        </div>
+                        <legend className="font-bold">Team {i}</legend>
+                        <div className="flex flex-row gap-2 text-nowrap flex-wrap">{renderUsers(i)}</div>
                     </fieldset>
                 ))}
-
             </form>
         </div>
     );
@@ -256,7 +236,8 @@ onValueChange={(value) => {}}
 </RadioGroup.Root> */
 }
 
-{/* <fieldset className="border  rounded-md  p-2">
+{
+    /* <fieldset className="border  rounded-md  p-2">
 <legend className="text-lg font-bold">分类班组</legend>
 
 {users &&
@@ -300,4 +281,5 @@ onValueChange={(value) => {}}
             </RadioGroup.Root>
         </fieldset>
     ))}
-</fieldset> */}
+</fieldset> */
+}

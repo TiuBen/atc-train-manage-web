@@ -7,6 +7,8 @@ import { useCalendar } from "@sn/useCalender";
 import { Button } from "@radix-ui/themes";
 import dayjs from "dayjs";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { API_URL } from "../../../utils/const/Const";
+import RightBarSelectDayDetail from "./RightBarSelectDayDetail";
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 function DayCellElement({ date, onClick }) {
@@ -16,8 +18,9 @@ function DayCellElement({ date, onClick }) {
     const endTime = "00:00:01";
 
     const query = new URLSearchParams({ startDate, startTime, endDate, endTime });
+    query.append("calculate", "day");
 
-    const { data, error, isLoading } = useSWR(`${SERVER_URL}/duty/?${query}`, fetcher);
+    const { data, error, isLoading } = useSWR(`${SERVER_URL}/duty?${query}`, fetcher);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
@@ -37,8 +40,9 @@ function TimeLineSidebar({ date }) {
     const endTime = "00:00:01";
 
     const query = new URLSearchParams({ startDate, startTime, endDate, endTime });
+    query.append("calculate", "month");
 
-    const { data, error, isLoading } = useSWR(`${SERVER_URL}/duty/?${query}`, fetcher);
+    const { data, error, isLoading } = useSWR(`${API_URL.query_statics}/${query}`, fetcher);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
@@ -76,7 +80,6 @@ function MonthPage() {
                                 <Button
                                     size="1"
                                     onClick={() => {
-                                        console.log("clicked");
                                         subOneMonth();
                                     }}
                                 >
@@ -85,7 +88,6 @@ function MonthPage() {
                                 <Button
                                     size="1"
                                     onClick={() => {
-                                        console.log("clicked");
                                         addOneMonth();
                                     }}
                                 >
@@ -112,7 +114,7 @@ function MonthPage() {
                     }}
                 />
             </div>
-          
+          <RightBarSelectDayDetail />
         </div>
     );
 }
