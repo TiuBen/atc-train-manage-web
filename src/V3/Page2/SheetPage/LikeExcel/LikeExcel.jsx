@@ -28,6 +28,22 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
+/**
+ * 格式化数值：保留2位小数，若无有效值则返回0
+ * @param {number|null|undefined} value - 输入值
+ * @returns {number} 格式化后的值（或0）
+ */
+function formatDecimal(value) {
+    // 检查是否为有效数字（非 null/undefined/NaN，且不为 0）
+    if (value === null || value === undefined || isNaN(value)) {
+        return 0;
+    }
+
+    // 四舍五入到2位小数，并避免 -0 的情况
+    const rounded = Math.round(value * 100) / 100;
+    return rounded === 0 ? "" : rounded; // 明确返回 0（而非 -0）
+}
+
 function LikeExcel() {
     const [selectedMonth, setSelectedMonth] = useState(dayjs().month());
     const { payload, setPayload } = usePage();
@@ -36,63 +52,57 @@ function LikeExcel() {
     const [dutyRows, setDutyRows] = useState([]);
     const [dutyStatics, setDutyStatics] = useState([]);
 
-    // useEffect(() => {
-    //     // append 可以添加多个相同名称的参数
+    useEffect(() => {
+        // append 可以添加多个相同名称的参数
 
-    //     if (selectedMonth !== null && queryName !== "") {
-    //         let q = new URLSearchParams();
+        if (selectedMonth && queryName ) {
+            let q = new URLSearchParams();
 
-    //         q.append("username", queryName);
+            q.append("username", queryName);
 
-    //         // Append startDate and startTime
-    //         q.append("startDate", dayjs().month(selectedMonth).date(1).format("YYYY-MM-DD"));
-    //         q.append("startTime", "00:00:00");
+            // Append startDate and startTime
+            q.append("startDate", dayjs().month(selectedMonth).date(1).format("YYYY-MM-DD"));
+            q.append("startTime", "00:00:00");
 
-    //         // Append endDate and endTime
-    //         q.append(
-    //             "endDate",
-    //             dayjs()
-    //                 .month(selectedMonth + 1)
-    //                 .date(1)
-    //                 .format("YYYY-MM-DD")
-    //         );
-    //         q.append("endTime", "00:00:01");
-
-    //         fetch(`${API_URL.users}?${q}`, {
-    //             method: "GET",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //         })
-    //             .then((res) => res.json())
-    //             .then((data) => {
-    //                 console.log("data", data);
-    //                 setDutyRows(data);
-    //             });
-
-    //         q.append("year", dayjs().get("year"));
-    //         q.append("month", dayjs().get("month"));
-
+            // Append endDate and endTime
+            q.append(
+                "endDate",
+                dayjs()
+                    .month(selectedMonth + 1)
+                    .date(1)
+                    .format("YYYY-MM-DD")
+            );
+            q.append("endTime", "00:00:01");
             
-    //         fetch(`${API_URL.users}?${q}`, {
-    //             method: "GET",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //         })
-    //             .then((res) => res.json())
-    //             .then((data) => {
-    //                 setDutyStatics(data);
-    //             });
-    //     } else {
-    //         setDutyRows([]);
-    //     }
-    // }, [selectedMonth, queryName]);
+            // 获取具体的本月的数据
+            fetch(`${API_URL.duty}?${q}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("data", data);
+                    setDutyRows(data);
+                });
 
-
-
-
-
+            // 获取统计数据 后台要计算
+            q.append("calculate", true);
+            fetch(`${API_URL.duty}?${q}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    setDutyStatics(data);
+                });
+        } else {
+            setDutyRows([]);
+        }
+    }, [selectedMonth, queryName,payload]);
 
     return (
         <div className="relative  flex flex-col gap-1 text-wrap flex-1 m-2">
@@ -221,7 +231,7 @@ function LikeExcel() {
                         </thead>
                         <tbody className="text-nowrap">
                             <tr>
-                                <td>带班主任席执勤小时</td>
+                                <td>带班主任席</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalCommanderTime?.dayShift +
@@ -234,7 +244,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>机场管制席执勤小时</td>
+                                <td>机场管制席</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalTowerMainTime?.dayShift +
@@ -247,7 +257,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>机场协调席执勤小时</td>
+                                <td>机场协调席</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalTowerSubTime?.dayShift +
@@ -260,7 +270,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>放行席执勤小时</td>
+                                <td>放行席</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalDeliveryTime?.dayShift +
@@ -273,7 +283,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>地面席执勤小时</td>
+                                <td>地面席</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalGroundTime?.dayShift +
@@ -286,24 +296,25 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>进近管制席执勤小时</td>
+                                <td>进近管制席</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>进近协调席执勤小时</td>
+                                <td>进近协调席</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>综合协调席小时</td>
+                                <td>综合协调席</td>
                                 <td>
                                     {Math.round(
-                                        (dutyStatics?.totalZongheTime?.dayShift + dutyStatics?.totalZongheTime?.nightShift) *
+                                        (dutyStatics?.totalZongheTime?.dayShift +
+                                            dutyStatics?.totalZongheTime?.nightShift) *
                                             100
                                     ) / 100}
                                 </td>
@@ -312,7 +323,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>现场调度席小时</td>
+                                <td>现场调度席</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalAOCTime?.dayShift + dutyStatics?.totalAOCTime?.nightShift) *
@@ -324,7 +335,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>见习管制员小时</td>
+                                <td>见习</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalStudentTime?.dayShift +
@@ -337,7 +348,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>管制教员席小时</td>
+                                <td>教员</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalTeacherTime?.dayShift +
@@ -349,7 +360,7 @@ function LikeExcel() {
                                 <td>{Math.round(dutyStatics?.totalTeacherTime?.nightShift * 100) / 100}</td>
                                 <td></td>
                             </tr>
-                          
+
                             <tr>
                                 <th colSpan="5">月度总小时统计</th>
                             </tr>
@@ -361,7 +372,7 @@ function LikeExcel() {
                                 <th>备注</th>
                             </tr>
                             <tr>
-                                <td>席位执勤小时</td>
+                                <td>席位</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalCommanderTime?.dayShift +
@@ -375,8 +386,7 @@ function LikeExcel() {
                                             dutyStatics?.totalDeliveryTime?.dayShift +
                                             dutyStatics?.totalDeliveryTime?.nightShift +
                                             dutyStatics?.totalZongheTime?.dayShift +
-                                            dutyStatics?.totalZongheTime?.nightShift 
-                                            ) *
+                                            dutyStatics?.totalZongheTime?.nightShift) *
                                             100
                                     ) / 100}
                                 </td>
@@ -405,7 +415,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>见习管制员小时</td>
+                                <td>见习</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalStudentTime?.dayShift +
@@ -418,7 +428,7 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>管制教员小时</td>
+                                <td>教员</td>
                                 <td>
                                     {Math.round(
                                         (dutyStatics?.totalTeacherTime?.dayShift +
@@ -431,11 +441,10 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
                             <tr>
-                                <td>现场调度席小时</td>
+                                <td>现场调度</td>
                                 <td>
                                     {Math.round(
-                                        (dutyStatics?.totalAOCTime?.dayShift +
-                                            dutyStatics?.totalAOCTime?.nightShift) *
+                                        (dutyStatics?.totalAOCTime?.dayShift + dutyStatics?.totalAOCTime?.nightShift) *
                                             100
                                     ) / 100}
                                 </td>
@@ -462,9 +471,9 @@ function LikeExcel() {
                                             dutyStatics?.totalStudentTime?.dayShift +
                                             dutyStatics?.totalStudentTime?.nightShift +
                                             dutyStatics?.totalAOCTime?.dayShift +
-                                            dutyStatics?.totalAOCTime?.nightShift+
+                                            dutyStatics?.totalAOCTime?.nightShift +
                                             dutyStatics?.totalZongheTime?.dayShift +
-                                            dutyStatics?.totalZongheTime?.nightShift ) *
+                                            dutyStatics?.totalZongheTime?.nightShift) *
                                             100
                                     ) / 100}
                                 </td>

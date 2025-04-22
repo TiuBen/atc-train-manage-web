@@ -5,6 +5,7 @@ import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import { API_URL } from "../../../utils/const/Const";
 import useStore from "../../../utils/store/userStore";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious  } from "@/components/ui/carousel";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -28,117 +29,74 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
+/**
+ * 格式化数值：保留2位小数，若无有效值则返回0
+ * @param {number|null|undefined} value - 输入值
+ * @returns {number} 格式化后的值（或0）
+ */
+function formatDecimal(value) {
+    // 检查是否为有效数字（非 null/undefined/NaN，且不为 0）
+    if (value === null || value === undefined || isNaN(value)) {
+        return 0;
+    }
+
+    // 四舍五入到2位小数，并避免 -0 的情况
+    const rounded = Math.round(value * 100) / 100;
+    return rounded === 0 ? "" : rounded; // 明确返回 0（而非 -0）
+}
+
 function UserRow({ month, username }) {
     const [dutyStatics, setDutyStatics] = useState([]);
 
-    // useEffect(() => {
-    //     // append 可以添加多个相同名称的参数
+    useEffect(() => {
+        // append 可以添加多个相同名称的参数
 
-    //     let q = new URLSearchParams();
-    //     q.append("username", username);
-    //     // Append startDate and startTime
-    //     q.append("startDate", dayjs().month(month).date(1).format("YYYY-MM-DD"));
-    //     q.append("startTime", "00:00:00");
+        let q = new URLSearchParams();
+        q.append("username", username);
+        // Append startDate and startTime
+        q.append("startDate", dayjs().month(month).date(1).format("YYYY-MM-DD"));
+        q.append("startTime", "00:00:00");
 
-    //     // Append endDate and endTime
-    //     q.append(
-    //         "endDate",
-    //         dayjs()
-    //             .month(month + 1)
-    //             .date(1)
-    //             .format("YYYY-MM-DD")
-    //     );
-    //     q.append("endTime", "00:00:01");
-    //     q.append("year", dayjs().get("year"));
-    //     q.append("month", dayjs().get("month"));
+        // Append endDate and endTime
+        q.append(
+            "endDate",
+            dayjs()
+                .month(month + 1)
+                .date(1)
+                .format("YYYY-MM-DD")
+        );
+        q.append("endTime", "00:00:01");
+        q.append("calculate", true);
 
-    //     fetch(`${API_URL.duty}?${q}`, {
-    //         method: "GET",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     })
-    //         .then((res) => res.json())
-    //         .then((data) => {
-    //             setDutyStatics(data);
-    //         });
-    // }, [month, username]);
+        fetch(`${API_URL.duty}?${q}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setDutyStatics(data);
+            });
+    }, [month, username]);
 
     return (
         <>
             <tr>
                 <td>{username}</td>
+                <td>{formatDecimal(dutyStatics?.totalCommanderTime?.dayShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalPositionTime?.dayShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalCommanderTime?.nightShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalPositionTime?.nightShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
                 <td>
-                    {Math.floor(dutyStatics?.totalCommanderTime?.dayShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalCommanderTime?.dayShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
+                    {formatDecimal(dutyStatics?.totalAOCTime?.nightShift) +
+                        formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}
                 </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalPositionTime?.dayShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalPositionTime?.dayShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalTeacherTime?.dayShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalTeacherTime?.dayShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalStudentTime?.dayShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalStudentTime?.dayShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalCommanderTime?.nightShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalCommanderTime?.nightShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalPositionTime?.nightShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalPositionTime?.nightShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalTeacherTime?.nightShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalTeacherTime?.nightShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(dutyStatics?.totalStudentTime?.nightShift * 100) / 100 !== 0 ? (
-                        <>{Math.floor(dutyStatics?.totalStudentTime?.nightShift * 100) / 100}</>
-                    ) : (
-                        <></>
-                    )}
-                </td>
-                <td>
-                    {Math.floor(
-                        dutyStatics?.totalAOCTime?.nightShift * 100 + dutyStatics?.totalAOCTime?.dayShift * 100
-                    ) /
-                        100 !==
-                    0 ? (
-                        <>
-                            {Math.floor(
-                                dutyStatics?.totalAOCTime?.nightShift * 100 + dutyStatics?.totalAOCTime?.dayShift * 100
-                            ) / 100}
-                        </>
-                    ) : (
-                        <></>
-                    )}
-                </td>
+
                 <td>
                     {Math.floor(
                         (dutyStatics?.totalCommanderTime?.dayShift +
@@ -200,14 +158,25 @@ function DefaultPage() {
     const { users } = useStore();
 
     return (
-        <div className=" flex-1 flex flex-col mx-2  overflow-auto">
-            <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
+        <div className=" flex-1 flex flex-col  overflow-auto relative items-center  ">
+                                <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
 
-            <div className="flex flex-row flex-1  flex-nowrap  gap-2 ">
-                {new Array(length).fill(0).map((item, index) => {
-                    return <MonthStatistics key={index} month={index} usernames={users} />;
-                })}
-            </div>
+            <Carousel
+                className="w-[92%]   m-auto"
+            >
+                <CarouselContent className="ml-1">
+                    {Array.from({ length: length })
+                    .map((_, index) => (
+                        <CarouselItem key={index} className="pl-1 m-auto max-xl:w-full xl:basis-1/3">
+                            <div className="p-1">
+                                <MonthStatistics key={index} month={index} usernames={users} />
+                            </div>
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+            </Carousel>
         </div>
     );
 }

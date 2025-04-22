@@ -20,6 +20,8 @@ import TopNav from "./TopNav/TopNav";
 import FaceDialog from "./Dialog/FaceDialog";
 import EditDutyRecordSheet from "./Dialog/EditDutyRecordSheet";
 import useStore from "../utils/store/userStore";
+import EditPositionDialog from "./Dialog/EditPositionDialog";
+import PositionList from "./CommonComponent/PositionList";
 
 
 const routes = [...Page1Routes, ...Page2Routes];
@@ -71,9 +73,10 @@ function AppVSkeleton() {
                             isLeftSidebarOpen={isLeftSidebarOpen}
                             setLeftSidebarOpen={setLeftSidebarOpen}
                         />
-                        {/* <EditDutyRecordSheet />
-                        <FaceDialog />
-                        <UserListDialog /> */}
+                         {/* <EditDutyRecordSheet /> */}
+                         <EditPositionDialog />
+                        {/* <FaceDialog /> */}
+                        {/* <UserListDialog />  */}
                     </Theme>
                 </OnDutyUserContextProvider>
             </DialogContextProvider>
@@ -108,6 +111,7 @@ function AppV3() {
         <BrowserRouter>
             <AppVSkeleton />
         </BrowserRouter>
+            // <PositionList title="Position List" />
     );
 }
 

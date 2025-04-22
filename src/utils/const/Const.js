@@ -1,6 +1,6 @@
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 // const SERVER_URL = "http://localhost:3105/api";
-// const SERVER_URL = "/api";
+// const SERVER_URL = ":3105/api";
 
 const FETCHER = (...args) => fetch(...args).then((res) => res.json());
 

@@ -59,8 +59,8 @@ function PositionSetting() {
                     <tr>
                         <th className="border border-gray-300 px-2 py-1">序号</th>
                         <th className="border border-gray-300 px-2 py-1">席位名称</th>
-                        <th className="border border-gray-300 px-2 py-1">主/副班</th>
-                        <th className="border border-gray-300 px-2 py-1">是否显示</th>
+                        <th className="border border-gray-300 px-2 py-1">是否配置主/副班</th>
+                        <th className="border border-gray-300 px-2 py-1">是否前端显示</th>
                         <th className="border border-gray-300 px-2 py-1">编辑</th>
                     </tr>
                 </thead>
