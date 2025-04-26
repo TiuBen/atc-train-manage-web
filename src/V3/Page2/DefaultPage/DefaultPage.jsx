@@ -5,7 +5,7 @@ import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import { API_URL } from "../../../utils/const/Const";
 import useStore from "../../../utils/store/userStore";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious  } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -159,14 +159,11 @@ function DefaultPage() {
 
     return (
         <div className=" flex-1 flex flex-col  overflow-auto relative items-center  ">
-                                <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
+            <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
 
-            <Carousel
-                className="w-[92%]   m-auto"
-            >
+            <Carousel className="w-[92%]   m-auto">
                 <CarouselContent className="ml-1">
-                    {Array.from({ length: length })
-                    .map((_, index) => (
+                    {Array.from({ length: length }).map((_, index) => (
                         <CarouselItem key={index} className="pl-1 m-auto max-xl:w-full xl:basis-1/3">
                             <div className="p-1">
                                 <MonthStatistics key={index} month={index} usernames={users} />

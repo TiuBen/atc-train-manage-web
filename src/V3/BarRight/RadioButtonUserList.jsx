@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import useSWR from "swr";
 import { SERVER_URL, FETCHER, usePage } from "@utils";
 import { API_URL } from "../../utils/const/Const";
+
 // function RadioButtonUserList({ queryName, onClick }) {
 function RadioButtonUserList() {
     const { data: userList, error, isLoading } = useSWR(`${API_URL.users}?orderBy=team`, FETCHER);
@@ -24,7 +25,7 @@ function RadioButtonUserList() {
                             checked={item.username === selectedUserName}
                             onChange={(e) => {
                                 setSelectedUserName(e.target.value);
-                                setPayload({ queryName: e.target.value });
+                                setPayload(item);
                             }}
                         />
                         {item.username}
