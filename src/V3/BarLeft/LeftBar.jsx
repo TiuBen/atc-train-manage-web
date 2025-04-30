@@ -82,6 +82,12 @@ function LeftBar(props) {
                     Icon: (props) => <UserRoundCog {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
                 },
+                {
+                    title: "夜班统计",
+                    href: "admin/night",
+                    Icon: (props) => <UserRoundCog {...props} size={"1.5em"} strokeWidth={1.5} />,
+                    active: false,
+                },
             ],
         },
     ];
