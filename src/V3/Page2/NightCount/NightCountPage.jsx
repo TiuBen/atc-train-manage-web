@@ -10,7 +10,6 @@ const StyledLikeExcel = styled.table`
     text-wrap: nowrap;
 
     td {
-        padding: 0.2rem;
         border: 1px solid black;
 
         &:hover {
@@ -19,7 +18,6 @@ const StyledLikeExcel = styled.table`
     }
 
     th {
-        padding: 0.2rem;
         border: 1px solid black;
     }
 `;
@@ -57,7 +55,7 @@ function NightCountPage() {
         // console.log(daysInMonth);
 
         const newDaysArray = Array.from({ length: daysInMonth }, (_, index) => {
-            return dayjs(selectedMonth).startOf("month").add(index, "day").format("D");
+            return dayjs(selectedMonth).startOf("month").add(index, "day").format("YYYY-MM-DD");
         });
         setDaysArray(newDaysArray);
     }, [selectedMonth]);
@@ -65,7 +63,6 @@ function NightCountPage() {
     return (
         <div className=" flex-1 flex flex-col  overflow-auto relative items-stretch border border-red-400 ">
             <h1 className="text-xl font-bold text-blue-700 text-center">2025年夜班次数统计</h1>
-
             <div className="relative  flex flex-col gap-1 text-wrap  m-2  ">
                 <div className="w-full flex  ">
                     {["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"].map(
@@ -94,38 +91,72 @@ function NightCountPage() {
                             <tr>
                                 <th>姓名</th>
                                 {daysArray.map((date, index) => (
-                                    <td key={index}>{date}</td>
+                                    <th key={index}>{dayjs(date).format("D")}</th>
                                 ))}
+                                <th>总次数/补贴</th>
                             </tr>
                         </thead>
                         <tbody>
                             {users.map((x, index) => {
                                 return (
-                                    <tr key={index}>
+                                    <tr key={index} className="hover:bg-slate-400">
                                         <td>{x.username}</td>
-                                        {Array(dayjs().daysInMonth())
-                                            .fill(0)
-                                            .map((y, i) => {
-                                                // return <td key={i}>{ nightShiftData[x.username][ dayjs().set("month", selectedMonth).set('D',i+1).format("YYYY-MM-DD")] }</td>;
-                                                // console.log(i);
-                                                // console.log(x.username);
+                                        {daysArray.map((y, i) => {
+                                            const date = dayjs()
+                                                .set("month", selectedMonth)
+                                                .set("date", i + 1)
+                                                .format("YYYY-MM-DD");
+                                            // console.log(date);
 
-                                                const date = dayjs()
-                                                    .set("month", selectedMonth)
-                                                    .set("date", i + 1)
-                                                    .format("YYYY-MM-DD");
-                                                // console.log(date);
+                                            console.log(nightShiftData[x.username]);
 
-                                                // console.log(nightShiftData[x.username]);
+                                            return (
+                                                <td key={i} className="m-0 px-0">
+                                                    {nightShiftData[x.username]?.[y]?.["夜班次数"] &&
+                                                        nightShiftData[x.username]?.[y]?.["夜班次数"]}
 
-                                                return (
-                                                    <td key={i}>
-                                                        {JSON.stringify(
+                                                    {nightShiftData[x.username]?.[y]?.["夜班次数"] === 0
+                                                        ? null
+                                                        : nightShiftData[x.username]?.[y]?.["夜班档位"]}
+                                                    {/* {JSON.stringify(
                                                             nightShiftData[x.username]?.[date]?.["夜班次数"]
-                                                        )}
-                                                    </td>
-                                                );
-                                            })}
+                                                        )} */}
+                                                </td>
+                                            );
+                                        })}
+                                        <td className="m-0 px-0">
+                                            {nightShiftData[x.username] &&
+                                                (() => {
+                                                    const totals = Object.values(nightShiftData[x.username]).reduce(
+                                                        (acc, curr) => {
+                                                            // 统计夜班次数
+                                                            if (
+                                                                curr["夜班次数"] &&
+                                                                typeof curr["夜班次数"] === "string"
+                                                            ) {
+                                                                const shifts = parseInt(curr["夜班次数"]) || 0;
+                                                                acc.totalShifts += shifts;
+                                                            }
+
+                                                            // 统计夜班金额
+                                                            if (
+                                                                curr["夜班档位"] &&
+                                                                typeof curr["夜班档位"] === "string"
+                                                            ) {
+                                                                const match = curr["夜班档位"].match(/\d+/);
+                                                                if (match) {
+                                                                    acc.totalAmount += parseInt(match[0]);
+                                                                }
+                                                            }
+
+                                                            return acc;
+                                                        },
+                                                        { totalShifts: 0, totalAmount: 0 }
+                                                    );
+
+                                                    return `${totals.totalShifts}次/${totals.totalAmount}元`;
+                                                })()}
+                                        </td>
                                     </tr>
                                 );
 

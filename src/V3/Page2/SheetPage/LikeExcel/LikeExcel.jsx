@@ -148,7 +148,7 @@ function LikeExcel() {
                     <tbody>
                         {dutyRows.map((x, index) => {
                             return (
-                                <tr key={index} className="text-sm font-bold">
+                                <tr key={index} className="text-sm font-bold hover:bg-slate-400">
                                     <td className="border border-slate-600 px-2 text-nowrap text-center ">
                                         <button
                                             onClick={() => {
@@ -233,77 +233,77 @@ function LikeExcel() {
                             </tr>
                         </thead>
                         <tbody className="text-nowrap">
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>带班主任席</td>
                                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>塔台管制席</td>
                                 <td>{formatDecimal(dutyStatics?.totalTowerMainTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTowerMainTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTowerMainTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>塔台协调席</td>
                                 <td>{formatDecimal(dutyStatics?.totalTowerSubTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTowerSubTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTowerSubTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>放行席</td>
                                 <td>{formatDecimal(dutyStatics?.totalDeliveryTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalDeliveryTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalDeliveryTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>地面席</td>
                                 <td>{formatDecimal(dutyStatics?.totalGroundTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalGroundTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalGroundTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>进近管制席</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>进近协调席</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>综合协调席</td>
                                 <td>{formatDecimal(dutyStatics?.totalZongheTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalZongheTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalZongheTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>现场调度席</td>
                                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>见习</td>
                                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>教员</td>
                                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
@@ -311,10 +311,10 @@ function LikeExcel() {
                                 <td></td>
                             </tr>
 
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <th colSpan="5">月度总小时统计</th>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <th>统计</th>
                                 <th>各席位总小时</th>
                                 <th>白班小时</th>
@@ -323,7 +323,7 @@ function LikeExcel() {
                                 </th>
                                 <th>备注</th>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>席位</td>
                                 <td>
                                     {formatDecimal(
@@ -354,14 +354,14 @@ function LikeExcel() {
                                 </td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>见习</td>
                                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>教员</td>
                                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
@@ -369,14 +369,14 @@ function LikeExcel() {
 
                                 <td></td>
                             </tr>
-                            <tr>
+                            <tr className="hover:bg-slate-400">
                                 <td>现场调度</td>
                                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
-                            <tr className="font-bold">
+                            <tr className="font-bold hover:bg-slate-400">
                                 <td>月度总小时</td>
                                 <td>{formatDecimal(dutyStatics?.totalTime?.time)}</td>
                                 <td>{formatDecimal(dutyStatics?.totalTime?.dayShift)}</td>
