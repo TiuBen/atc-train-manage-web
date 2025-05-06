@@ -22,7 +22,7 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
-function NightCountPage() {
+function NightCountByMonth() {
     const length = dayjs().month() + 1;
     const { users } = useStore();
     const [nightShiftData, setNightShiftData] = useState({});
@@ -43,7 +43,7 @@ function NightCountPage() {
         fetch(`${API_URL.users}/nights?${q}`)
             .then((res) => res.json())
             .then((data) => {
-                console.log(data?.nightShiftData);
+                // console.log(data?.nightShiftData);
                 setNightShiftData(data?.nightShiftData);
             });
     }, [selectedMonth]);
@@ -61,7 +61,7 @@ function NightCountPage() {
     }, [selectedMonth]);
 
     return (
-        <div className=" flex-1 flex flex-col  overflow-auto relative items-stretch border border-red-400 ">
+        <div className=" flex-1 flex flex-col  overflow-auto relative items-stretch ">
             <h1 className="text-xl font-bold text-blue-700 text-center">2025年夜班次数统计</h1>
             <div className="relative  flex flex-col gap-1 text-wrap  m-2  ">
                 <div className="w-full flex  ">
@@ -107,17 +107,23 @@ function NightCountPage() {
                                                 .set("date", i + 1)
                                                 .format("YYYY-MM-DD");
                                             // console.log(date);
+                                            console.log(x.username);
 
                                             console.log(nightShiftData[x.username]);
 
                                             return (
                                                 <td key={i} className="m-0 px-0">
-                                                    {nightShiftData[x.username]?.[y]?.["夜班次数"] &&
-                                                        nightShiftData[x.username]?.[y]?.["夜班次数"]}
+                                                    {/* {nightShiftData[x.username]?.[y]?.["夜班次数"] &&
+                                                        nightShiftData[x.username]?.[y]?.["夜班次数"]} */}
 
                                                     {nightShiftData[x.username]?.[y]?.["夜班次数"] === 0
-                                                        ? null
+                                                        ? ""
                                                         : nightShiftData[x.username]?.[y]?.["夜班档位"]}
+
+                                                    {nightShiftData[x.username]?.[y]?.["夜班次数"] !== undefined &&
+                                                    nightShiftData[x.username]?.[y]?.["夜班次数"] !== 0
+                                                        ? "段"
+                                                        : ""}
                                                     {/* {JSON.stringify(
                                                             nightShiftData[x.username]?.[date]?.["夜班次数"]
                                                         )} */}
@@ -127,34 +133,28 @@ function NightCountPage() {
                                         <td className="m-0 px-0">
                                             {nightShiftData[x.username] &&
                                                 (() => {
-                                                    const totals = Object.values(nightShiftData[x.username]).reduce(
-                                                        (acc, curr) => {
-                                                            // 统计夜班次数
-                                                            if (
-                                                                curr["夜班次数"] &&
-                                                                typeof curr["夜班次数"] === "string"
-                                                            ) {
-                                                                const shifts = parseInt(curr["夜班次数"]) || 0;
-                                                                acc.totalShifts += shifts;
+                                                    const t = { totalShifts: 0, totalAmount: 0 };
+
+                                                    for (const [key, value] of Object.entries(
+                                                        nightShiftData[x.username]
+                                                    )) {
+                                                        if (
+                                                            dayjs(key, "YYYYY-MM-DD").format("YYYY-MM") ===
+                                                            selectedMonth
+                                                        ) {
+                                                            console.log(key);
+                                                            console.log(value);
+
+                                                            if (value["夜班次数"] >= 0.01) {
+                                                                t.totalShifts += value["夜班次数"];
                                                             }
-
-                                                            // 统计夜班金额
-                                                            if (
-                                                                curr["夜班档位"] &&
-                                                                typeof curr["夜班档位"] === "string"
-                                                            ) {
-                                                                const match = curr["夜班档位"].match(/\d+/);
-                                                                if (match) {
-                                                                    acc.totalAmount += parseInt(match[0]);
-                                                                }
+                                                            if (value["夜班档位"] >= 0.01) {
+                                                                t.totalAmount += value["夜班档位"];
                                                             }
+                                                        }
+                                                    }
 
-                                                            return acc;
-                                                        },
-                                                        { totalShifts: 0, totalAmount: 0 }
-                                                    );
-
-                                                    return `${totals.totalShifts}次/${totals.totalAmount}元`;
+                                                    return `${t.totalShifts}晚/${t.totalAmount}段`;
                                                 })()}
                                         </td>
                                     </tr>
@@ -185,4 +185,4 @@ function NightCountPage() {
     );
 }
 
-export default NightCountPage;
+export default NightCountByMonth;

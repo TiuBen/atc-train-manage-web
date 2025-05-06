@@ -8,7 +8,7 @@ import LikeExcel from "./SheetPage/LikeExcel/LikeExcel.jsx";
 
 import UserSettingPage from "./SettingPage/UserSettingPage/UserSettingPage.jsx";
 import SettingPage from "./SettingPage/SettingPage.jsx";
-import NightCountPage from "./NightCount/NightCountPage.jsx";
+import NightPage from "./NightCount/NightPage.jsx";
 
 const _testData = {
     "2025-01-01": () => <div>新年快乐！</div>,
@@ -69,7 +69,7 @@ const Page2Routes = [
     {
         path: "admin/night",
         main: () => {
-            return <NightCountPage />;
+            return <NightPage />;
         },
         sidebar: () => null,
     },

@@ -1,9 +1,6 @@
 import { Button, Dialog } from "@radix-ui/themes";
 import React, { useState, useEffect, useContext, createContext, useRef } from "react";
-import { useDialog, SERVER_URL } from "@utils";
-import { usePage, FETCHER } from "@utils";
-import useSWR from "swr";
-import { API_URL } from "../../utils/const/Const";
+import { usePage } from "@utils";
 import EditDutyRecord from "../Page2/SheetPage/LikeExcel/EditDutyRecord";
 
 function EditPositionDialog() {

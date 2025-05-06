@@ -1,7 +1,5 @@
 import { ClipboardPenLine, MessageCircle, Sheet, UserRoundCog, BicepsFlexed, CalendarDays } from "lucide-react";
-import { Theme, Button } from "@radix-ui/themes";
 import { Link } from "react-router-dom";
-import { SERVER_URL, FETCHER } from "@utils";
 
 const LeftNavItem = ({ title, href, Icon, active, isExpanded, subNav }) => {
     if (isExpanded) {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useSWR from "swr";
-import { SERVER_URL, FETCHER, usePage } from "@utils";
+import {  FETCHER, usePage } from "@utils";
 import { API_URL } from "../../utils/const/Const";
 
 // function RadioButtonUserList({ queryName, onClick }) {
