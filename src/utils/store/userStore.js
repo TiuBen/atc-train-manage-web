@@ -20,6 +20,9 @@ const API_URL = {
 const useStore = create((set) => ({
     users: [1, 1, 2],
     userStatics: {},
+    userStaticsByMonth:[],
+    positionsOnDuty: [],
+
     isLoading: true,
     error: null,
 
@@ -71,6 +74,22 @@ const useStore = create((set) => ({
             console.log(error);
         }
     },
+
+    // 获取某个月的数据
+
+    // 获取席位
+    fetchPositions: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await fetch(API_URL.query_positions+ "?display=true");
+            if (!response.ok) throw new Error("Network response was not ok");
+            const positionsOnDuty = await response.json();
+            set({ positionsOnDuty, isLoading: false });
+        } catch (error) {
+            set({ error: error.message, isLoading: false });
+        }
+    }
+
 }));
 
 export default useStore;

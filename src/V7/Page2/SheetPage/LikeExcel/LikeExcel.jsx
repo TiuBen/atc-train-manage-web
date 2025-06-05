@@ -378,38 +378,9 @@ function LikeExcel() {
                             </tr>
                             <tr className="font-bold hover:bg-slate-400">
                                 <td>月度总小时</td>
-                                <td>
-                                    {formatDecimal(
-                                        dutyStatics?.totalCommanderTime?.dayShift +
-                                            +dutyStatics?.totalPositionTime?.dayShift +
-                                            dutyStatics?.totalTeacherTime?.dayShift +
-                                            dutyStatics?.totalStudentTime?.dayShift +
-                                            dutyStatics?.totalCommanderTime?.nightShift +
-                                            dutyStatics?.totalPositionTime?.nightShift +
-                                            dutyStatics?.totalTeacherTime?.nightShift +
-                                            dutyStatics?.totalStudentTime?.nightShift +
-                                            dutyStatics?.totalAOCTime?.nightShift +
-                                            dutyStatics?.totalAOCTime?.dayShift
-                                    )}
-                                </td>
-                                <td>
-                                    {formatDecimal(
-                                        dutyStatics?.totalCommanderTime?.dayShift +
-                                            +dutyStatics?.totalPositionTime?.dayShift +
-                                            dutyStatics?.totalTeacherTime?.dayShift +
-                                            dutyStatics?.totalStudentTime?.dayShift +
-                                            dutyStatics?.totalAOCTime?.dayShift
-                                    )}
-                                </td>
-                                <td>
-                                    {formatDecimal(
-                                            dutyStatics?.totalCommanderTime?.nightShift +
-                                            dutyStatics?.totalPositionTime?.nightShift +
-                                            dutyStatics?.totalTeacherTime?.nightShift +
-                                            dutyStatics?.totalStudentTime?.nightShift +
-                                            dutyStatics?.totalAOCTime?.nightShift 
-                                    )}
-                                </td>
+                                <td>{formatDecimal(dutyStatics?.totalTime?.time)}</td>
+                                <td>{formatDecimal(dutyStatics?.totalTime?.dayShift)}</td>
+                                <td>{formatDecimal(dutyStatics?.totalTime?.nightShift)}</td>
                                 <td></td>
                             </tr>
                         </tbody>

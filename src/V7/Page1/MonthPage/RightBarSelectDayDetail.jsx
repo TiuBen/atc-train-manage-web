@@ -8,38 +8,39 @@ import useStore from "../../../utils/store/userStore";
 function UserRow({ month, username,userId }) {
     const [dutyStatics, setDutyStatics] = useState([]);
 
-    useEffect(() => {
-        // append 可以添加多个相同名称的参数
+    // useEffect(() => {
+    //     // append 可以添加多个相同名称的参数
 
-        let q = new URLSearchParams();
-        q.append("username", username);
-        // Append startDate and startTime
-        q.append("startDate", dayjs().month(month).date(1).format("YYYY-MM-DD"));
-        q.append("startTime", "00:00:00");
+    //     let q = new URLSearchParams();
+    //     q.append("username", username);
+    //     // Append startDate and startTime
+    //     q.append("startDate", dayjs().month(month).date(1).format("YYYY-MM-DD"));
+    //     q.append("startTime", "00:00:00");
 
-        // Append endDate and endTime
-        q.append(
-            "endDate",
-            dayjs()
-                .month(month + 1)
-                .date(1)
-                .format("YYYY-MM-DD")
-        );
-        q.append("endTime", "00:00:01");
-        q.append("year", dayjs().get("year"));
-        q.append("month", dayjs().get("month"));
+    //     // Append endDate and endTime
+    //     q.append(
+    //         "endDate",
+    //         dayjs()
+    //             .month(month + 1)
+    //             .date(1)
+    //             .format("YYYY-MM-DD")
+    //     );
+    //     q.append("endTime", "00:00:01");
+    //     q.append("year", dayjs().get("year"));
+    //     q.append("month", dayjs().get("month"));
 
-        fetch(`${API_URL.users}/${userId}/duty?${q}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setDutyStatics(data);
-            });
-    }, [month, username,userId]);
+    //     // ! 这部分想展示 一年的工作时间
+    //     fetch(`${API_URL.users}/${userId}/duty?${q}`, {
+    //         method: "GET",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //     })
+    //         .then((res) => res.json())
+    //         .then((data) => {
+    //             setDutyStatics(data);
+    //         });
+    // }, [month, username,userId]);
 
     return (
         <>

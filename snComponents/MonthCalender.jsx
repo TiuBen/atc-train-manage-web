@@ -46,7 +46,7 @@ function MonthCalender(props) {
             <div className="col-span-7 ">{title}</div>
             {["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map((day, index) => {
                 return (
-                    <div key={index} className=" outline outline-1  outline-gray-100  text-nowrap ">
+                    <div key={index} className=" outline outline-1  outline-gray-100  text-nowrap font-bold ">
                         {day}
                     </div>
                 );
@@ -57,10 +57,13 @@ function MonthCalender(props) {
                 const content = cellRender(date);
 
                 return (
-                    <div key={index} className=" outline outline-1  outline-gray-100  ">
-                        {dayjs().get('month') !== dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).get('month')
-                            ? dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("M月D")
-                            : dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("D")}
+                    <div key={index} className=" outline outline-1  outline-gray-100 hover:bg-blue-100 cursor-default ">
+                        <div className={` text-nowrap hover:font-bold  px-4  ${ dayjs(date).isSame( Date.now(),"day")?"bg-blue-600 text-cyan-50 ":"" } `}>
+                            {dayjs().get("month") !== dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).get("month")
+                                ? dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("M月D")
+                                : dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("D")}
+                                
+                        </div>
                         {content}
                     </div>
                 );
