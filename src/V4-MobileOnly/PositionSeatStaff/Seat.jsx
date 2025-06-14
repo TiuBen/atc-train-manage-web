@@ -19,6 +19,9 @@ function Seat(props) {
 
     const { onDutyUser, putToServerUserGetOut } = useOnDutyUser();
 
+
+    
+
     useEffect(() => {
         const params = new URLSearchParams({ position });
         

@@ -4,19 +4,20 @@ import { useDialog, useOnDutyUser, SERVER_URL, FETCHER } from "@utils";
 import useSWR from "swr";
 import { X } from "lucide-react";
 
-function UserListDialog() {
+function UserListDialog({users}) {
     const { dialogPayload, setDialogPayload } = useDialog();
 
     const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
 
-    const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/query/orderedusername`, FETCHER);
+    const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/users`, FETCHER);
 
-    if (error) return <div>failed to load</div>;
-    if (isLoading) return <div>loading...</div>;
+    if (error) return <div>failed to load UserListDialog</div>;
+    if (isLoading) return <div>loading...UserListDialog</div>;
 
     return (
         <Dialog.Root
-            open={dialogPayload?.userListDialogDisplay}
+            // open={dialogPayload?.userListDialogDisplay}
+            open={true}
             onOpenChange={() => setDialogPayload({ userListDialogDisplay: false })}
         >
             <Dialog.Content
@@ -39,7 +40,7 @@ function UserListDialog() {
                 </Dialog.Title>
                 <Dialog.Description className="text-l">点击姓名</Dialog.Description>
                 <div className="flex flex-col flex-wrap gap-2">
-                    {orderedusername.map((uRow, index) => {
+                    {/* {orderedusername.map((uRow, index) => {
                         return (
                             <div key={index} className="flex flex-row flex-1 flex-wrap gap-2 border-b-2 pb-1">
                                 {uRow.map((x, key) => {
@@ -68,7 +69,7 @@ function UserListDialog() {
                                 })}
                             </div>
                         );
-                    })}
+                    })} */}
                 </div>
             </Dialog.Content>
         </Dialog.Root>
