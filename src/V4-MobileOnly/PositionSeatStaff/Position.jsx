@@ -15,11 +15,12 @@ function Position(props) {
     return (
         <div>
             <div className="border rounded-lg flex  flex-col items-center gap-2 p-1 self-stretch text-nowrap">
-                <h2 className="font-black text-xl">{position}</h2>
+                <h2 className="font-black text-xl px-1">{position+"："+dutyType}</h2>
+
                 <div className="flex flex-row gap-2 p-1">
-                    {Array.isArray(dutyType) ? (
+                    {dutyType==="主班,副班" ? (
                         <>
-                            {dutyType.map((x, index) => {
+                            {["主班","副班"].map((x, index) => {
                                 return <Seat position={position} dutyType={x} key={index} />;
                             })}
                         </>

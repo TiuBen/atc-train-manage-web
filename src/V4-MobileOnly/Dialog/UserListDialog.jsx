@@ -9,15 +9,15 @@ function UserListDialog({users}) {
 
     const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
 
-    const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/users`, FETCHER);
+    // const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/users`, FETCHER);
 
-    if (error) return <div>failed to load UserListDialog</div>;
-    if (isLoading) return <div>loading...UserListDialog</div>;
+    // if (error) return <div>failed to load UserListDialog</div>;
+    // if (isLoading) return <div>loading...UserListDialog</div>;
 
     return (
         <Dialog.Root
             // open={dialogPayload?.userListDialogDisplay}
-            open={true}
+            open={false}
             onOpenChange={() => setDialogPayload({ userListDialogDisplay: false })}
         >
             <Dialog.Content
@@ -40,9 +40,10 @@ function UserListDialog({users}) {
                 </Dialog.Title>
                 <Dialog.Description className="text-l">点击姓名</Dialog.Description>
                 <div className="flex flex-col flex-wrap gap-2">
-                    {/* {orderedusername.map((uRow, index) => {
+           
+                    {users.map((uRow, index) => {
                         return (
-                            <div key={index} className="flex flex-row flex-1 flex-wrap gap-2 border-b-2 pb-1">
+                            <div key={index} className={`flex flex-row flex-1 flex-wrap gap-2  ${index!==0? "border-t-2 pt-2":"" }`}>
                                 {uRow.map((x, key) => {
                                     return (
                                         <Button
@@ -63,13 +64,13 @@ function UserListDialog({users}) {
                                             key={key}
                                             style={{ width: "5rem" }}
                                         >
-                                            {x}
+                                            {x.username}
                                         </Button>
                                     );
                                 })}
                             </div>
                         );
-                    })} */}
+                    })}
                 </div>
             </Dialog.Content>
         </Dialog.Root>

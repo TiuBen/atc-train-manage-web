@@ -9,19 +9,15 @@ import UserListDialog from "./Dialog/UserListDialog";
 import FaceDialog from "./Dialog/FaceDialog";
 
 function AppMobile() {
-    const { data: positions, error, isLoading } = useSWR(`${SERVER_URL}/positions`, FETCHER);
-    const { data: users } = useSWR(`${SERVER_URL}/users`, FETCHER);
-   
+    const { data: displayPositions, error, isLoading } = useSWR(`${SERVER_URL}/positions?display=true`, FETCHER);
+    const {
+        data: users = [],
+        error2,
+        isLoading2,
+    } = useSWR(`${SERVER_URL}/users?fields=${encodeURIComponent("id,username,team")}&groupBy=team`, FETCHER);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
-
-
-
-
-
-
-
 
     return (
         <OnDutyUserContextProvider>
@@ -47,14 +43,13 @@ function AppMobile() {
                     </header>
 
                     <div className="flex flex-row flex-wrap gap-4 m-8 items-start content-start">
-                        {/* {positions.map((item, index) => {
-                                if (item.display) {
-                                    return <Position key={index} {...item} />;
-                                }
-                            })} */}
+                        {displayPositions.map((item, index) => {
+                            return <Position key={index} {...item} />;
+                        })}
+                        {JSON.stringify(displayPositions)}
                     </div>
                     <FaceDialog />
-                    <UserListDialog uses={users}/>
+                    {error2 ? <div>ERROR</div> : isLoading2 ? <div>Loading</div> : <UserListDialog users={users} />}
                 </Theme>
             </DialogContextProvider>
         </OnDutyUserContextProvider>

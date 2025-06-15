@@ -1,9 +1,10 @@
 import { Button } from "@radix-ui/themes";
 import React, { useState, useEffect } from "react";
-import { useDialog, useOnDutyUser, SERVER_URL,FETCHER } from "@utils";
+import { useDialog, useOnDutyUser} from "@utils";
 import Staff from "./Staff";
 import dayjs from "dayjs";
-
+import useSWR from "swr";
+import { SERVER_URL, FETCHER, DialogContextProvider, OnDutyUserContextProvider } from "@utils";
 //*     Position
 //*         |
 //*    Seat    Seat
@@ -20,50 +21,41 @@ function Seat(props) {
     const { onDutyUser, putToServerUserGetOut } = useOnDutyUser();
 
 
-    
+    const q=new URLSearchParams();
+    q.append("position",position)
+    if (dutyType) {
+        q.append("dutyType", dutyType);
+    }
+    q.append("outTime",null)
 
-    useEffect(() => {
-        const params = new URLSearchParams({ position });
-        
-        if (dutyType !== undefined) {
-            params.append("dutyType", dutyType);
-        }
-        // console.log(`${SERVER_URL}/duty?${params}`);
-        
-        fetch(`${SERVER_URL}/duty?${params}`)
-            .then((res) => res.json())
-            .then((data) => {
-                
-                setStaffs([...data]);
-            })
-            .catch((e) => console.log(e));
-    }, [position, dutyType]);
-
+    const {data,error,loading}=useSWR(`${SERVER_URL}/duty?${q}`, FETCHER);
+  
     // 十分钟退出的功能
-    useEffect(() => {
-        // if more than 2 user putTO get out immediately
-        const sortedData = staffs
-            .filter((item) => {
-                return item.roleType !== "见习";
-            })
-            .sort((a, b) => a.id - b.id);
+    // useEffect(() => {
+    //     // if more than 2 user putTO get out immediately
+    //     const sortedData = staffs
+    //         .filter((item) => {
+    //             return item.roleType !== "见习";
+    //         })
+    //         .sort((a, b) => a.id - b.id);
 
-        const timer = setInterval(() => {
-            if (sortedData.length > 1) {
-                const { inTime } = sortedData[sortedData.length - 1];
-                const isMoreThan10Minutes = dayjs().diff(dayjs(inTime, "YYYY-MM-DD HH:mm:ss"), "minute", true) > 10.0;
-                if (isMoreThan10Minutes) {
-                    putToServerUserGetOut(sortedData[0]);
-                }
-            }
-        }, 30 * 1000);
+    //     const timer = setInterval(() => {
+    //         if (sortedData.length > 1) {
+    //             const { inTime } = sortedData[sortedData.length - 1];
+    //             const isMoreThan10Minutes = dayjs().diff(dayjs(inTime, "YYYY-MM-DD HH:mm:ss"), "minute", true) > 10.0;
+    //             if (isMoreThan10Minutes) {
+    //                 putToServerUserGetOut(sortedData[0]);
+    //             }
+    //         }
+    //     }, 30 * 1000);
 
-        return () => clearInterval(timer);
-    }, [staffs, putToServerUserGetOut]);
+    //     return () => clearInterval(timer);
+    // }, [staffs, putToServerUserGetOut]);
 
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
-            <div className="flex flex-row items-center gap-2">
+            {position+""+dutyType}
+            {/* <div className="flex flex-row items-center gap-2">
                 {dutyType && <h3 className="font-black text-blue-600 text-lg">{dutyType}</h3>}
 
                 <Button
@@ -88,13 +80,14 @@ function Seat(props) {
                     接班
                 </Button>
             </div>
+            {JSON.stringify(data)}
             {staffs.map((y, index) => {
                 return (
                     <div key={index}>
                         <Staff {...y} key={index} />
                     </div>
                 );
-            })}
+            })} */}
         </div>
     );
 }
