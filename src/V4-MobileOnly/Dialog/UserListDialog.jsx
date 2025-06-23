@@ -7,7 +7,7 @@ import { X } from "lucide-react";
 function UserListDialog({users}) {
     const { dialogPayload, setDialogPayload } = useDialog();
 
-    const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
+    // const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
 
     // const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/users`, FETCHER);
 
@@ -16,8 +16,8 @@ function UserListDialog({users}) {
 
     return (
         <Dialog.Root
-            // open={dialogPayload?.userListDialogDisplay}
-            open={false}
+            open={dialogPayload?.userListDialogDisplay}
+            // open={false}
             onOpenChange={() => setDialogPayload({ userListDialogDisplay: false })}
         >
             <Dialog.Content
@@ -49,7 +49,7 @@ function UserListDialog({users}) {
                                         <Button
                                             color="cyan"
                                             variant="soft"
-                                            disabled={onDutyUser.some((item) => item.username === x)}
+                                            // disabled={onDutyUser.some((item) => item.username === x)}
                                             onClick={() => {
                                                 setDialogPayload((prev) => {
                                                     return {

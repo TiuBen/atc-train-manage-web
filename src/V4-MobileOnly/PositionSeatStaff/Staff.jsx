@@ -21,7 +21,7 @@ function Staff(props) {
     // ! 基础信息
     const { username, position, dutyType, inTime } = props;
     // ! 角色信息
-    const { roleType, roleStartTime } = props;
+    const { roleType, roleStartTime,id } = props;
 
     const { setOpenUserListDialog, setOpenConfirmGetOutDialog } = useDialog();
     const { setDialogPayload } = useDialog();
@@ -127,6 +127,8 @@ function Staff(props) {
                     />
                 </div>
                 <div className=" flex flex-col flex-1 justify-between items-start">
+                {"id"+id}
+
                     <h4
                         className={` text-sm font-black italic text-nowrap ${
                             isOver2Hours ? " text-red-600" : " text-green-600"
@@ -143,8 +145,8 @@ function Staff(props) {
                     <Button
                         variant="soft"
                         onClick={() => {
-                            setOpenConfirmGetOutDialog(true);
-                            setDialogPayload({ ...props, dialogTitle: "确认退出？", confirmButtonText: "确定" });
+                            // setOpenConfirmGetOutDialog(true);
+                            setDialogPayload({ ...props,confirmGetOutDialogDisplay:true, dialogTitle: "确认退出？", confirmButtonText: "确定",dutyRecordID:id });
                         }}
                     >
                         退出

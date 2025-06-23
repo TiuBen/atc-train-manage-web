@@ -15,10 +15,10 @@ import { SERVER_URL, FETCHER, DialogContextProvider, OnDutyUserContextProvider }
 
 function Seat(props) {
     const { position, dutyType } = props;
-    const [staffs, setStaffs] = useState([]);
+    // const [staffs, setStaffs] = useState([]);
     const { setDialogPayload } = useDialog();
 
-    const { onDutyUser, putToServerUserGetOut } = useOnDutyUser();
+    // const { onDutyUser, putToServerUserGetOut } = useOnDutyUser();
 
 
     const q=new URLSearchParams();
@@ -28,7 +28,7 @@ function Seat(props) {
     }
     q.append("outTime",null)
 
-    const {data,error,loading}=useSWR(`${SERVER_URL}/duty?${q}`, FETCHER);
+    const {data:staffs=[],error,loading}=useSWR(`${SERVER_URL}/duty?${q}`, FETCHER);
   
     // 十分钟退出的功能
     // useEffect(() => {
@@ -54,8 +54,7 @@ function Seat(props) {
 
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
-            {position+""+dutyType}
-            {/* <div className="flex flex-row items-center gap-2">
+            <div className="flex flex-row items-center gap-2">
                 {dutyType && <h3 className="font-black text-blue-600 text-lg">{dutyType}</h3>}
 
                 <Button
@@ -80,14 +79,14 @@ function Seat(props) {
                     接班
                 </Button>
             </div>
-            {JSON.stringify(data)}
+           
             {staffs.map((y, index) => {
                 return (
                     <div key={index}>
                         <Staff {...y} key={index} />
                     </div>
                 );
-            })} */}
+            })}
         </div>
     );
 }

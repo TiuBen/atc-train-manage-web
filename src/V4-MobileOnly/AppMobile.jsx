@@ -7,6 +7,7 @@ import Position from "./PositionSeatStaff/Position";
 import { Theme, Switch } from "@radix-ui/themes";
 import UserListDialog from "./Dialog/UserListDialog";
 import FaceDialog from "./Dialog/FaceDialog";
+import ConfirmGetOutDialog from "./Dialog/ConfirmGetOutDialog";
 
 function AppMobile() {
     const { data: displayPositions, error, isLoading } = useSWR(`${SERVER_URL}/positions?display=true`, FETCHER);
@@ -20,7 +21,7 @@ function AppMobile() {
     if (isLoading) return <div>loading...</div>;
 
     return (
-        <OnDutyUserContextProvider>
+        <>
             <DialogContextProvider>
                 <Theme accentColor="indigo">
                     <header className=" sticky w-full top-0  h-[3rem] text-white bg-blue-900 " style={{ gridRow: "1" }}>
@@ -48,11 +49,12 @@ function AppMobile() {
                         })}
                         {JSON.stringify(displayPositions)}
                     </div>
-                    <FaceDialog />
+                    {/* <FaceDialog /> */}
                     {error2 ? <div>ERROR</div> : isLoading2 ? <div>Loading</div> : <UserListDialog users={users} />}
+                    <ConfirmGetOutDialog />
                 </Theme>
             </DialogContextProvider>
-        </OnDutyUserContextProvider>
+        </>
     );
 }
 
