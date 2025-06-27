@@ -21,7 +21,7 @@ function AppMobile() {
     if (isLoading) return <div>loading...</div>;
 
     return (
-        <>
+        <OnDutyUserContextProvider>
             <DialogContextProvider>
                 <Theme accentColor="indigo">
                     <header className=" sticky w-full top-0  h-[3rem] text-white bg-blue-900 " style={{ gridRow: "1" }}>
@@ -54,7 +54,7 @@ function AppMobile() {
                     <ConfirmGetOutDialog />
                 </Theme>
             </DialogContextProvider>
-        </>
+        </OnDutyUserContextProvider>
     );
 }
 

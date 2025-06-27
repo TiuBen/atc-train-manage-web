@@ -4,12 +4,16 @@ import { useDialog, useOnDutyUser, SERVER_URL, FETCHER } from "@utils";
 import useSWR from "swr";
 import { X } from "lucide-react";
 
-function UserListDialog({users}) {
+function UserListDialog() {
     const { dialogPayload, setDialogPayload } = useDialog();
 
     // const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
 
-    // const { data: orderedusername, error, isLoading } = useSWR(`${SERVER_URL}/users`, FETCHER);
+    const { data: allUsers = [] } = useSWR(
+        `${SERVER_URL}/users?fields=${encodeURIComponent("id,username,team")}&groupBy=team`,
+        FETCHER
+    );
+    const { data: onDutyUsers = [] } = useSWR(`${SERVER_URL}/duty?fields=${encodeURIComponent("id,username")}&outTime=null`, FETCHER);
 
     // if (error) return <div>failed to load UserListDialog</div>;
     // if (isLoading) return <div>loading...UserListDialog</div>;
@@ -39,17 +43,22 @@ function UserListDialog({users}) {
                     </Button>
                 </Dialog.Title>
                 <Dialog.Description className="text-l">点击姓名</Dialog.Description>
+                {dialogPayload?.position +""+ dialogPayload?.dutyType}
                 <div className="flex flex-col flex-wrap gap-2">
-           
-                    {users.map((uRow, index) => {
+                    {allUsers.map((uRow, index) => {
                         return (
-                            <div key={index} className={`flex flex-row flex-1 flex-wrap gap-2  ${index!==0? "border-t-2 pt-2":"" }`}>
+                            <div
+                                key={index}
+                                className={`flex flex-row flex-1 flex-wrap gap-2  ${
+                                    index !== 0 ? "border-t-2 pt-2" : ""
+                                }`}
+                            >
                                 {uRow.map((x, key) => {
                                     return (
                                         <Button
                                             color="cyan"
                                             variant="soft"
-                                            // disabled={onDutyUser.some((item) => item.username === x)}
+                                            disabled={onDutyUsers.some((item) => item.username === x.username)}
                                             onClick={() => {
                                                 setDialogPayload((prev) => {
                                                     return {
@@ -60,6 +69,21 @@ function UserListDialog({users}) {
                                                         dutyType: prev?.dutyType,
                                                     };
                                                 });
+                                                fetch(SERVER_URL + "/duty", {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                    },
+                                                    body: JSON.stringify({
+                                                        id:x.id,
+                                                        username: x.username,
+                                                        position: dialogPayload?.position,
+                                                        dutyType: dialogPayload?.dutyType,
+                                                    })
+                                                })
+
+
+
                                             }}
                                             key={key}
                                             style={{ width: "5rem" }}

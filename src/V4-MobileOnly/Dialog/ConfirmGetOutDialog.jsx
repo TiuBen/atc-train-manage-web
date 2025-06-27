@@ -14,7 +14,7 @@ function ConfirmGetOutDialog() {
             onOpenChange={() => setDialogPayload({ confirmGetOutDialogDisplay: false })}
         >
             <Dialog.Content
-                maxWidth="200px"
+                maxWidth="340px"
                 className=" flex flex-col"
                 style={{
                     display: "flex",
@@ -26,24 +26,24 @@ function ConfirmGetOutDialog() {
                 }}
             >
                 <Dialog.Title className="flex flex-row justify-between text-wrap items-center">
-                    <div>退出?</div>
+                    <div>确认停止本席位值班 ?</div>
                     <Button color="red" onClick={() => setDialogPayload({ confirmGetOutDialogDisplay: false })}>
                         <X />
                     </Button>
                 </Dialog.Title>
-             
+
                 <Button
                     size={"4"}
                     onClick={() => {
-                        // setDialogPayload({confirmGetOutDialogDisplay:false});
+                        setDialogPayload({confirmGetOutDialogDisplay:false});
                         fetch(`${SERVER_URL}/duty/${dialogPayload.id}`, {
                             method: "PUT",
                             headers: {
-                                "Content-Type": "application/json", 
+                                "Content-Type": "application/json",
                             },
                             body: JSON.stringify({
                                 ...dialogPayload,
-                                outTime:dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                                outTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
                             }),
                         });
                     }}

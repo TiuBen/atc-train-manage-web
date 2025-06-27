@@ -1,6 +1,6 @@
 import { Button } from "@radix-ui/themes";
 import React, { useState, useEffect } from "react";
-import { useDialog, useOnDutyUser} from "@utils";
+import { useDialog, useOnDutyUser } from "@utils";
 import Staff from "./Staff";
 import dayjs from "dayjs";
 import useSWR from "swr";
@@ -18,18 +18,17 @@ function Seat(props) {
     // const [staffs, setStaffs] = useState([]);
     const { setDialogPayload } = useDialog();
 
-    // const { onDutyUser, putToServerUserGetOut } = useOnDutyUser();
+    const { onDutyUser,setOnDutyUser, putToServerUserGetOut } = useOnDutyUser();
 
-
-    const q=new URLSearchParams();
-    q.append("position",position)
+    const q = new URLSearchParams();
+    q.append("position", position);
     if (dutyType) {
         q.append("dutyType", dutyType);
     }
-    q.append("outTime",null)
+    q.append("outTime", null);
 
-    const {data:staffs=[],error,loading}=useSWR(`${SERVER_URL}/duty?${q}`, FETCHER);
-  
+    const { data: staffs = [], error, loading } = useSWR(`${SERVER_URL}/duty?${q}`, FETCHER);
+
     // 十分钟退出的功能
     // useEffect(() => {
     //     // if more than 2 user putTO get out immediately
@@ -51,6 +50,13 @@ function Seat(props) {
 
     //     return () => clearInterval(timer);
     // }, [staffs, putToServerUserGetOut]);
+
+    if (error) {
+        return <div>{JSON.stringify(error)}</div>;
+    }
+    if (loading) {
+        return <div>正在获取席位信息...</div>;
+    }
 
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
@@ -79,7 +85,7 @@ function Seat(props) {
                     接班
                 </Button>
             </div>
-           
+
             {staffs.map((y, index) => {
                 return (
                     <div key={index}>
