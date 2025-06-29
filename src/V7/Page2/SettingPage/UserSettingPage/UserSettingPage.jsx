@@ -314,7 +314,7 @@ function UserSettingPage() {
                             .then((res) => res.json())
                             .then((data) => {
                                 console.log(data);
-                                // setRawSelectedUser(null);
+                                setRawSelectedUser(data);
                                 // setSelectedUserID()
                             });
                         e.preventDefault();

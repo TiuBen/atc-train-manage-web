@@ -19,15 +19,15 @@ function Seat(props) {
     const { setDialogPayload } = useDialog();
 
     const { onDutyUser,setOnDutyUser, putToServerUserGetOut } = useOnDutyUser();
+   
+    const { data: staffs = [], error, loading } = useSWR(`${SERVER_URL}/duty?position=${position}&dutyType=${dutyType}&outTime=null`, FETCHER);
 
-    const q = new URLSearchParams();
-    q.append("position", position);
-    if (dutyType) {
-        q.append("dutyType", dutyType);
-    }
-    q.append("outTime", null);
-
-    const { data: staffs = [], error, loading } = useSWR(`${SERVER_URL}/duty?${q}`, FETCHER);
+    
+    useEffect(() => {
+        if (staffs.length > 0) {
+            setOnDutyUser(staffs[0]);
+        }
+    }, [staffs, setOnDutyUser]);
 
     // 十分钟退出的功能
     // useEffect(() => {
@@ -57,6 +57,8 @@ function Seat(props) {
     if (loading) {
         return <div>正在获取席位信息...</div>;
     }
+
+
 
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
