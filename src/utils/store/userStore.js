@@ -30,7 +30,7 @@ const useStore = create((set) => ({
     fetchUsers: async () => {
         set({ isLoading: true, error: null });
         try {
-            const response = await fetch(API_URL.users);
+            const response = await fetch(API_URL.users+`?fields=${encodeURIComponent("id,username")}`);
             if (!response.ok) throw new Error("Network response was not ok");
             const users = await response.json();
             set({ users, isLoading: false });
@@ -91,5 +91,7 @@ const useStore = create((set) => ({
     }
 
 }));
+
+useStore.getState().fetchUsers();
 
 export default useStore;

@@ -20,15 +20,16 @@ import Sheet from "./Page2/SheetPage/Sheet";
 import NightPage from "./Page2/NightCount/NightPage";
 
 function AppV7() {
-    const { fetchUsers,fetchPositions } = useStore();
-    useEffect(() => {
-        fetchUsers();
-        fetchPositions();
-    }, [fetchUsers,fetchPositions]);
+    const { fetchUsers,fetchPositions,users } = useStore();
+    // useEffect(() => {
+    //     fetchUsers();
+    //     fetchPositions();
+    // }, [fetchUsers,fetchPositions]);
     return (
         <PageContextProvider>
             <DialogContextProvider>
-                <OnDutyUserContextProvider>
+                 {JSON.stringify(users)}
+                {/* <OnDutyUserContextProvider>
                     <Theme accentColor="indigo">
                         <BrowserRouter>
                             <Routes>
@@ -56,7 +57,7 @@ function AppV7() {
                             </Routes>
                         </BrowserRouter>
                     </Theme>
-                </OnDutyUserContextProvider>
+                </OnDutyUserContextProvider> */}
             </DialogContextProvider>
         </PageContextProvider>
     );
