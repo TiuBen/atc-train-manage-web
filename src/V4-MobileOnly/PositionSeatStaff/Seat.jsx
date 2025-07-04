@@ -63,6 +63,7 @@ function Seat(props) {
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
             <div className="flex flex-row items-center gap-2">
+                {JSON.stringify(dutyType)}ff
                 {dutyType && <h3 className="font-black text-blue-600 text-lg">{dutyType}</h3>}
 
                 <Button
@@ -82,6 +83,8 @@ function Seat(props) {
                             dutyType: dutyType,
                             dialogType: "User_Get_In",
                         });
+
+
                     }}
                 >
                     接班

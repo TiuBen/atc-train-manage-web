@@ -23,10 +23,14 @@ const useStore = create((set) => ({
     userStaticsByMonth:[],
     positionsOnDuty: [],
 
+
     isLoading: true,
     error: null,
 
+
     // 获取用户数据
+    // ! 这段只是获取 所有的user 
+    // ! 用来 配合 弹出的 用户列表选择
     fetchUsers: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -38,6 +42,18 @@ const useStore = create((set) => ({
             set({ error: error.message, isLoading: false });
         }
     },
+
+    // 试试 这段用来 提交数据
+
+    putDutyUser: async (userId, updatedData) => { 
+        
+
+
+
+    },
+
+
+
 
     // 更新用户数据
     updateUser: async (userId, updatedData) => {

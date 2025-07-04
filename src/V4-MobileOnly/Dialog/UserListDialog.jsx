@@ -92,7 +92,7 @@ function UserListDialog() {
                                                         console.log(err);
                                                     });
 
-                                                mutate(`${SERVER_URL}/duty?position=${dialogPayload.position}&dutyType=${dialogPayload.dutyType}&outTime=null`);
+                                                // mutate(`${SERVER_URL}/duty?position=${dialogPayload.position}&dutyType=${dialogPayload.dutyType}&outTime=null`);
                                             }}
                                             key={key}
                                             style={{ width: "5rem" }}
