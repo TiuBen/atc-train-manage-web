@@ -46,7 +46,7 @@ function UserListDialog() {
                         <X />
                     </Button>
                 </Dialog.Title>
-                <Dialog.Description className="text-l">点击姓名</Dialog.Description>
+                <Dialog.Description className="text-l">点击姓名d</Dialog.Description>
                 {dialogPayload?.position + "" + dialogPayload?.dutyType}
                 <div className="flex flex-col flex-wrap gap-2">
                     {allUsers.map((uRow, index) => {
@@ -92,7 +92,7 @@ function UserListDialog() {
                                                         console.log(err);
                                                     });
 
-                                                // mutate(`${SERVER_URL}/duty?position=${dialogPayload.position}&dutyType=${dialogPayload.dutyType}&outTime=null`);
+                                                mutate(`${SERVER_URL}/duty?position=${dialogPayload.position}&dutyType=${dialogPayload.dutyType}&outTime=null`);
                                             }}
                                             key={key}
                                             style={{ width: "5rem" }}

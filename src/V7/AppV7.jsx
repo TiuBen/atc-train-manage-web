@@ -28,8 +28,8 @@ function AppV7() {
     return (
         <PageContextProvider>
             <DialogContextProvider>
-                 {JSON.stringify(users)}
-                {/* <OnDutyUserContextProvider>
+                 {/* {JSON.stringify(users)} */}
+                <OnDutyUserContextProvider>
                     <Theme accentColor="indigo">
                         <BrowserRouter>
                             <Routes>
@@ -57,7 +57,7 @@ function AppV7() {
                             </Routes>
                         </BrowserRouter>
                     </Theme>
-                </OnDutyUserContextProvider> */}
+                </OnDutyUserContextProvider>
             </DialogContextProvider>
         </PageContextProvider>
     );
