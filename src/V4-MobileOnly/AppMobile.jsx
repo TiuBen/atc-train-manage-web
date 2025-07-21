@@ -17,6 +17,10 @@ function AppMobile() {
         isLoading2,
     } = useSWR(`${SERVER_URL}/users?fields=${encodeURIComponent("id,username,team")}&groupBy=team`, FETCHER);
 
+
+    const {data:allDetailUsers}=useSWR(`${SERVER_URL}/users`,FETCHER);
+
+
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
 
@@ -48,9 +52,12 @@ function AppMobile() {
                             return <Position key={index} {...item} />;
                         })}
                         {JSON.stringify(displayPositions)}
+                        <br />
+                        ===========
+                        {/* {JSON.stringify(allDetailUsers)} */}
                     </div>
                     {/* <FaceDialog /> */}
-                    {error2 ? <div>ERROR</div> : isLoading2 ? <div>Loading</div> : <UserListDialog users={users} />}
+                    {error2 ? <div>ERROR</div> : isLoading2 ? <div>Loading</div> : <UserListDialog users={users} allDetailUsers={allDetailUsers} />}
                     <ConfirmGetOutDialog />
                 </Theme>
             </DialogContextProvider>
