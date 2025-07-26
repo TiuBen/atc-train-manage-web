@@ -5,6 +5,8 @@ import Staff from "./Staff";
 import dayjs from "dayjs";
 import useSWR from "swr";
 import { SERVER_URL, FETCHER, DialogContextProvider, OnDutyUserContextProvider } from "@utils";
+import useStore from "../../utils/store/userStore";
+
 //*     Position
 //*         |
 //*    Seat    Seat
@@ -15,19 +17,18 @@ import { SERVER_URL, FETCHER, DialogContextProvider, OnDutyUserContextProvider }
 
 function Seat(props) {
     const { position, dutyType } = props;
-    // const [staffs, setStaffs] = useState([]);
     const { setDialogPayload } = useDialog();
+    const { setSelectedPosition } = useStore();
 
-    const { onDutyUser,setOnDutyUser, putToServerUserGetOut } = useOnDutyUser();
-   
-    const { data: staffs = [], error, loading } = useSWR(`${SERVER_URL}/duty?position=${position}&dutyType=${dutyType}&outTime=null`, FETCHER);
-
-    
-    useEffect(() => {
-        if (staffs.length > 0) {
-            setOnDutyUser(staffs[0]);
-        }
-    }, [staffs, setOnDutyUser]);
+    const {
+        // data: staffs = [],
+        data,
+        error,
+        loading,
+    } = useSWR(`${SERVER_URL}/duty?position=${position}${dutyType?`&dutyType=${dutyType}`:""}&outTime=null`, FETCHER, {
+        revalidateOnFocus: false,
+        fallbackData: [],
+    });
 
     // 十分钟退出的功能
     // useEffect(() => {
@@ -58,19 +59,15 @@ function Seat(props) {
         return <div>正在获取席位信息...</div>;
     }
 
-
-
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
             <div className="flex flex-row items-center gap-2">
-                {JSON.stringify(dutyType)}ff
-                {dutyType && <h3 className="font-black text-blue-600 text-lg">{dutyType}</h3>}
-
+                {dutyType && <h3 className="font-black text-blue-600 text-lg">{ dutyType}</h3>}
                 <Button
                     style={{ marginTop: "auto" }}
                     disabled={
-                        staffs.filter((item) => {
-                            return item.roleType !== "见习";
+                        data?.filter((item) => {
+                            return item?.roleType !== "见习";
                         }).length >= 2
                     }
                     onClick={() => {
@@ -79,19 +76,16 @@ function Seat(props) {
                         setDialogPayload({
                             userListDialogDisplay: true,
                             dialogTitle: "进行交接班",
-                            position: position,
-                            dutyType: dutyType,
                             dialogType: "User_Get_In",
                         });
-
-
+                        setSelectedPosition({ position: position, dutyType: dutyType });
                     }}
                 >
                     接班
                 </Button>
             </div>
 
-            {staffs.map((y, index) => {
+            {data.map((y, index) => {
                 return (
                     <div key={index}>
                         <Staff {...y} key={index} />

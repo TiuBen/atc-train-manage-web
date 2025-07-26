@@ -3,76 +3,68 @@ import { Button, Dialog } from "@radix-ui/themes";
 import { useDialog, useOnDutyUser, SERVER_URL, FETCHER } from "@utils";
 import useSWR, { useSWRConfig } from "swr";
 import { X } from "lucide-react";
+import useStore from "../../utils/store/userStore";
 
-function UserListDialog({ allDetailUsers = [] }) {
+function UserListDialog() {
     const { dialogPayload, setDialogPayload } = useDialog();
     const { mutate } = useSWRConfig();
     const [availableStaffs, setAvailableStaffs] = useState([]);
 
-    // const { onDutyUser, postToServerUserGetIn } = useOnDutyUser();
-
-    const { data: allUsers = [] } = useSWR(
-        `${SERVER_URL}/users?fields=${encodeURIComponent("id,username,team")}&groupBy=team`,
-        FETCHER
-    );
-    const { data: onDutyUsers = [] } = useSWR(
-        `${SERVER_URL}/duty?fields=${encodeURIComponent("id,username")}&outTime=null`,
-        FETCHER
-    );
+    const { groupedUsers, detailUsers, onDutyUsers, selectedPosition } = useStore();
 
     // if (error) return <div>failed to load UserListDialog</div>;
     // if (isLoading) return <div>loading...UserListDialog</div>;
 
-    // 在这部分直接监听 dialogPayload 中的席位 然后来判断能不能 点击
-
+    // ! 在这部分直接监听 dialogPayload 中的席位 然后来判断能不能 点击
     useEffect(() => {
         console.log("出现");
-
+        // console.log(detailUsers);
+        // console.log(dialogPayload);
         const _availableStaffs = [];
 
-        allDetailUsers.forEach((user) => {
-            // console.log("dd");
-
-            const uP = user.position || [];
-            console.log(uP);
-
-            // const found = uP.find(
-            //     (x) => x.position === dialogPayload.position && x.dutyType.includes(dialogPayload.dutyType)
-            // );
-
-            uP.forEach((x) => {
-                console.log(x.position + "  " + x.dutyType);
-                console.log(x.position === dialogPayload.position);
-                if (x.position === dialogPayload.position) {
-                    if (x.dutyType === null) {
-                        console.log("null:" + x.dutyType === dialogPayload.dutyType);
-                        if (x.dutyType === dialogPayload.dutyType) {
-                            _availableStaffs.push(user.username);
+        detailUsers.forEach((user) => {
+            const uPositions = user.position || [];
+            const { position, dutyType, roleType } = selectedPosition;
+            uPositions.forEach((x) => {
+                // console.log(x.position + "  " + x.dutyType);
+                // console.log(x.position === dialogPayload.position);
+                if (x.position === position) {
+                    // console.log(user.username);
+                    if (roleType === "见习") {
+                        if (x.dutyType === null) {
+                            // console.log("xxx null:" + x.dutyType === dutyType);
+                            if (x.dutyType === dutyType && x.roleType === roleType) {
+                                // console.log("push1");
+                                _availableStaffs.push(user.username);
+                            }
+                        } else {
+                            // console.log("ddddd：" + x.dutyType.includes(dutyType));
+                            if (x.dutyType.includes(dutyType) && x.roleType === roleType) {
+                                // console.log("push2");
+                                _availableStaffs.push(user.username);
+                            }
                         }
                     } else {
-                        console.log(x.dutyType.includes(dialogPayload.dutyType));
-                        if (x.dutyType.includes(dialogPayload.dutyType)) {
-                            _availableStaffs.push(user.username);
+                        if (x.dutyType === null) {
+                            // console.log("xxx null:" + x.dutyType === dutyType);
+                            if (x.dutyType === dutyType) {
+                                // console.log("push1");
+                                _availableStaffs.push(user.username);
+                            }
+                        } else {
+                            // console.log("ddddd：" + x.dutyType.includes(dutyType));
+                            if (x.dutyType.includes(dutyType)) {
+                                // console.log("push2");
+                                _availableStaffs.push(user.username);
+                            }
                         }
                     }
                 }
-
-                // if (x.position === dialogPayload.position && x.dutyType.includes(dialogPayload.dutyType)) {
-                //     _availableStaffs.push(user.username);
-                //     console.log("zhaodao");
-                // }
             });
-
-            // console.log("found: " + found);
-
-            // if (found) {
-            //     console.log("找到");
-            //     _availableStaffs.push(user);
-            // }
         });
 
         setAvailableStaffs(_availableStaffs);
-    }, [dialogPayload.position, dialogPayload.dutyType, allDetailUsers]);
+    }, [selectedPosition, detailUsers]);
 
     return (
         <Dialog.Root
@@ -93,18 +85,23 @@ function UserListDialog({ allDetailUsers = [] }) {
                 }}
             >
                 <Dialog.Title className="flex flex-row justify-between text-wrap">
-                    <>{JSON.stringify(dialogPayload)}</>
-                    <br />
-                    <>{JSON.stringify(availableStaffs)}</>
                     <div>{dialogPayload.dialogTitle}</div>
                     <Button color="red" onClick={() => setDialogPayload({ userListDialogDisplay: false })}>
                         <X />
                     </Button>
                 </Dialog.Title>
-                <Dialog.Description className="text-l">点击姓名d</Dialog.Description>
-                {dialogPayload?.position + "" + dialogPayload?.dutyType}
+                <Dialog.Description className="text-center border pr-[40px] font-bold text-blue-500">
+                    {"席位:" +
+                        selectedPosition.position +
+                        "(" +
+                        selectedPosition?.dutyType +
+                        ")" +
+                        "(" +
+                        selectedPosition?.roleType +
+                        ")"}
+                </Dialog.Description>
                 <div className="flex flex-col flex-wrap gap-2">
-                    {allUsers.map((uRow, index) => {
+                    {groupedUsers.map((uRow, index) => {
                         return (
                             <div
                                 key={index}
@@ -117,18 +114,20 @@ function UserListDialog({ allDetailUsers = [] }) {
                                         <Button
                                             color="cyan"
                                             variant="soft"
-                                            disabled={onDutyUsers.some((item) => item.username === x.username)}
-                                            onClick={async () => {
-                                                await fetch(SERVER_URL + "/duty", {
+                                            disabled={
+                                                onDutyUsers.some((item) => item.username === x.username) ||
+                                                !availableStaffs.includes(x.username)
+                                            }
+                                            onClick={() => {
+                                                fetch(SERVER_URL + "/duty", {
                                                     method: "POST",
                                                     headers: {
                                                         "Content-Type": "application/json",
                                                     },
                                                     body: JSON.stringify({
+                                                        ...selectedPosition,
                                                         id: x.id,
                                                         username: x.username,
-                                                        position: dialogPayload?.position,
-                                                        dutyType: dialogPayload?.dutyType,
                                                     }),
                                                 })
                                                     .then((res) => res.json())
@@ -136,20 +135,22 @@ function UserListDialog({ allDetailUsers = [] }) {
                                                         if (data.error) {
                                                             window.alert(data.error);
                                                         } else {
-                                                            setDialogPayload((prev) => {
-                                                                return {
-                                                                    userListDialogDisplay: false,
-                                                                };
+                                                            setDialogPayload({
+                                                                userListDialogDisplay: false,
                                                             });
                                                         }
+
+                                                        mutate(
+                                                            `${SERVER_URL}/duty?position=${selectedPosition.position}${
+                                                                selectedPosition.dutyType
+                                                                    ? `&dutyType=${selectedPosition.dutyType}`
+                                                                    : ""
+                                                            }&outTime=null`
+                                                        );
                                                     })
                                                     .catch((err) => {
                                                         console.log(err);
                                                     });
-
-                                                mutate(
-                                                    `${SERVER_URL}/duty?position=${dialogPayload.position}&dutyType=${dialogPayload.dutyType}&outTime=null`
-                                                );
                                             }}
                                             key={key}
                                             style={{ width: "5rem" }}

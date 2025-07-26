@@ -9,41 +9,54 @@ function PositionSetting() {
     const { data: positions } = useSWR(API_URL.query_positions, FETCHER);
     const { payload, setPayload } = usePage();
 
-    const [editRow, setEditRow] = useState(null);
-    const [editedData, setEditedData] = useState({});
+    const [editingRow, setEditingRow] = useState({});
 
     const [newPosition, setNewPosition] = useState(null);
 
-    const handleEdit = (position) => {
-        setEditRow(position.id);
-        setEditedData({ ...position });
-    };
-
-    const handleSave = (id) => {
+    const handleSave = () => {
         // 在这里处理保存逻辑，例如更新状态或发送API请求
-        console.log("Saving data for position:", id, editedData);
-        setEditRow(null);
-        fetch(`${SERVER_URL}/positions/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(editedData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Data updated successfully:", data);
-                setEditRow(null);
-                setEditedData({});
+        console.log("Saving data for position:", editingRow);
+        setEditingRow(null);
+        if (!editingRow?.id) {
+            // 没有ID 就是新ID
+            fetch(`${API_URL.query_positions}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(editingRow),
             })
-            .then(() => {
-                mutate(API_URL.query_positions);
-            });
+                .then((response) => response.json())
+                .then((data) => {
+                    // console.log("Data updated successfully:", data);
+                    setEditingRow({});
+                })
+                .then(() => {
+                    mutate(API_URL.query_positions);
+                });
+        } else if (editingRow?.id) {
+            // 没有ID 就是新ID
+            fetch(`${API_URL.query_positions}/${editingRow.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(editingRow),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    // console.log("Data updated successfully:", data);
+                    setEditingRow({});
+                })
+                .then(() => {
+                    mutate(API_URL.query_positions);
+                });
+        } else {
+        }
     };
 
     const handleChange = (e, field) => {
-        console.log("Editing data for field:", field, e.target.value);
-        setEditedData((prev) => {
+        setEditingRow((prev) => {
             return {
                 ...prev,
                 [field]: e.target.value,
@@ -53,12 +66,12 @@ function PositionSetting() {
 
     return (
         <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-bold text-gray-300">部分席位名称被历史执勤数据使用，无法删除</h1>
+            <h1 className="text-xl font-bold text-red-300">部分席位名称被历史执勤数据使用，无法删除</h1>
             <table className="border-collapse border rounded-lg border-gray-400 table-auto ">
                 <thead>
                     <tr>
                         <th className="border border-gray-300 px-2 py-1">序号</th>
-                        <th className="border border-gray-300 px-2 py-1">席位名称</th>
+                        <th className="border border-gray-300 px-2 py-1 w-[8rem]">席位名称</th>
                         <th className="border border-gray-300 px-2 py-1">是否配置主/副班</th>
                         <th className="border border-gray-300 px-2 py-1">是否前端显示</th>
                         <th className="border border-gray-300 px-2 py-1">编辑</th>
@@ -69,20 +82,21 @@ function PositionSetting() {
                         return (
                             <tr key={index} style={{ gap: "0.25rem" }}>
                                 <td className="border border-gray-300 px-2 py-1">{position.id}</td>
-                                <td className="border border-gray-300 px-2 py-1">
-                                    {editRow === position.id ? (
+                                <td className="border border-gray-300 px-2 py-1 w-[8rem]">
+                                    {editingRow?.id === position.id ? (
                                         <input
-                                            className="border-2 border-blue-600 rounded-lg px-2 py-1"
+                                            className="border-2 border-blue-600 rounded-lg px-2 py-1 w-full"
                                             type="text"
-                                            value={editedData.position}
-                                            onChange={(e) => handleChange(e, "name")}
+                                            value={editingRow.position}
+                                            disabled={editingRow.position}
+                                            onChange={(e) => handleChange(e, "position")}
                                         />
                                     ) : (
                                         position.position
                                     )}
                                 </td>
                                 <td className="border border-gray-300 px-2 py-1">
-                                    {editRow === position.id ? (
+                                    {editingRow?.id === position.id ? (
                                         <label
                                             htmlFor={`${position.id}dutyType`}
                                             className="flex justify-items-center gap-1 text-blue-600 font-bold"
@@ -90,24 +104,15 @@ function PositionSetting() {
                                             <input
                                                 type="checkbox"
                                                 id={`${position.id}dutyType`}
-                                                value={editedData.dutyType}
-                                                checked={editedData.dutyType !== null}
+                                                value={editingRow.dutyType}
+                                                checked={editingRow.dutyType !== null}
                                                 onChange={(e) => {
-                                                    if (editedData.dutyType === null) {
-                                                        setEditedData((prev) => {
-                                                            return {
-                                                                ...prev,
-                                                                dutyType: `主班,副班`,
-                                                            };
-                                                        });
-                                                    } else {
-                                                        setEditedData((prev) => {
-                                                            return {
-                                                                ...prev,
-                                                                dutyType: null,
-                                                            };
-                                                        });
-                                                    }
+                                                    setEditingRow((prev) => {
+                                                        return {
+                                                            ...prev,
+                                                            dutyType: e.target.checked ? `主班,副班` : null,
+                                                        };
+                                                    });
                                                 }}
                                             />
                                             配置主副班
@@ -117,7 +122,7 @@ function PositionSetting() {
                                     )}
                                 </td>
                                 <td className="border border-gray-300 px-2 py-1">
-                                    {editRow === position.id ? (
+                                    {editingRow?.id === position.id ? (
                                         <label
                                             htmlFor={`${position.id}display`}
                                             className="flex justify-items-center gap-1 text-blue-600 font-bold"
@@ -125,16 +130,16 @@ function PositionSetting() {
                                             <input
                                                 type="checkbox"
                                                 id={`${position.id}display`}
-                                                value={editedData.display}
+                                                value={editingRow.display}
                                                 onChange={(e) => {
-                                                    setEditedData((prev) => {
+                                                    setEditingRow((prev) => {
                                                         return {
                                                             ...prev,
                                                             display: prev.display === 1 ? 0 : 1,
                                                         };
                                                     });
                                                 }}
-                                                checked={editedData.display}
+                                                checked={editingRow.display}
                                             />
                                             显示
                                         </label>
@@ -143,13 +148,13 @@ function PositionSetting() {
                                     )}
                                 </td>
                                 <td className="border border-gray-300 px-2 py-1">
-                                    {editRow === position.id ? (
+                                    {editingRow?.id === position.id ? (
                                         <Button onClick={() => handleSave(position.id)}>
                                             <Check />
                                             保存
                                         </Button>
                                     ) : (
-                                        <Button color="gray" onClick={() => handleEdit(position)}>
+                                        <Button color="gray" onClick={() => setEditingRow(position)}>
                                             <PencilLine />
                                             修改
                                         </Button>
@@ -159,7 +164,7 @@ function PositionSetting() {
                         );
                     })}
                     {newPosition && (
-                        <tr  style={{ gap: "0.25rem" }}>
+                        <tr style={{ gap: "0.25rem" }}>
                             <td className="border border-gray-300 px-2 py-1"></td>
                             <td className="border border-gray-300 px-2 py-1">
                                 <input
@@ -208,50 +213,47 @@ function PositionSetting() {
                                 </label>
                             </td>
                             <td className="border border-gray-300 px-2 py-1">
-                             
-                                    <label
-                                        htmlFor={`new-display`}
-                                        className="flex justify-items-center gap-1 text-blue-600 font-bold"
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            id={`new-display`}
-                                            value={newPosition?.display}
-                                            onChange={(e) => {
-                                                setNewPosition((prev) => {
-                                                    return {
-                                                        ...prev,
-                                                        display: prev.display === 1 ? 0 : 1,
-                                                    };
-                                                });
-                                            }}
-                                            checked={newPosition?.display}
-                                        />
-                                        显示
-                                    </label>
-                              
+                                <label
+                                    htmlFor={`new-display`}
+                                    className="flex justify-items-center gap-1 text-blue-600 font-bold"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        id={`new-display`}
+                                        value={newPosition?.display}
+                                        onChange={(e) => {
+                                            setNewPosition((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    display: prev.display === 1 ? 0 : 1,
+                                                };
+                                            });
+                                        }}
+                                        checked={newPosition?.display}
+                                    />
+                                    显示
+                                </label>
                             </td>
                             <td className="border border-gray-300 px-2 py-1">
-                                <Button onClick={() => {
-                                    fetch(`${SERVER_URL}/positions`, {
-                                        method: "POST",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                        },
-                                        body: JSON.stringify(newPosition),
-                                    })
-                                        .then((response) => response.json())
-                                        .then((data) => {
-                                            console.log("Data updated successfully:", data);
-                                            setNewPosition(null);
+                                <Button
+                                    onClick={() => {
+                                        fetch(`${SERVER_URL}/positions`, {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                            },
+                                            body: JSON.stringify(newPosition),
                                         })
-                                        .then(() => {
-                                            mutate(API_URL.query_positions);
-                                        });
-
-
-
-                                }}>
+                                            .then((response) => response.json())
+                                            .then((data) => {
+                                                console.log("Data updated successfully:", data);
+                                                setNewPosition(null);
+                                            })
+                                            .then(() => {
+                                                mutate(API_URL.query_positions);
+                                            });
+                                    }}
+                                >
                                     <Check />
                                     保存
                                 </Button>
@@ -265,7 +267,7 @@ function PositionSetting() {
                     color="green"
                     onClick={() => {
                         setNewPosition({
-                            position: "",
+                            position: null,
                             dutyType: null,
                             display: 0,
                         });

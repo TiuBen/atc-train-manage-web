@@ -13,9 +13,9 @@ function Position(props) {
     const { position, dutyType } = props;
 
     return (
-        <div>
-            <div className="border rounded-lg flex  flex-col items-center gap-2 p-1 self-stretch text-nowrap">
-                <h2 className="font-black text-xl px-1">{position+"："+dutyType}</h2>
+        
+            <div className="border rounded-lg flex  flex-col items-center gap-2 p-1 self-stretch text-nowrap min-w-[150px]">
+                <h2 className="font-black text-xl px-1">{position}</h2>
 
                 <div className="flex flex-row gap-2 p-1">
                     {dutyType==="主班,副班" ? (
@@ -30,7 +30,7 @@ function Position(props) {
                     )}
                 </div>
             </div>
-        </div>
+        
     );
 }
 

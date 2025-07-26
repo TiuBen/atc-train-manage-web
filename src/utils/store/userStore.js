@@ -1,4 +1,5 @@
 // store.js
+import { use } from "react";
 import { create } from "zustand";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -19,41 +20,105 @@ const API_URL = {
 // 创建 store
 const useStore = create((set) => ({
     users: [1, 1, 2],
+    groupedUsers: [],
+    detailUsers: [],
+    onDutyUsers: [],
+    //
+    selectedPosition: {},
+
     userStatics: {},
-    userStaticsByMonth:[],
+    userStaticsByMonth: [],
     positionsOnDuty: [],
 
+    positions: [],
 
     isLoading: true,
     error: null,
 
-
     // 获取用户数据
-    // ! 这段只是获取 所有的user 
+    // ! 这段只是获取 所有的user
     // ! 用来 配合 弹出的 用户列表选择
-    fetchUsers: async () => {
+    initStore: async () => {
         set({ isLoading: true, error: null });
         try {
-            const response = await fetch(API_URL.users+`?fields=${encodeURIComponent("id,username")}`);
-            if (!response.ok) throw new Error("Network response was not ok");
-            const users = await response.json();
-            set({ users, isLoading: false });
+            fetch(`${SERVER_URL}/positions?display=true`)
+                .then((response) => response.json())
+                .then((data) => {
+                    set({ positions: data, isLoading: false });
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    set(error);
+                });
+
+            fetch(API_URL.users + `?fields=${encodeURIComponent("id,username")}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    set({ users: data });
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    set(error);
+                });
+
+            fetch(`${SERVER_URL}/users?fields=${encodeURIComponent("id,username,team,position")}&groupBy=team`)
+                .then((response) => response.json())
+                .then((data) => {
+                    const groupedUsers = data;
+                    const detailUsers = data
+                        .flat()
+                        .map(({ id, username, team, position }) => ({ id, username, position }));
+                    set({ groupedUsers, detailUsers });
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    set({ error });
+                });
+
+            fetch(`${SERVER_URL}/duty?outTime=null`)
+                .then((response) => response.json())
+                .then((data) => {
+                    set({ onDutyUsers: data });
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    set(error);
+                });
         } catch (error) {
-            set({ error: error.message, isLoading: false });
+            set({ error: error.message });
         }
+        // set({ isLoading: false });
     },
+
+    //
+    // fetchDetailUsers: async () => {
+    //     console.log("testSSS");
+    //     set({ isLoading: true, error: null });
+    //     try {
+    //         const response = await fetch(API_URL.users);
+    //         if (!response.ok) throw new Error("Network response was not ok");
+    //         const detailUsers = await response.json();
+    //         set({ detailUsers, isLoading: false });
+    //     } catch (error) {
+    //         set({ error: error.message, isLoading: false });
+    //     }
+    // },
+
+    // fetchOnDutyUsers: (x) => {
+    //     set((state) => {
+    //         if (state.onDutyUsers.some((i) => i.id === x.id)) {
+    //         }
+    //     });
+    // },
 
     // 试试 这段用来 提交数据
 
-    putDutyUser: async (userId, updatedData) => { 
-        
+    setSelectedPosition: (position) =>
+        set((state) => ({
+            selectedPosition: position,
+        })),
 
-
-
-    },
-
-
-
+    putDutyUser: async (userId, updatedData) => {},
 
     // 更新用户数据
     updateUser: async (userId, updatedData) => {
@@ -97,17 +162,17 @@ const useStore = create((set) => ({
     fetchPositions: async () => {
         set({ isLoading: true, error: null });
         try {
-            const response = await fetch(API_URL.query_positions+ "?display=true");
+            const response = await fetch(API_URL.query_positions + "?display=true");
             if (!response.ok) throw new Error("Network response was not ok");
             const positionsOnDuty = await response.json();
             set({ positionsOnDuty, isLoading: false });
         } catch (error) {
             set({ error: error.message, isLoading: false });
         }
-    }
-
+    },
 }));
 
-useStore.getState().fetchUsers();
+useStore.getState().initStore();
+// useStore.getState().fetchDetailUsers();
 
 export default useStore;
