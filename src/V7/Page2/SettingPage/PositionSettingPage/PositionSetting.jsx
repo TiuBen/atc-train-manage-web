@@ -7,7 +7,6 @@ import { PencilLine, Trash2, SquarePlus, Check } from "lucide-react";
 
 function PositionSetting() {
     const { data: positions } = useSWR(API_URL.query_positions, FETCHER);
-    const { payload, setPayload } = usePage();
 
     const [editingRow, setEditingRow] = useState({});
 
@@ -52,6 +51,7 @@ function PositionSetting() {
                     mutate(API_URL.query_positions);
                 });
         } else {
+            console.log("No ID found for editing row.");
         }
     };
 
@@ -71,7 +71,7 @@ function PositionSetting() {
                 <thead>
                     <tr>
                         <th className="border border-gray-300 px-2 py-1">序号</th>
-                        <th className="border border-gray-300 px-2 py-1 w-[8rem]">席位名称</th>
+                        <th className="border border-gray-300 px-2 py-1 w-[8rem] max-w-[8rem]">席位名称</th>
                         <th className="border border-gray-300 px-2 py-1">是否配置主/副班</th>
                         <th className="border border-gray-300 px-2 py-1">是否前端显示</th>
                         <th className="border border-gray-300 px-2 py-1">编辑</th>
@@ -82,13 +82,12 @@ function PositionSetting() {
                         return (
                             <tr key={index} style={{ gap: "0.25rem" }}>
                                 <td className="border border-gray-300 px-2 py-1">{position.id}</td>
-                                <td className="border border-gray-300 px-2 py-1 w-[8rem]">
+                                <td className="border border-gray-300 px-2 py-1 ">
                                     {editingRow?.id === position.id ? (
                                         <input
-                                            className="border-2 border-blue-600 rounded-lg px-2 py-1 w-full"
+                                            className="border-2 border-blue-600 rounded-lg px-2 py-1 w-full disabled:cursor-not-allowed"
                                             type="text"
                                             value={editingRow.position}
-                                            disabled={editingRow.position}
                                             onChange={(e) => handleChange(e, "position")}
                                         />
                                     ) : (
@@ -168,9 +167,10 @@ function PositionSetting() {
                             <td className="border border-gray-300 px-2 py-1"></td>
                             <td className="border border-gray-300 px-2 py-1">
                                 <input
-                                    className="border-2 border-blue-600 rounded-lg px-2 py-1"
+                                    className="border-2 border-blue-600 rounded-lg px-2 py-1 w-[8rem]"
                                     type="text"
                                     value={newPosition?.position}
+                                    maxLength={7}
                                     onChange={(e) => {
                                         setNewPosition((prev) => {
                                             return {
@@ -265,6 +265,7 @@ function PositionSetting() {
             <div className="flex justify-end">
                 <Button
                     color="green"
+                    disabled={newPosition}
                     onClick={() => {
                         setNewPosition({
                             position: null,
