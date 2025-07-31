@@ -12,7 +12,7 @@ function RadioButtonUserList() {
     if (error) return <div>Failed to load</div>;
     if (isLoading) return <div>Loading...</div>;
     return (
-        <div className="flex flex-row flex-wrap text-nowrap flex-1  content-start gap-1 m-2">
+        <div className="flex flex-row flex-wrap text-nowrap flex-1  content-start gap-1 m-2 ">
             {userList.flat().map((item, i) => {
                 return (
                     <label

@@ -27,8 +27,8 @@ function DayCellElement({ date, onClick }) {
     const usernameSet = new Set(data.map((item) => item.username));
     const usernameArray = Array.from(usernameSet);
     return (
-        <div className="flex flex-col items-start justify-center  overflow-auto" onClick={() => onClick(date)}>
-            <div className="text-sm text-gray-500 px-1">{usernameArray.join(",")}</div>
+        <div className="flex flex-col items-start justify-center  overflow-y-scroll" onClick={() => onClick(date)}>
+            <div className="text-sm text-gray-500 px-1 text-ellipsis">{usernameArray.join(",")}</div>
         </div>
     );
 }
@@ -103,12 +103,13 @@ function MonthPage() {
                     cellRender={(props) => {
                         return (
                             <>
-                                <DayCellElement
+                            {/* #TODO 这段6月的渲染还有 BUG 然后 全部渲染 效果也不好 */}
+                                {/* <DayCellElement
                                     date={props}
                                     onClick={(date) => {
                                         setDate(date);
                                     }}
-                                />
+                                /> */}
                             </>
                         );
                     }}

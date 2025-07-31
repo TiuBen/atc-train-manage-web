@@ -6,6 +6,9 @@ import useSWR, { mutate } from "swr";
 import { API_URL } from "../../../utils/const/Const";
 import useStore from "../../../utils/store/userStore";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import ContentSlider from "../../../../snComponents/snCarousel";
+import formatDecimal from "../../../utils/tools/formatDecimal";
+
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -28,22 +31,6 @@ const StyledLikeExcel = styled.table`
         }
     }
 `;
-
-/**
- * 格式化数值：保留2位小数，若无有效值则返回0
- * @param {number|null|undefined} value - 输入值
- * @returns {number} 格式化后的值（或0）
- */
-function formatDecimal(value) {
-    // 检查是否为有效数字（非 null/undefined/NaN，且不为 0）
-    if (value === null || value === undefined || isNaN(value)) {
-        return 0;
-    }
-
-    // 四舍五入到2位小数，并避免 -0 的情况
-    const rounded = Math.round(value * 100) / 100;
-    return rounded === 0 ? "" : rounded; // 明确返回 0（而非 -0）
-}
 
 function UserRow({ month, username }) {
     const [dutyStatics, setDutyStatics] = useState([]);
@@ -93,8 +80,8 @@ function UserRow({ month, username }) {
                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
                 <td>
-                    {formatDecimal(dutyStatics?.totalAOCTime?.nightShift) +
-                        formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}
+                    {formatDecimal(dutyStatics?.totalAOCTime?.nightShift+dutyStatics?.totalAOCTime?.dayShift) 
+                       }
                 </td>
 
                 <td>
@@ -160,7 +147,7 @@ function DefaultPage() {
     return (
         <div className=" flex-1 flex flex-col  overflow-auto relative items-center  ">
             <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
-
+            {/* 
             <Carousel className="w-[92%]   m-auto">
                 <CarouselContent className="ml-1">
                     {Array.from({ length: length }).map((_, index) => (
@@ -173,7 +160,14 @@ function DefaultPage() {
                 </CarouselContent>
                 <CarouselPrevious />
                 <CarouselNext />
-            </Carousel>
+            </Carousel> */}
+            <div className="w-full p-2 h-full flex flex-row flex-nowrap">
+                    {Array.from({ length: length }).map((_, index) => (
+                        <div className="p-1 pl-1 m-auto inline-flex max-xl:w-full xl:basis-1/3">
+                            <MonthStatistics key={index} month={index} usernames={users} />
+                        </div>
+                    ))}
+            </div>
         </div>
     );
 }

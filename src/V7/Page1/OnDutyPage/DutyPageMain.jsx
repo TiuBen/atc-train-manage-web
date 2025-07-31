@@ -7,14 +7,14 @@ import { data } from "autoprefixer";
 import useStore from "../../../utils/store/userStore.js";
 
 function DutyPage() {
-    const { positionsOnDuty: data, isLoading, error } = useStore();
+    const { positions, isLoading, error, onDutyUsers } = useStore();
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
 
     return (
-        <div className="flex flex-row flex-wrap gap-4 justify-center items-start  content-start overflow-auto p-2">
-            {data.map((item, index) => {
-                return <Position key={index} position={item.position} dutyType={item.dutyType} />;
+        <div className="flex flex-row flex-wrap gap-4 justify-start items-start  content-start overflow-auto p-2">
+            {positions.map((item, index) => {
+                return <Position key={index} {...item} />;
             })}
         </div>
     );

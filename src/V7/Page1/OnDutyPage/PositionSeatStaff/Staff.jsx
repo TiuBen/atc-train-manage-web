@@ -4,6 +4,7 @@ import { useLongPress } from "ahooks";
 import { Button, Avatar } from "@radix-ui/themes";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
+import useStore from "../../../../utils/store/userStore"
 dayjs.extend(duration);
 
 //*     Position
@@ -15,17 +16,28 @@ dayjs.extend(duration);
 //*
 
 function Staff(props) {
-    // if (props.roleStartTime === null) {
-    //     console.log("Staff", props);
-    // }
-    // ! 基础信息
-    const { username, position, dutyType, inTime } = props;
-    // ! 角色信息
-    const { roleType, roleStartTime } = props;
+    // !  这里是后端传来的这个duty row 的全部信息基础信息
+    // !  useSWR(`${SERVER_URL}/duty?position=${position}&dutyType=${dutyType}&outTime=null`, FETCHER);
+    //!   获取来的
+    const {
+        id,
+        username,
+        position,
+        dutyType,
+        inTime,
+        outTime,
+        roleType,
+        relatedDutyTableRowId,
+        roleStartTime,
+        roleEndTime,
+        status,
+    } = props;
 
-    const { setOpenUserListDialog, setOpenConfirmGetOutDialog } = useDialog();
     const { setDialogPayload } = useDialog();
-    // console.log(props);
+
+    //! 减少后端请求 在这里检测 长按的效果
+    const { detailUsers, setSelectedPosition } = useStore();
+    const [canLongPress, setCanLongPress] = useState();
 
     // 执勤时间
     const date1 = dayjs(inTime);
@@ -39,39 +51,20 @@ function Staff(props) {
 
     useLongPress(
         () => {
-            if (roleType === "见习") {
-                setOpenConfirmGetOutDialog(true);
-
+            if (canLongPress) {
                 setDialogPayload({
-                    dialogTitle: "见习状态，无教员资格",
-                    confirmButtonText: "确定",
-                    confirmButtonFunction: () => {
-                        setOpenConfirmGetOutDialog(false);
-                    },
-                });
-            } else if (roleType === "教员") {
-                setOpenConfirmGetOutDialog(true);
-                setDialogPayload({
-                    dialogTitle: "该教员已有一名学员",
-                    confirmButtonText: "确定",
-                    confirmButtonFunction: () => {
-                        setOpenConfirmGetOutDialog(false);
-                    },
-                });
-            } else {
-                setOpenUserListDialog(true);
-                setDialogPayload({
-                    ...props,
-                    // dialogTitle:`由${username}负责，开始见习`,
                     dialogTitle: (
                         <div>
                             由<span className="text-blue-500 px-1">{username}</span>负责，开始见习
                         </div>
                     ),
-                    excludeUser: username,
-                    roleType: "见习",
+                    userListDialogDisplay: true,
+                });
+                setSelectedPosition({
                     position: position,
                     dutyType: dutyType,
+                    roleType: "见习",
+                    teacherDutyRowId: id,
                 });
             }
         },
@@ -97,6 +90,17 @@ function Staff(props) {
         return () => clearInterval(timerId);
     }, [props]);
 
+    useEffect(() => {
+        const user = detailUsers.find((user) => user.username === username);
+        // console.log(user);
+        const uP = user.position || [];
+        const foundP = uP.find((x) => x.position === position);
+        // console.log(foundP);
+        if (foundP && foundP?.roleType === "教员") {
+            setCanLongPress(true);
+        }
+    }, []);
+
     return (
         <>
             <div
@@ -104,9 +108,10 @@ function Staff(props) {
                     roleType === "教员" || roleType === "见习" ? "border-2 border-lime-500" : ""
                 }`}
             >
+                {/* <div className="text-wrap">{JSON.stringify(id)} </div> */}
                 <div ref={ref} className="flex items-center justify-center ">
                     {roleType === "教员" ? (
-                        <label className="text-blue-600 font-bold" style={{ writingMode: "vertical-rl " }}>
+                        <label className="text-blue-600 font-bold " style={{ writingMode: "vertical-rl " }}>
                             教员
                         </label>
                     ) : (
@@ -122,8 +127,7 @@ function Staff(props) {
 
                     <img
                         className={`max-w-[5rem] max-h-[4rem]  aspect-auto `}
-                        // src={ SERVER_URL.slice(0,-3) + username + ".jpg"}
-                        src={ SERVER_URL.slice(0,-3)+"images/" + username + ".jpg"}
+                        src={SERVER_URL + "/" + username + ".jpg"}
                         alt={username}
                     />
                 </div>
@@ -144,8 +148,15 @@ function Staff(props) {
                     <Button
                         variant="soft"
                         onClick={() => {
-                            setOpenConfirmGetOutDialog(true);
-                            setDialogPayload({ ...props, dialogTitle: "确认退出？", confirmButtonText: "确定" });
+                            setDialogPayload({
+                                confirmGetOutDialogDisplay: true,
+                                dialogTitle: "确认退出？",
+                                confirmButtonText: "确定",
+                                dutyRecordId: id,
+                                dutyRecord: { ...props },
+                                username: username,
+                            });
+                            setSelectedPosition({ position: position, dutyType: dutyType });
                         }}
                     >
                         退出

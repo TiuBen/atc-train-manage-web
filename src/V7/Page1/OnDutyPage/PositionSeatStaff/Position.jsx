@@ -24,7 +24,7 @@ function Position(props) {
                             })}
                         </>
                     ) : (
-                        <Seat position={position} />
+                        <Seat position={position} dutyType={null} />
 
                     )}
                 </div>
