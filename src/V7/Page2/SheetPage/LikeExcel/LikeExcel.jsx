@@ -83,7 +83,7 @@ function LikeExcel() {
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log("data", data);
+                    // console.log("data", data);
                     setDutyRows(data);
                 });
 
@@ -98,7 +98,7 @@ function LikeExcel() {
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log("data", data);
+                    // console.log("data", data);
 
                     setDutyStatics(data);
                 });
@@ -164,6 +164,7 @@ function LikeExcel() {
                                     <td className="border border-slate-600 px-2 text-nowrap text-center ">
                                         <button
                                             onClick={() => {
+                                                console.log("clicked "+x.id);
                                                 setPayload({
                                                     ...payload,
                                                     editSheetDisplay: true,
@@ -173,6 +174,7 @@ function LikeExcel() {
                                         >
                                             <Edit3 size={16} />
                                         </button>
+                                            {/* <>{x.id}</> */}
                                     </td>
                                     <td className="border border-slate-600 px-2 text-nowrap text-center">
                                         {dayjs(x.inTime).format("YYYY-MM-DD")}

@@ -118,7 +118,7 @@ function NightCountByMonth() {
 
                                                     {nightShiftData[x.username]?.[y]?.["夜班次数"] === 0
                                                         ? ""
-                                                        : nightShiftData[x.username]?.[y]?.["夜班档位"]}
+                                                        : nightShiftData[x.username]?.[y]?.["夜班段数"]}
 
                                                     {nightShiftData[x.username]?.[y]?.["夜班次数"] !== undefined &&
                                                     nightShiftData[x.username]?.[y]?.["夜班次数"] !== 0
@@ -148,8 +148,8 @@ function NightCountByMonth() {
                                                             if (value["夜班次数"] >= 0.01) {
                                                                 t.totalShifts += value["夜班次数"];
                                                             }
-                                                            if (value["夜班档位"] >= 0.01) {
-                                                                t.totalAmount += value["夜班档位"];
+                                                            if (value["夜班段数"] >= 0.01) {
+                                                                t.totalAmount += value["夜班段数"];
                                                             }
                                                         }
                                                     }

@@ -5,6 +5,7 @@ import { Button, Avatar } from "@radix-ui/themes";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import useStore from "../../utils/store/userStore";
+
 dayjs.extend(duration);
 
 //*     Position
@@ -36,8 +37,8 @@ function Staff(props) {
     const { setDialogPayload } = useDialog();
 
     //! 减少后端请求 在这里检测 长按的效果
-    const { detailUsers, setSelectedPosition } = useStore();
-    const [canLongPress, setCanLongPress] = useState();
+    const { detailUsers, setSelectedPosition, setSelectedDutyRecord } = useStore();
+    const [canLongPress, setCanLongPress] = useState(false);
 
     // 执勤时间
     const date1 = dayjs(inTime);
@@ -55,17 +56,13 @@ function Staff(props) {
                 setDialogPayload({
                     dialogTitle: (
                         <div>
-                            由<span className="text-blue-500 px-1">{username}</span>负责，开始见习
+                            由<span className="text-blue-500 px-1">{username}</span>负责，开始带培
                         </div>
                     ),
                     userListDialogDisplay: true,
                 });
-                setSelectedPosition({
-                    position: position,
-                    dutyType: dutyType,
-                    roleType: "见习",
-                    teacherDutyRowId: id,
-                });
+             
+                setSelectedDutyRecord({ ...props });
             }
         },
         ref,
@@ -94,12 +91,17 @@ function Staff(props) {
         const user = detailUsers.find((user) => user.username === username);
         // console.log(user);
         const uP = user.position || [];
-        const foundP = uP.find((x) => x.position === position);
+        const foundP = uP.find((x) => x.position === position)|| {};
         // console.log(foundP);
-        if (foundP&&foundP?.roleType === "教员") {
+        if ( roleType===null &&foundP.roleType === "教员"  ) {
+            
             setCanLongPress(true);
         }
-    }, []);
+        else{
+            setCanLongPress(false);
+        }
+       
+    }, [detailUsers,roleType,username,position]);
 
     return (
         <>
@@ -152,12 +154,8 @@ function Staff(props) {
                                 confirmGetOutDialogDisplay: true,
                                 dialogTitle: "确认退出？",
                                 confirmButtonText: "确定",
-                                dutyRecordId: id,
-                                dutyRecord:{...props},
-                                username: username,
                             });
-                            setSelectedPosition({ position: position, dutyType: dutyType });
-
+                            setSelectedDutyRecord({ ...props })
                         }}
                     >
                         退出

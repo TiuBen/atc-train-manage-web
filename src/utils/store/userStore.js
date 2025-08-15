@@ -1,5 +1,5 @@
 // store.js
-import { use } from "react";
+import dayjs from "dayjs";
 import { create } from "zustand";
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
@@ -18,19 +18,23 @@ const API_URL = {
 };
 
 // 创建 store
-const useStore = create((set) => ({
+const useStore = create((set, get) => ({
     users: [1, 1, 2],
     groupedUsers: [],
     detailUsers: [],
     onDutyUsers: [],
     //
-    selectedPosition: {},
+    selectedPosition: null, // 用来在 席位点击后使用
+    selectedDutyRecord: null, // 用来在  某个 人被点击后用
+    selectedUser: { username: "", userId: -1 },
+    selectedUserNightCount: {},
 
     userStatics: {},
     userStaticsByMonth: [],
     positionsOnDuty: [],
 
     positions: [],
+
 
     isLoading: true,
     error: null,
@@ -117,8 +121,93 @@ const useStore = create((set) => ({
         set((state) => ({
             selectedPosition: position,
         })),
+    setSelectedDutyRecord: (dutyRecord) =>
+        set((state) => ({
+            selectedDutyRecord: dutyRecord,
+        })),
 
-    putDutyUser: async (userId, updatedData) => {},
+    putDutyRecord: async (dutyRecord) => {
+        const _temp = { ...dutyRecord };
+        if (_temp.roleType === null) {
+            //! 只有 既不是 见习 也不是 教员 的才只改变自己
+            fetch(`${SERVER_URL}/duty/${_temp.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    outTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                }),
+            })
+                .then((res) => res.json())
+                .then(async (data) => {
+                    console.log(data);
+                    // await get().fetchOnDutyUsers();
+                    // get().setSelectedDutyRecord(null);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {});
+        } else {
+            let studentData, studentDataID, teacherData, teacherDataID;
+            const parts = _temp.relatedDutyTableRowId.split(";").filter((part) => part !== ""); // 按 `;` 分割并过滤空字符串
+            const lastPart = parts[parts.length - 1]; // 取最后一段
+
+            if (_temp.roleType === "见习") {
+                studentData = {
+                    outTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                    roleEndTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                    relatedDutyTableRowId: null,
+                };
+                studentDataID = _temp.id;
+                teacherData = {
+                    roleType: null,
+                    roleStartTime: null,
+                    roleEndTime: null,
+                };
+                teacherDataID = lastPart;
+            } else if (_temp.roleType === "教员") {
+                studentData = {
+                    outTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                    roleEndTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                    relatedDutyTableRowId: null,
+                };
+                studentDataID = lastPart;
+                teacherData = {
+                    roleType: null,
+                    roleEndTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                    outTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                };
+                teacherDataID = _temp.id;
+            }
+
+            const promises = [
+                { id: studentDataID, data: studentData },
+                { id: teacherDataID, data: teacherData },
+            ].map(({ id, data }) =>
+                fetch(`${SERVER_URL}/duty/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(data),
+                })
+            );
+
+            Promise.all(promises)
+                .then((responses) => Promise.all(responses.map((res) => res.json())))
+                .then(async (data) => {
+                    console.log("所有更新成功", data);
+                    // await get().fetchOnDutyUsers();
+                    // get().setSelectedDutyRecord(null);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {});
+        }
+    },
 
     // 更新用户数据
     updateUser: async (userId, updatedData) => {
@@ -156,6 +245,17 @@ const useStore = create((set) => ({
         }
     },
 
+    fetchOnDutyUsers: async () => {
+        fetch(`${SERVER_URL}/duty?outTime=null`)
+            .then((res) => res.json())
+            .then((data) => {
+                const prev = get().onDutyUsers;
+                if (JSON.stringify(prev) !== JSON.stringify(data)) {
+                    set({ onDutyUsers: data });
+                }
+            });
+    },
+
     // 获取某个月的数据
 
     // 获取席位
@@ -170,6 +270,8 @@ const useStore = create((set) => ({
             set({ error: error.message, isLoading: false });
         }
     },
+
+   
 }));
 
 useStore.getState().initStore();
