@@ -10,6 +10,7 @@ import formatDecimal from "../../utils/tools/formatDecimal";
 const StyledLikeExcel = styled.table`
     width: 100%;
     height: 100%;
+    background-color: white;
     border-collapse: collapse;
     text-wrap: nowrap;
     font-size: 0.8rem !important;
@@ -37,7 +38,6 @@ function UserRow({ year, month, username, userId }) {
     const [nightsCount, setNightsCount] = useState({});
     const monthly = dayjs().set("year", year).set("month", month).set("date", 1).format("YYYY-MM");
 
-    const { selectedUser } = useStore();
 
     useEffect(() => {
         // append 可以添加多个相同名称的参数
@@ -106,7 +106,7 @@ function UserRow({ year, month, username, userId }) {
                     });
                 }}
                 className={`${
-                    useStore.getState().selectedUser.username === username
+                    useStore.getState().selectedUser?.username === username
                         ? "bg-blue-600 text-white  hover:bg-blue-600 hover:text-white "
                         : "hover:bg-blue-200"
                 }`}
@@ -125,7 +125,7 @@ function UserRow({ year, month, username, userId }) {
                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift + dutyStatics?.totalAOCTime?.dayShift)}</td>
 
-                <td>
+                <td className="bg-blue-400 text-white">
                     {formatDecimal(
                         dutyStatics?.totalCommanderTime?.dayShift +
                             +dutyStatics?.totalPositionTime?.dayShift +
@@ -139,7 +139,7 @@ function UserRow({ year, month, username, userId }) {
                             dutyStatics?.totalAOCTime?.dayShift
                     )}
                 </td>
-                <td>{nightsCount?.[username]?.[monthly]?.["夜班段数"]}</td>
+                <td>{ (nightsCount?.[username]?.[monthly]?.["夜班段数"] || 0) > 0 ? `${nightsCount?.[username]?.[monthly]?.["夜班段数"]}段` : ""}</td>
             </tr>
         </>
     );
@@ -152,7 +152,7 @@ function MonthStatistics({ year, month }) {
             <StyledLikeExcel>
                 <thead className="text-center">
                     <tr className="text-center">
-                        <th className="bg-blue-600 text-white">{month + 1}月</th>
+                        <th className="bg-blue-400 text-white">{month + 1}月</th>
                         <th colSpan={4}>白班</th>
                         <th colSpan={4}>夜班</th>
                         <th rowSpan={2}>

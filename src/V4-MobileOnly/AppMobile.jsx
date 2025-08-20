@@ -1,8 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
-import useSWR from "swr";
-import { SERVER_URL, FETCHER, DialogContextProvider } from "@utils";
+import React, { useState } from "react";
+import { DialogContextProvider } from "@utils";
 import { TowerControl, PlaneTakeoff, ScanFace, HandMetal, CalendarRange } from "lucide-react";
-import styled from "styled-components";
 import Position from "./PositionSeatStaff/Position";
 import { Theme, Switch, Button } from "@radix-ui/themes";
 import UserListDialog from "./Dialog/UserListDialog";
@@ -10,20 +8,19 @@ import FaceDialog from "./Dialog/FaceDialog";
 import ConfirmGetOutDialog from "./Dialog/ConfirmGetOutDialog";
 import useStore from "../utils/store/userStore";
 import DetailPage from "./DetailPage/DetailPage";
+import TimelineDutyDialog from "./Dialog/TimelineDutyDialog";
 
 function AppMobile() {
-    const { positions, isLoading, error, onDutyUsers, selectedPosition, selectedDutyRecord } =
-        useStore();
-    const [showDetail, setShowDetail] = useState(false);
+    const { positions, isLoading, error, onDutyUsers, selectedPosition, selectedDutyRecord } = useStore();
+    const [showDetail, setShowDetail] = useState(true);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
 
-
     return (
         <Theme accentColor="indigo">
             <DialogContextProvider>
-                <header
+                {/* <header
                     className=" sticky w-full top-0  h-[3rem] text-white bg-blue-900 z-50 "
                     style={{ gridRow: "1" }}
                 >
@@ -48,9 +45,9 @@ function AppMobile() {
                             <ScanFace />
                         </div>
                     </div>
-                </header>
+                </header> */}
                 <>
-                    {!showDetail ? (
+                    {/* {!showDetail ? (
                         <div className="flex flex-row flex-wrap gap-4 p-2 items-start content-start flex-1">
                             {positions.map((item, index) => {
                                 return <Position key={index} {...item} />;
@@ -58,25 +55,19 @@ function AppMobile() {
                         </div>
                     ) : (
                         <DetailPage />
-                    )}
+                    )} */}
                 </>
-                <div>onDutyUsers:{JSON.stringify(onDutyUsers)}</div>
-                =============
-                <div>selectedPosition:{JSON.stringify(selectedPosition)}</div>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <br></br>
-                <div>selectedDutyRecord:{JSON.stringify(selectedDutyRecord)}</div>
+                {/* <div className=" fixed  bottom-0">
+                    <div>onDutyUsers:{JSON.stringify(onDutyUsers)}</div>
+                    <br></br>
+                    <div>selectedPosition:{JSON.stringify(selectedPosition)}</div>
+                    <br></br>
+                    <div>selectedDutyRecord:{JSON.stringify(selectedDutyRecord)}</div>
+                </div> */}
                 {/* <FaceDialog /> */}
-                {error ? <div>ERROR</div> : isLoading ? <div>Loading</div> : <UserListDialog />}
-                <ConfirmGetOutDialog />
+                {/* {error ? <div>ERROR</div> : isLoading ? <div>Loading</div> : <UserListDialog />} */}
+                {/* <ConfirmGetOutDialog /> */}
+                <TimelineDutyDialog />
             </DialogContextProvider>
         </Theme>
     );

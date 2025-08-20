@@ -69,13 +69,13 @@ function MonthCalender(props) {
     return (
         <div
             aria-roledescription="month-calendar"
-            className=" outline outline-1  outline-gray-100 grid grid-cols-7  grid-rows-[min-content,min-content] flex-1 h-full"
+            className=" outline outline-1  outline-gray-200 grid grid-cols-7  grid-rows-[min-content,min-content] flex-1 h-full"
             // style={{ gridTemplateRows: "min-content min-content" }}
         >
             <div className="col-span-7 ">{title}</div>
             {["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map((day, index) => {
                 return (
-                    <div key={index} className=" outline outline-1  outline-gray-100  text-nowrap font-bold ">
+                    <div key={index} className=" outline outline-1  outline-gray-200  text-nowrap font-bold ">
                         {day}
                     </div>
                 );
@@ -87,16 +87,16 @@ function MonthCalender(props) {
                 return (
                     <div
                         key={index}
-                        className=" outline outline-1  outline-gray-100 hover:bg-blue-100 cursor-default flex flex-col  items-stretch"
+                        className=" outline outline-1  outline-gray-200 hover:bg-blue-50 cursor-default flex flex-col  items-stretch"
                     >
                         <div
-                            className={` text-nowrap hover:font-bold mr-[1px] px-4  ${
+                            className={` text-nowrap hover:font-bold mr-[1px] px-4  text-center ${
                                 dayjs(date).isSame(Date.now(), "day") ? "bg-blue-600 text-cyan-50 " : ""
                             } `}
                         >
                             {dayjs().get("month") !== dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).get("month")
-                                ? dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("M月D")
-                                : dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("D")}
+                                ? dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("M月D日")
+                                : dayjs(date, ["YYYY-MM-DD", "YYYY-M-D"]).format("D日")}
                         </div>
                         {/* <div className="flex h-full" ref={(el) => (cellRefs.current[index] = el)}>
                         </div> */}

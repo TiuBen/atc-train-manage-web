@@ -1,11 +1,10 @@
 import React, { useContext, useState } from "react";
 import { Avatar, Button, Dialog } from "@radix-ui/themes";
 import { useDialog, useOnDutyUser, SERVER_URL, FETCHER } from "@utils";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR, { useSWRConfig,mutate } from "swr";
 import { X } from "lucide-react";
 import dayjs from "dayjs";
 import useStore from "../../utils/store/userStore";
-
 function ConfirmGetOutDialog() {
     const { dialogPayload, setDialogPayload } = useDialog();
     const {
@@ -63,7 +62,11 @@ function ConfirmGetOutDialog() {
                         size={"4"}
                         onClick={ async() => {
                             let _temp = { ...selectedDutyRecord }; // 因为异步 不确定
+                            const {position,dutyType}=_temp;
                             await putDutyRecord(_temp);
+                            mutate(
+                                `${SERVER_URL}/duty?position=${position}${dutyType ? `&dutyType=${dutyType}` : ""}&outTime=null`
+                            );
                             //!
                             setDialogPayload({ confirmGetOutDialogDisplay: false });
                         }}

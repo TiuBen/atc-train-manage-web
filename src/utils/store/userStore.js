@@ -26,7 +26,9 @@ const useStore = create((set, get) => ({
     //
     selectedPosition: null, // 用来在 席位点击后使用
     selectedDutyRecord: null, // 用来在  某个 人被点击后用
-    selectedUser: { username: "", userId: -1 },
+
+    // 用在 详情页
+    selectedUser:null,
     selectedUserNightCount: {},
 
     userStatics: {},
@@ -142,8 +144,8 @@ const useStore = create((set, get) => ({
                 .then((res) => res.json())
                 .then(async (data) => {
                     console.log(data);
-                    // await get().fetchOnDutyUsers();
-                    // get().setSelectedDutyRecord(null);
+                    await get().fetchOnDutyUsers();
+                    get().setSelectedDutyRecord(null);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -199,8 +201,8 @@ const useStore = create((set, get) => ({
                 .then((responses) => Promise.all(responses.map((res) => res.json())))
                 .then(async (data) => {
                     console.log("所有更新成功", data);
-                    // await get().fetchOnDutyUsers();
-                    // get().setSelectedDutyRecord(null);
+                    await get().fetchOnDutyUsers();
+                    get().setSelectedDutyRecord(null);
                 })
                 .catch((err) => {
                     console.log(err);

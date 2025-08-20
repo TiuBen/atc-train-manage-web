@@ -16,6 +16,19 @@ dayjs.extend(duration);
 //*    Staff   Staff
 //*
 
+function formatDuration(date1) {
+    const diff = dayjs.duration(dayjs().diff(date1));
+    const totalMinutes = diff.asMinutes();
+
+    if (totalMinutes >= 60) {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = Math.round(totalMinutes % 60);
+        return `${hours}小时${minutes}分钟`;
+    } else {
+        return `${Math.round(totalMinutes)}分钟`;
+    }
+}
+
 function Staff(props) {
     // !  这里是后端传来的这个duty row 的全部信息基础信息
     // !  useSWR(`${SERVER_URL}/duty?position=${position}&dutyType=${dutyType}&outTime=null`, FETCHER);
@@ -37,15 +50,15 @@ function Staff(props) {
     const { setDialogPayload } = useDialog();
 
     //! 减少后端请求 在这里检测 长按的效果
-    const { detailUsers, setSelectedPosition, setSelectedDutyRecord } = useStore();
+    const { detailUsers, setSelectedDutyRecord } = useStore();
     const [canLongPress, setCanLongPress] = useState(false);
 
     // 执勤时间
     const date1 = dayjs(inTime);
-    const [inDutyTime, setInDutyTime] = useState(dayjs.duration(dayjs(Date.now()).diff(date1)).format("H小时m分"));
+    const [inDutyTime, setInDutyTime] = useState(formatDuration(date1));
     // 带教时间
     const date2 = dayjs(roleStartTime);
-    const [inRoleTime, setInRoleTime] = useState(dayjs.duration(dayjs(Date.now()).diff(date2)).format("H小时m分"));
+    const [inRoleTime, setInRoleTime] = useState(formatDuration(date2));
 
     const [isOver2Hours, setIsOver2Hours] = useState(dayjs(Date.now()).diff(inTime, "hours", true) >= 2.17);
     const ref = useRef(null);
@@ -61,7 +74,7 @@ function Staff(props) {
                     ),
                     userListDialogDisplay: true,
                 });
-             
+
                 setSelectedDutyRecord({ ...props });
             }
         },
@@ -72,16 +85,16 @@ function Staff(props) {
     );
 
     useEffect(() => {
-        setInDutyTime(dayjs.duration(dayjs(Date.now()).diff(inTime)).format("H小时m分"));
-        setInRoleTime(dayjs.duration(dayjs(Date.now()).diff(roleStartTime)).format("H小时m分"));
+        setInDutyTime(formatDuration(inTime));
+        setInRoleTime(formatDuration(roleStartTime));
 
         const timerId = setInterval(() => {
             if (dayjs(Date.now()).diff(inTime, "hours", true) >= 2.17) {
                 setIsOver2Hours(true);
             }
 
-            setInDutyTime(dayjs.duration(dayjs(Date.now()).diff(inTime)).format("H小时m分"));
-            setInRoleTime(dayjs.duration(dayjs(Date.now()).diff(roleStartTime)).format("H小时m分"));
+            setInDutyTime(formatDuration(inTime));
+            setInRoleTime(formatDuration(roleStartTime));
         }, 15 * 1000);
 
         return () => clearInterval(timerId);
@@ -91,17 +104,14 @@ function Staff(props) {
         const user = detailUsers.find((user) => user.username === username);
         // console.log(user);
         const uP = user.position || [];
-        const foundP = uP.find((x) => x.position === position)|| {};
+        const foundP = uP.find((x) => x.position === position) || {};
         // console.log(foundP);
-        if ( roleType===null &&foundP.roleType === "教员"  ) {
-            
+        if (roleType === null && foundP.roleType === "教员") {
             setCanLongPress(true);
-        }
-        else{
+        } else {
             setCanLongPress(false);
         }
-       
-    }, [detailUsers,roleType,username,position]);
+    }, [detailUsers, roleType, username, position]);
 
     return (
         <>
@@ -155,7 +165,7 @@ function Staff(props) {
                                 dialogTitle: "确认退出？",
                                 confirmButtonText: "确定",
                             });
-                            setSelectedDutyRecord({ ...props })
+                            setSelectedDutyRecord({ ...props });
                         }}
                     >
                         退出

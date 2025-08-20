@@ -1,10 +1,8 @@
 import { Button } from "@radix-ui/themes";
 import React, { useState, useEffect } from "react";
-import { useDialog, useOnDutyUser } from "@utils";
+import { useDialog } from "@utils";
 import Staff from "./Staff";
 import dayjs from "dayjs";
-import useSWR from "swr";
-import { SERVER_URL, FETCHER, DialogContextProvider, OnDutyUserContextProvider } from "@utils";
 import useStore from "../../utils/store/userStore";
 
 //*     Position
@@ -15,23 +13,12 @@ import useStore from "../../utils/store/userStore";
 //*    Staff   Staff
 //*
 
+ 
 function Seat(props) {
     const { position, dutyType } = props;
     const { setDialogPayload } = useDialog();
     const { onDutyUsers, setSelectedPosition, putDutyRecord } = useStore();
 
-    const {
-        data: duties = [],
-        error,
-        loading,
-    } = useSWR(
-        `${SERVER_URL}/duty?position=${position}${dutyType ? `&dutyType=${dutyType}` : ""}&outTime=null`,
-        FETCHER,
-        {
-            revalidateOnFocus: false,
-            fallbackData: [],
-        }
-    );
     // 十分钟退出的功能
     useEffect(() => {
         // if more than 2 user putTO get out immediately
@@ -61,7 +48,7 @@ function Seat(props) {
                 <Button
                     style={{ marginTop: "auto" }}
                     disabled={
-                        duties.filter(
+                        onDutyUsers.filter(
                             (duty) =>
                                 duty.position === position && duty.dutyType === dutyType && duty.roleType !== "见习"
                         ).length >= 2
@@ -80,11 +67,13 @@ function Seat(props) {
                     接班
                 </Button>
             </div>
-            {duties.map((duty, index) => (
-                <div key={index}>
-                    <Staff {...duty} key={index} />
-                </div>
-            ))}
+            {onDutyUsers
+                .filter((duty) => duty.position === position && duty.dutyType === dutyType)
+                .map((duty, index) => (
+                    <div key={index}>
+                        <Staff {...duty} key={index} />
+                    </div>
+                ))}
         </div>
     );
 }
@@ -125,3 +114,19 @@ export default Seat;
 // if (loading) {
 //     return <div>正在获取席位信息...</div>;
 // }
+
+// const {
+//     data: duties = [],
+//     error,
+//     loading,
+// } = useSWR(
+//     `${SERVER_URL}/duty?position=${position}${dutyType ? `&dutyType=${dutyType}` : ""}&outTime=null`,
+//     FETCHER,
+//     {
+//         revalidateOnFocus: false,
+//         fallbackData: [],
+//     }
+// );
+// mutate(
+//     `${SERVER_URL}/duty?position=${position}${dutyType ? `&dutyType=${dutyType}` : ""}&outTime=null`
+// );
