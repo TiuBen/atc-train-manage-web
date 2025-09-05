@@ -10,42 +10,40 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 
-import { usePage,   } from "@utils";
+import { Button, Dialog } from "@radix-ui/themes";
+
+import { usePage } from "@utils";
 import EditDutyRecord from "../Page2/SheetPage/LikeExcel/EditDutyRecord";
+import useDialog from "../../utils/hooks/useDialog";
 
 function EditDutyRecordSheet() {
-    const { payload, setPayload } = usePage();
-    const { editSheetDisplay } = payload;
+    const { dialogPayload,setDialogPayload } = useDialog();
     // const { data: positions, error, isLoading } = useSWR(API_URL.query_positions, FETCHER);
     // const { data: roles } = useSWR(API_URL.query_roles, FETCHER);
 
     return (
-        <Sheet
-            open={editSheetDisplay}
-            onOpenChange={() => {
-                setPayload((prev) => {
-                    return { ...prev, editSheetDisplay: false };
-                });
-            }}
+        <Dialog.Root
+            open={dialogPayload.editSheetDisplay}
+            // onOpenChange={() => {
+            //     setDialogPayload((prev) => {
+            //         return { ...prev, editSheetDisplay: false };
+            //     });
+            // }}
         >
-            {/* <SheetTrigger asChild>
-                <Button variant="outline">Open</Button>
-            </SheetTrigger> */}
-            <SheetContent className="border border-red-600 flex flex-col gap-2 overflow-y-auto">
-                <SheetHeader>
-                    <SheetTitle>修改执勤记录</SheetTitle>
-                    <SheetDescription>
-                        此功能仅能修改执勤记录,如果此条目具备教员资格,请先检查或修改学员记录。
-                    </SheetDescription>
-                </SheetHeader>
-                        <EditDutyRecord />
-
-                <SheetFooter  className="border  border-red-600   mx-auto">
-                    <SheetClose >
-                    </SheetClose>
-                </SheetFooter>
-            </SheetContent>
-        </Sheet>
+            <Dialog.Content className=" min-w-[60%] flex flex-col  overflow-y-auto font-mono font-serif">
+                <Dialog.Title className="flex flex-row justify-between ">
+                    <div>修改执勤数据</div>
+                    <Button color="" onClick={() => setDialogPayload({ editSheetDisplay: false })}>
+                        X
+                    </Button>
+                </Dialog.Title>
+                <Dialog.Description className="text-sm text-blue-600 font-light italic" >
+                    小心修改执勤记录,如果此条目为教员或见习,请先修改学员记录。
+                </Dialog.Description>
+                <EditDutyRecord />
+           
+            </Dialog.Content>
+        </Dialog.Root>
     );
 }
 

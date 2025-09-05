@@ -18,7 +18,7 @@ function Position(props) {
                 <h2 className="font-black text-xl px-1">{position}</h2>
 
                 <div className="flex flex-row gap-2 p-1">
-                    {dutyType==="主班,副班" ? (
+                    {dutyType ? (
                         <>
                             {["主班","副班"].map((x, index) => {
                                 return <Seat position={position} dutyType={x} key={index} />;

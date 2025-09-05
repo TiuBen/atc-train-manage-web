@@ -5,7 +5,7 @@ import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import { API_URL } from "../../utils/const/Const";
 import useStore from "../../utils/store/userStore";
-import formatDecimal from "../../utils/tools/formatDecimal";
+import {formatDecimal} from "../../utils/tools/formatDecimal";
 
 const StyledLikeExcel = styled.table`
     width: 100%;

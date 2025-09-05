@@ -7,7 +7,7 @@ import { API_URL } from "../../../utils/const/Const";
 import useStore from "../../../utils/store/userStore";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ContentSlider from "../../../../snComponents/snCarousel";
-import formatDecimal from "../../../utils/tools/formatDecimal";
+import {formatDecimal} from "../../../utils/tools/formatDecimal";
 
 
 const StyledLikeExcel = styled.table`
@@ -32,16 +32,18 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
-function UserRow({ month, username }) {
-    const [dutyStatics, setDutyStatics] = useState([]);
+function UserRow({  year, month, username, userId  }) {
+    const [dutyStatics, setDutyStatics] = useState({});
+    // const [teachStatistics, setTeachStatistics] = useState({});
+    const [nightsCount, setNightsCount] = useState({});
+    const monthly = dayjs().set("year", year).set("month", month).set("date", 1).format("YYYY-MM");
 
     useEffect(() => {
         // append 可以添加多个相同名称的参数
 
         let q = new URLSearchParams();
-        q.append("username", username);
         // Append startDate and startTime
-        q.append("startDate", dayjs().month(month).date(1).format("YYYY-MM-DD"));
+        q.append("startDate", dayjs().set("year", year).set("month", month).set("date", 1).format("YYYY-MM-DD"));
         q.append("startTime", "00:00:00");
 
         // Append endDate and endTime
@@ -55,7 +57,7 @@ function UserRow({ month, username }) {
         q.append("endTime", "00:00:01");
         q.append("calculate", true);
 
-        fetch(`${API_URL.duty}?${q}`, {
+        fetch(`${API_URL.users}/${userId}/dutyStatistics?${q}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -65,28 +67,65 @@ function UserRow({ month, username }) {
             .then((data) => {
                 setDutyStatics(data);
             });
-    }, [month, username]);
+
+        // fetch(`${API_URL.users}/${userId}/teachStatistics?${q}`, {
+        //     method: "GET",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        // })
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //         setTeachStatistics(data);
+        //     });
+
+        fetch(`${API_URL.users}/${userId}/nightCount?${q}`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setNightsCount(data);
+            });
+    }, [year, month, userId]);
 
     return (
         <>
-            <tr>
+            <tr
+                onClick={() => {
+                    useStore.setState({
+                        selectedUser: {
+                            username: username,
+                            userId: userId,
+                        },
+                        selectedUserNightCount:{...nightsCount}
+                    });
+                }}
+                className={`${
+                    useStore.getState().selectedUser?.username === username
+                        ? "bg-blue-600 text-white  hover:bg-blue-600 hover:text-white "
+                        : "hover:bg-blue-200"
+                }`}
+            >
+                {/* //! 姓名 */}
                 <td>{username}</td>
+                {/* 白天 */}
                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.dayShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalPositionTime?.dayShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
+                {/* 夜晚 */}
                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalPositionTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
-                <td>
-                    {formatDecimal(dutyStatics?.totalAOCTime?.nightShift+dutyStatics?.totalAOCTime?.dayShift) 
-                       }
-                </td>
+                <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift + dutyStatics?.totalAOCTime?.dayShift)}</td>
 
-                <td>
-                    {Math.floor(
-                        (dutyStatics?.totalCommanderTime?.dayShift +
+                <td className="bg-blue-400 text-white">
+                    {formatDecimal(
+                        dutyStatics?.totalCommanderTime?.dayShift +
                             +dutyStatics?.totalPositionTime?.dayShift +
                             dutyStatics?.totalTeacherTime?.dayShift +
                             dutyStatics?.totalStudentTime?.dayShift +
@@ -95,26 +134,40 @@ function UserRow({ month, username }) {
                             dutyStatics?.totalTeacherTime?.nightShift +
                             dutyStatics?.totalStudentTime?.nightShift +
                             dutyStatics?.totalAOCTime?.nightShift +
-                            dutyStatics?.totalAOCTime?.dayShift) *
-                            100
-                    ) / 100}
+                            dutyStatics?.totalAOCTime?.dayShift
+                    )}
                 </td>
+                <td>{ (nightsCount?.[username]?.[monthly]?.["夜班段数"] || 0) > 0 ? `${nightsCount?.[username]?.[monthly]?.["夜班段数"]}段` : ""}</td>
             </tr>
         </>
     );
 }
 
-function MonthStatistics({ month, usernames }) {
+function MonthStatistics({ year, month}) {
+    const { users } = useStore();
     return (
-        <div className=" px-2 rounded-lg ">
+        <div className=" overflow-y-auto">
             <StyledLikeExcel>
                 <thead className="text-center">
                     <tr className="text-center">
-                        <th className="bg-blue-600 text-white">{month + 1}月</th>
+                        <th className="bg-blue-400 text-white">{month + 1}月</th>
                         <th colSpan={4}>白班</th>
                         <th colSpan={4}>夜班</th>
-                        <th colSpan={1}>现场</th>
-                        <th colSpan={1}>总小时数</th>
+                        <th rowSpan={2}>
+                            现场
+                            <br />
+                            调度
+                        </th>
+                        <th rowSpan={2}>
+                            总小
+                            <br />
+                            时数
+                        </th>
+                        <th rowSpan={2}>
+                            夜班
+                            <br />
+                            段数
+                        </th>
                     </tr>
                     <tr>
                         <th>姓名</th>
@@ -126,13 +179,13 @@ function MonthStatistics({ month, usernames }) {
                         <th>席位</th>
                         <th>教员</th>
                         <th>学员</th>
-                        <th>调度</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {usernames.map((item, index) => {
-                        // return <div key={index}>{JSON.stringify(item)}</div>
-                        return <UserRow key={index} month={month} username={item.username} />;
+                    {users.map((item, index) => {
+                        return (
+                            <UserRow key={index} year={year} month={month} username={item.username} userId={item.id} />
+                        );
                     })}
                 </tbody>
             </StyledLikeExcel>
@@ -147,13 +200,13 @@ function DefaultPage() {
     return (
         <div className=" flex-1 flex flex-col  overflow-auto relative items-center  ">
             <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
-            {/* 
-            <Carousel className="w-[92%]   m-auto">
+            
+            {/* <Carousel className="w-[92%]   m-auto">
                 <CarouselContent className="ml-1">
                     {Array.from({ length: length }).map((_, index) => (
                         <CarouselItem key={index} className="pl-1 m-auto max-xl:w-full xl:basis-1/3">
                             <div className="p-1">
-                                <MonthStatistics key={index} month={index} usernames={users} />
+                                <MonthStatistics key={index} year={2025} month={index} usernames={users} />
                             </div>
                         </CarouselItem>
                     ))}
@@ -164,7 +217,7 @@ function DefaultPage() {
             <div className="w-full p-2 h-full flex flex-row flex-nowrap">
                     {Array.from({ length: length }).map((_, index) => (
                         <div className="p-1 pl-1 m-auto inline-flex max-xl:w-full xl:basis-1/3">
-                            <MonthStatistics key={index} month={index} usernames={users} />
+                            <MonthStatistics key={index} year={2025} month={index} usernames={users} />
                         </div>
                     ))}
             </div>

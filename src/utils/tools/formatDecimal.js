@@ -14,4 +14,4 @@ function formatDecimal(value) {
     return rounded === 0 ? "" : rounded; // 明确返回 0（而非 -0）
 }
 
-export default formatDecimal;
+export { formatDecimal };

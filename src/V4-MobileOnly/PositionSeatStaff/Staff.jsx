@@ -35,6 +35,7 @@ function Staff(props) {
     //!   获取来的
     const {
         id,
+        userId,
         username,
         position,
         dutyType,
@@ -50,7 +51,7 @@ function Staff(props) {
     const { setDialogPayload } = useDialog();
 
     //! 减少后端请求 在这里检测 长按的效果
-    const { detailUsers, setSelectedDutyRecord } = useStore();
+    const { detailUsers, setSelectedDutyRecord, selectedDutyRecord } = useStore();
     const [canLongPress, setCanLongPress] = useState(false);
 
     // 执勤时间
@@ -74,7 +75,6 @@ function Staff(props) {
                     ),
                     userListDialogDisplay: true,
                 });
-
                 setSelectedDutyRecord({ ...props });
             }
         },
@@ -100,18 +100,23 @@ function Staff(props) {
         return () => clearInterval(timerId);
     }, [props]);
 
+    // 专门检测能否 带培
     useEffect(() => {
-        const user = detailUsers.find((user) => user.username === username);
-        // console.log(user);
-        const uP = user.position || [];
-        const foundP = uP.find((x) => x.position === position) || {};
-        // console.log(foundP);
-        if (roleType === null && foundP.roleType === "教员") {
-            setCanLongPress(true);
-        } else {
+        if (roleType === "教员") {
             setCanLongPress(false);
+        } else {
+            const user = detailUsers.find((user) => user.id === userId);
+            // console.log(user);
+            const uP = user.position || [];
+            const foundP = uP.find((x) => x?.position === position) || {};
+            // console.log(foundP);
+            if (foundP.roleType === "教员") {
+                setCanLongPress(true);
+            } else {
+                setCanLongPress(false);
+            }
         }
-    }, [detailUsers, roleType, username, position]);
+    }, [detailUsers, roleType, userId,position]);
 
     return (
         <>

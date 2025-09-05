@@ -1,19 +1,14 @@
 import React, { useState } from "react";
-import useSWR from "swr";
-import {  FETCHER, usePage } from "@utils";
-import { API_URL } from "../../utils/const/Const";
+import useStore from "../../utils/store/userStore";
 
 // function RadioButtonUserList({ queryName, onClick }) {
 function RadioButtonUserList() {
-    const { data: userList, error, isLoading } = useSWR(`${API_URL.users}?orderBy=team`, FETCHER);
-    const [selectedUserName, setSelectedUserName] = useState("");
-    const { payload, setPayload } = usePage();
 
-    if (error) return <div>Failed to load</div>;
-    if (isLoading) return <div>Loading...</div>;
+    const {users,selectedUser}=useStore()
+
     return (
         <div className="flex flex-row flex-wrap text-nowrap flex-1  content-start gap-1 m-2 ">
-            {userList.flat().map((item, i) => {
+            {users.map((item, i) => {
                 return (
                     <label
                         key={i}
@@ -22,10 +17,9 @@ function RadioButtonUserList() {
                         <input
                             type="radio"
                             value={item.username}
-                            checked={item.username === selectedUserName}
+                            checked={item === selectedUser}
                             onChange={(e) => {
-                                setSelectedUserName(e.target.value);
-                                setPayload(item);
+                               useStore.setState({selectedUser:item})
                             }}
                         />
                         {item.username}

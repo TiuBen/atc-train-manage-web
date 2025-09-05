@@ -5,34 +5,12 @@ import useSWR, { mutate } from "swr";
 import { usePage, SERVER_URL, FETCHER } from "@utils";
 
 function UserSettingPage() {
-    const { data: positions } = useSWR(API_URL.query_positions, FETCHER);
+    const { data: positions } = useSWR(API_URL.positions, FETCHER);
     const { data: users } = useSWR(API_URL.users, FETCHER);
-    const [selectedUserName, setSelectedUserName] = useState("");
-    const { payload, setPayload } = usePage();
-
-    const [selectedUserID, setSelectedUserID] = useState(1);
     const [selectedUser, setSelectedUser] = useState(null);
 
     const [needSave, setNeedSave] = useState(false);
     const [rawSelectedUser, setRawSelectedUser] = useState(null);
-
-    useEffect(() => {
-        fetch(`${API_URL.users}/${selectedUserID}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                setSelectedUser(data);
-                setRawSelectedUser(data);
-                console.log(data);
-            })
-            .catch((error) => {
-                console.log("Error fetching data:", error);
-            });
-    }, [selectedUserID]);
 
     useEffect(() => {
         if (JSON.stringify(selectedUser) !== JSON.stringify(rawSelectedUser)) {
@@ -42,7 +20,6 @@ function UserSettingPage() {
         }
     }, [selectedUser, rawSelectedUser]);
 
-    const [userPositionSetting, setUserPositionSetting] = useState([]);
 
     return (
         <div className=" flex-1 items-center content-start">
@@ -64,10 +41,12 @@ function UserSettingPage() {
                             height: "100%",
                         }}
                         onValueChange={(value) => {
+                            console.log(value);
                             if (needSave) {
                                 window.alert("请先保存");
                             } else {
-                                setSelectedUserID(value);
+                                setSelectedUser(value);
+                                setRawSelectedUser(value);
                             }
                         }}
                     >
@@ -75,11 +54,11 @@ function UserSettingPage() {
                             users.map((item, i) => {
                                 return (
                                     <RadioGroup.Item
-                                        value={item.id}
+                                        value={item}
                                         key={i}
                                         style={{ gap: "0.25rem" }}
                                         className=" hover:font-bold hover:text-blue-700"
-                                        checked={selectedUserID === item.id}
+                                        checked={selectedUser?.id === i+1}
                                     >
                                         {item.username}
                                     </RadioGroup.Item>
@@ -91,7 +70,6 @@ function UserSettingPage() {
                     <legend className="text-lg font-bold">席位权限</legend>
                     <div className="flex flex-row gap-2 flex-wrap">
                         {positions?.map((item, index) => {
-                            const p = item.position;
                             return (
                                 //
                                 <div
@@ -100,45 +78,45 @@ function UserSettingPage() {
                                 >
                                     <label className="inline-flex gap-1 items-center">
                                         <input
-                                            value={p}
+                                            value={item.position}
                                             type="checkbox"
-                                            checked={selectedUser?.position?.some((x) => x.position === p)}
+                                            checked={selectedUser?.position?.some((x) => x.position === item.position)}
                                             onChange={(e) => {
                                                 console.log(e.target.value);
 
                                                 setSelectedUser((prev) => {
                                                     const prevPosition = prev.position ? [...prev.position] : [];
-                                                    const positionExists = prevPosition.some((x) => x.position === p);
+                                                    const currentPosition = item.position;
+                                                    const positionExists = prevPosition.some(
+                                                        (x) => x.position === currentPosition
+                                                    );
 
-                                                    let newPosition;
                                                     if (positionExists) {
                                                         // Remove the position if it already exists
-                                                        newPosition = prevPosition.filter(
-                                                            (item) => item.position !== p
-                                                        );
+                                                        return {
+                                                            ...prev,
+                                                            position: prevPosition.filter(
+                                                                (pos) => pos.position !== currentPosition
+                                                            ),
+                                                        };
                                                     } else {
                                                         // Add the position if it doesn't exist
-                                                        const newPositionObj = positions.find(
-                                                            (pos) => pos.position === p
-                                                        );
-                                                        if (newPositionObj) {
-                                                            newPosition = [
+                                                        return {
+                                                            ...prev,
+                                                            position: [
                                                                 ...prevPosition,
-                                                                { position: p, dutyType: null, roleType: null },
-                                                            ];
-                                                        } else {
-                                                            newPosition = prevPosition; // Fallback in case the position is not found
-                                                        }
+                                                                {
+                                                                    position: currentPosition,
+                                                                    dutyType: null,
+                                                                    roleType: null,
+                                                                },
+                                                            ],
+                                                        };
                                                     }
-
-                                                    return {
-                                                        ...prev,
-                                                        position: newPosition,
-                                                    };
                                                 });
                                             }}
                                         />
-                                        {p}
+                                        {item.position}
                                     </label>
                                     {item.dutyType !== null && (
                                         <div className="flex flex-col border border-gray-200 px-[0.2rem] rounded">
@@ -150,39 +128,39 @@ function UserSettingPage() {
                                                             value={x}
                                                             name={`${index}isMainOrCo`}
                                                             disabled={
-                                                                !selectedUser?.position?.some((x) => x.position === p)
+                                                                !selectedUser?.position?.find(
+                                                                    (x) => x.position === item.position
+                                                                )
                                                             }
                                                             checked={selectedUser?.position?.some((v) => {
-                                                                return v.position === p && v?.dutyType?.includes(x);
+                                                                return (
+                                                                    v.position === item.position &&
+                                                                    v?.dutyType?.includes(x)
+                                                                );
                                                             })}
                                                             onChange={(e) => {
-                                                                setSelectedUser((prev) => {
-                                                                    const updatedPosition = prev.position.map((pos) => {
-                                                                        if (pos.position === p) {
-                                                                            let dutyType = pos.dutyType || "";
-                                                                            const dutyTypes = dutyType
-                                                                                .split(",")
-                                                                                .filter(Boolean);
-                                                                            if (dutyTypes.includes(x)) {
-                                                                                // Remove the duty type if it already exists
-                                                                                dutyType = dutyTypes
-                                                                                    .filter((dt) => dt !== x)
-                                                                                    .join(",");
-                                                                            } else {
-                                                                                // Add the duty type if it doesn't exist
-                                                                                dutyType = [...dutyTypes, x].join(",");
-                                                                            }
-                                                                            return {
-                                                                                ...pos,
-                                                                                dutyType,
-                                                                            };
-                                                                        }
-                                                                        return pos;
-                                                                    });
+                                                                const tempP = selectedUser.position.find(
+                                                                    (x) => x.position === item.position
+                                                                );
+                                                                console.log(tempP);
+                                                                if (!tempP) return;
 
+                                                                if (e.target.checked) {
+                                                                    // ✅ 勾选：把 dutyType 加进去
+                                                                    tempP.dutyType = Array.isArray(tempP.dutyType)
+                                                                        ? [...new Set([...tempP.dutyType, x])]
+                                                                        : [x];
+                                                                } else {
+                                                                    // ❌ 取消勾选：把 dutyType 移除
+                                                                    tempP.dutyType = (tempP.dutyType || []).filter(
+                                                                        (d) => d !== x
+                                                                    );
+                                                                }
+                                                                console.log("更新后的 tempP:", tempP);
+                                                                setSelectedUser((prev) => {
                                                                     return {
                                                                         ...prev,
-                                                                        position: updatedPosition,
+                                                                        position: [...prev.position],
                                                                     };
                                                                 });
                                                             }}
@@ -203,21 +181,23 @@ function UserSettingPage() {
                                                             value={y}
                                                             name={`${index}isTeacherOrStudent`}
                                                             disabled={
-                                                                !selectedUser?.position?.some((x) => x.position === p)
+                                                                !selectedUser?.position?.some(
+                                                                    (x) => x.position === item.position
+                                                                )
                                                             }
                                                             checked={selectedUser?.position?.some((x) => {
-                                                                return x.position === p && x.roleType === y;
+                                                                return x.position === item.position && x.roleType === y;
                                                             })}
                                                             onChange={(e) => {
                                                                 console.log(e.target.value);
 
                                                                 setSelectedUser((prev) => {
                                                                     const updatedPosition = prev.position.map((pos) => {
-                                                                        if (pos.position === p) {
+                                                                        if (pos.position === item.position) {
                                                                             let roleType = pos.roleType || "";
                                                                             if (roleType === y) {
                                                                                 // Remove the duty type if it already exists
-                                                                                roleType = "";
+                                                                                roleType = null;
                                                                             } else {
                                                                                 // Add the duty type if it doesn't exist
                                                                                 roleType = y;
@@ -250,7 +230,7 @@ function UserSettingPage() {
                         })}
                     </div>
                 </fieldset>
-                <fieldset className="border  rounded-md p-2">
+                {/* <fieldset className="border  rounded-md p-2">
                     <legend className="text-lg font-bold">岗位权限</legend>
                     <div className="flex flex-row gap-2 flex-wrap">
                         {["管制员", "教员", "见习", "领班"].map((item, index) => {
@@ -286,7 +266,7 @@ function UserSettingPage() {
                             );
                         })}
                     </div>
-                </fieldset>
+                </fieldset> */}
 
                 <fieldset className="border  rounded-md p-2">
                     <legend className="text-lg font-bold">人脸识别照片</legend>
@@ -304,7 +284,7 @@ function UserSettingPage() {
                     color="red"
                     disabled={!needSave}
                     onClick={(e) => {
-                        fetch(`${API_URL.users}/${selectedUserID}`, {
+                        fetch(`${API_URL.users}/${selectedUser.id}`, {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",

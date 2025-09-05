@@ -6,7 +6,7 @@ import { usePage, SERVER_URL, FETCHER } from "@utils";
 import { PencilLine, Trash2, SquarePlus, Check } from "lucide-react";
 
 function PositionSetting() {
-    const { data: positions } = useSWR(API_URL.query_positions, FETCHER);
+    const { data: positions } = useSWR(API_URL.positions, FETCHER);
 
     const [editingRow, setEditingRow] = useState({});
 

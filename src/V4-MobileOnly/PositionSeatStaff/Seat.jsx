@@ -31,7 +31,7 @@ function Seat(props) {
         const timer = setInterval(() => {
             if (sortedData.length > 1) {
                 const { inTime } = sortedData[sortedData.length - 1];
-                const isMoreThan10Minutes = dayjs().diff(dayjs(inTime, "YYYY-MM-DD HH:mm:ss"), "minute", true) > 0.6;
+                const isMoreThan10Minutes = dayjs().diff(dayjs(inTime, "YYYY-MM-DD HH:mm:ss"), "minute", true) > 10.0;
                 if (isMoreThan10Minutes) {
                     putDutyRecord(sortedData[0]);
                 }
@@ -43,6 +43,7 @@ function Seat(props) {
 
     return (
         <div className="flex flex-col items-center border rounded-lg p-1 gap-1 text-center self-stretch">
+            
             <div className="flex flex-row items-center gap-2">
                 {dutyType && <h3 className="font-black text-blue-600 text-lg">{dutyType}</h3>}
                 <Button

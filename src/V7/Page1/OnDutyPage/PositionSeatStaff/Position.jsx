@@ -13,13 +13,13 @@ function Position(props) {
     const { position, dutyType } = props;
 
     return (
-        <div>
+        <>
             <div className="border rounded-lg flex  flex-col items-center gap-2 p-1 self-stretch">
                 <h2 className="font-black text-xl">{position}</h2>
                 <div className="flex flex-row gap-2 p-1">
                     {dutyType ? (
                         <>
-                            {dutyType.split(',').map((x, index) => {
+                            {["主班","副班"].map((x, index) => {
                                 return <Seat position={position} dutyType={x} key={index} />;
                             })}
                         </>
@@ -29,7 +29,7 @@ function Position(props) {
                     )}
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

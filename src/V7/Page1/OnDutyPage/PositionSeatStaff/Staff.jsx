@@ -4,7 +4,7 @@ import { useLongPress } from "ahooks";
 import { Button, Avatar } from "@radix-ui/themes";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import useStore from "../../../../utils/store/userStore"
+import useStore from "../../../../utils/store/userStore";
 dayjs.extend(duration);
 
 //*     Position
@@ -33,11 +33,9 @@ function Staff(props) {
         status,
     } = props;
 
-    const { setDialogPayload } = useDialog();
 
     //! 减少后端请求 在这里检测 长按的效果
     const { detailUsers, setSelectedPosition } = useStore();
-    const [canLongPress, setCanLongPress] = useState();
 
     // 执勤时间
     const date1 = dayjs(inTime);
@@ -47,32 +45,6 @@ function Staff(props) {
     const [inRoleTime, setInRoleTime] = useState(dayjs.duration(dayjs(Date.now()).diff(date2)).format("H小时m分"));
 
     const [isOver2Hours, setIsOver2Hours] = useState(dayjs(Date.now()).diff(inTime, "hours", true) >= 2.17);
-    const ref = useRef(null);
-
-    useLongPress(
-        () => {
-            if (canLongPress) {
-                setDialogPayload({
-                    dialogTitle: (
-                        <div>
-                            由<span className="text-blue-500 px-1">{username}</span>负责，开始见习
-                        </div>
-                    ),
-                    userListDialogDisplay: true,
-                });
-                setSelectedPosition({
-                    position: position,
-                    dutyType: dutyType,
-                    roleType: "见习",
-                    teacherDutyRowId: id,
-                });
-            }
-        },
-        ref,
-        {
-            threshold: 1000,
-        }
-    );
 
     useEffect(() => {
         setInDutyTime(dayjs.duration(dayjs(Date.now()).diff(inTime)).format("H小时m分"));
@@ -90,16 +62,7 @@ function Staff(props) {
         return () => clearInterval(timerId);
     }, [props]);
 
-    useEffect(() => {
-        const user = detailUsers.find((user) => user.username === username);
-        // console.log(user);
-        const uP = user.position || [];
-        const foundP = uP.find((x) => x.position === position);
-        // console.log(foundP);
-        if (foundP && foundP?.roleType === "教员") {
-            setCanLongPress(true);
-        }
-    }, []);
+
 
     return (
         <>
@@ -109,7 +72,7 @@ function Staff(props) {
                 }`}
             >
                 {/* <div className="text-wrap">{JSON.stringify(id)} </div> */}
-                <div ref={ref} className="flex items-center justify-center ">
+                <div   className="flex items-center justify-center ">
                     {roleType === "教员" ? (
                         <label className="text-blue-600 font-bold " style={{ writingMode: "vertical-rl " }}>
                             教员
@@ -145,20 +108,7 @@ function Staff(props) {
                         <></>
                     )}
 
-                    <Button
-                        variant="soft"
-                        onClick={() => {
-                            setDialogPayload({
-                                confirmGetOutDialogDisplay: true,
-                                dialogTitle: "确认退出？",
-                                confirmButtonText: "确定",
-                                dutyRecordId: id,
-                                dutyRecord: { ...props },
-                                username: username,
-                            });
-                            setSelectedPosition({ position: position, dutyType: dutyType });
-                        }}
-                    >
+                    <Button variant="soft" disabled>
                         退出
                     </Button>
                 </div>

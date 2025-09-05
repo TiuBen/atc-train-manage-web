@@ -1,4 +1,4 @@
-import { ClipboardPenLine, MessageCircle, Sheet, UserRoundCog, BicepsFlexed, CalendarDays } from "lucide-react";
+import { ClipboardPenLine, MessageCircle, Sheet, UserRoundCog, BicepsFlexed, CalendarDays,Settings,MoonStar,FileDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -78,15 +78,21 @@ function LeftBar(props) {
                 {
                     title: "设置",
                     href: "/admin/setting",
-                    Icon: (props) => <UserRoundCog {...props} size={"1.5em"} strokeWidth={1.5} />,
+                    Icon: (props) => <Settings {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
                 },
                 {
                     title: "夜班统计",
                     href: "admin/night",
-                    Icon: (props) => <UserRoundCog {...props} size={"1.5em"} strokeWidth={1.5} />,
+                    Icon: (props) => <MoonStar {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
                 },
+                {
+                    title: "导出EXCEL",
+                    href: "admin/excel",
+                    Icon: (props) => <FileDown {...props} size={"1.5em"} strokeWidth={1.5} />,
+                    active: false,
+                }
             ],
         },
     ];

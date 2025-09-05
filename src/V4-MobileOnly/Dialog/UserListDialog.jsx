@@ -5,6 +5,8 @@ import useSWR, { useSWRConfig } from "swr";
 import { X } from "lucide-react";
 import useStore from "../../utils/store/userStore";
 import dayjs from "dayjs";
+import { API_URL } from "../../utils/const/Const";
+
 function UserListDialog() {
     const { dialogPayload, setDialogPayload } = useDialog();
     const { mutate } = useSWRConfig();
@@ -30,14 +32,16 @@ function UserListDialog() {
         const _availableStaffs = [];
         let position, dutyType, roleType;
         if (selectedPosition) {
+            // 这个有值 是 接班
             position = selectedPosition?.position;
             dutyType = selectedPosition?.dutyType;
-            roleType = selectedPosition?.roleType;
+            roleType = null;
         }
         if (selectedDutyRecord) {
+            // 这个有值 是 见习
             position = selectedDutyRecord?.position;
             dutyType = selectedDutyRecord?.dutyType;
-            roleType = selectedDutyRecord?.roleType;
+            roleType = "见习";
         }
 
         detailUsers.forEach((user) => {
@@ -48,27 +52,16 @@ function UserListDialog() {
                     //! 职位匹配
                     if (roleType === "见习") {
                         //! 要撒选出来 学员
-                        if (x.dutyType === null) {
-                            // console.log("xxx null:" + x.dutyType === dutyType);
-                            if (x.dutyType === dutyType && x.roleType === roleType) {
-                                // console.log("push1");
-                                _availableStaffs.push(user.username);
-                            }
-                        } else {
-                            // console.log("ddddd：" + x.dutyType.includes(dutyType));
-                            if (x.dutyType.includes(dutyType) && x.roleType === roleType) {
-                                // console.log("push2");
-                                _availableStaffs.push(user.username);
-                            }
+                        if (x.roleType === "见习") {
+                            _availableStaffs.push(user.id);
                         }
                     } else {
-                        if (x.dutyType === null) {
-                            if (x.dutyType === dutyType) {
-                                _availableStaffs.push(user.username);
-                            }
-                        } else {
-                            if (x.dutyType.includes(dutyType)) {
-                                _availableStaffs.push(user.username);
+                        // !这个有值 是 接班
+                        //! 如果是接班 则  dutyType 应该满足
+                        if (x?.roleType !== "见习") {
+                            if (x?.dutyType?.includes(dutyType) || x?.dutyType === dutyType) {
+                                _availableStaffs.push(user.id);
+                                // _availableStaffs.push(user);
                             }
                         }
                     }
@@ -135,8 +128,8 @@ function UserListDialog() {
                                             color="cyan"
                                             variant="soft"
                                             disabled={
-                                                onDutyUsers.some((item) => item.username === x.username) ||
-                                                !availableStaffs.includes(x.username)
+                                                onDutyUsers.some((duty) => duty.userId === x.id) ||
+                                                !availableStaffs.includes(x.id)
                                             }
                                             onClick={() => {
                                                 //* 这部分应对如下情况
@@ -146,14 +139,13 @@ function UserListDialog() {
 
                                                 //* 按 seat上的接班 普通 2个 staff
                                                 if (selectedPosition) {
-                                                    let postToDutyTableData = {};
-                                                    postToDutyTableData = {
+                                                    let postToDutyTableData = {
                                                         userId: x.id,
                                                         username: x.username,
                                                         ...selectedPosition,
                                                     };
 
-                                                    fetch(SERVER_URL + "/duty", {
+                                                    fetch(API_URL.duty, {
                                                         method: "POST",
                                                         headers: {
                                                             "Content-Type": "application/json",
@@ -175,7 +167,7 @@ function UserListDialog() {
                                                         .finally(() => {});
                                                 }
 
-                                                //* 长按 staff 上的头像 进行接班
+                                                //* 长按 staff 上的头像 进行 见习
                                                 if (selectedDutyRecord) {
                                                     let postToDutyTableData = {
                                                         userId: x.id,
@@ -185,10 +177,10 @@ function UserListDialog() {
                                                         roleType: "见习",
                                                         inTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
                                                         roleStartTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
-                                                        relatedDutyTableRowId: selectedDutyRecord.id+";",
+                                                        relatedDutyTableRowId: selectedDutyRecord.id,
                                                     };
-
-                                                    fetch(SERVER_URL + "/duty", {
+                                                    //!
+                                                    fetch(API_URL.duty, {
                                                         method: "POST",
                                                         headers: {
                                                             "Content-Type": "application/json",
@@ -197,21 +189,26 @@ function UserListDialog() {
                                                     })
                                                         .then((res) => res.json())
                                                         .then((data) => {
-                                                            
                                                             console.log("//* 更新教员部分");
                                                             console.log(data);
                                                             //* 更新教员部分
                                                             let putToDutyTableData = {
                                                                 roleType: "教员",
-                                                                relatedDutyTableRowId:
+                                                                relatedDutyTableRowId: Array.isArray(
                                                                     selectedDutyRecord.relatedDutyTableRowId
-                                                                        ? selectedDutyRecord.relatedDutyTableRowId +
-                                                                          data.lastID +
-                                                                          ";"
-                                                                        : data.lastID + ";",
-                                                                roleStartTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+                                                                )
+                                                                    ? [
+                                                                          ...selectedDutyRecord.relatedDutyTableRowId,
+                                                                          data.lastID,
+                                                                      ]
+                                                                    : [data.lastID],
+                                                                roleStartTime: Array.isArray(
+                                                                    selectedDutyRecord.roleStartTime
+                                                                )
+                                                                    ? [...selectedDutyRecord.roleStartTime, dayjs().format("YYYY-MM-DD HH:mm:ss")]
+                                                                    : [dayjs().format("YYYY-MM-DD HH:mm:ss")], // ,
                                                             };
-                                                            fetch(SERVER_URL + "/duty/" + selectedDutyRecord.id, {
+                                                            fetch(`${API_URL.duty}/${selectedDutyRecord.id}`, {
                                                                 method: "PUT",
                                                                 headers: {
                                                                     "Content-Type": "application/json",
@@ -273,3 +270,13 @@ export default UserListDialog;
 //     .then(() => {
 //         window.location.reload();
 //     });
+
+// relatedDutyTableRowId: Array.isArray(
+//     selectedDutyRecord.relatedDutyTableRowId
+// )
+//     ? selectedDutyRecord.relatedDutyTableRowId.push()
+//       data.lastID +
+//       ";"
+//     : data.lastID + ";",
+// roleStartTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+// };

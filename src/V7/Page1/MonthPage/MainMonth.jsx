@@ -68,14 +68,14 @@ function MonthPage() {
     const [date, setDate] = useState("");
 
     return (
-        <div className="flex flex-row flex-1 ">
-            <div className="flex-1 pl-4">
+        <div className="flex flex-row flex-1  ">
+            <div className="flex-1 p-2 ">
                 <MonthCalender
                     title={
                         <div className="flex flex-row flex-1 flex-shrink-0 items-center justify-between p-2">
                             <div className="flex flex-row flex-1 gap-1 items-center ">
                                 <div className=" text-3xl font-bold">
-                                    {year}年{month}月
+                                    {year}年{month+1}月
                                 </div>
                                 <Button
                                     size="1"

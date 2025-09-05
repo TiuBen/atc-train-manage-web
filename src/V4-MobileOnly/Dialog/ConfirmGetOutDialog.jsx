@@ -61,7 +61,7 @@ function ConfirmGetOutDialog() {
                         className="aspect-square"
                         size={"4"}
                         onClick={ async() => {
-                            let _temp = { ...selectedDutyRecord }; // 因为异步 不确定
+                            let _temp =structuredClone(selectedDutyRecord);  // 因为异步 不确定
                             const {position,dutyType}=_temp;
                             await putDutyRecord(_temp);
                             mutate(

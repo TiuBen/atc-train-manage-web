@@ -11,7 +11,7 @@ const timelineDD = styled.div`
 
 function TimelineDutyDialog() {
     return (
-        <div className="relative flex flex-row h-[1000px]">
+        <div className=" flex flex-row h-[100px] min-h-[350px] w-[150px] min-w-[250px] relative ">
             <div className="hidden relative left-[4rem] border-l-[0.2rem] border-gray-300 h-[600px]">
                 {Array.from({ length: 25 }).map((_, i) => (
                     <div key={i} className="absolute" style={{ top: `${(i / 24) * 100}%`, left: "0px" }}>
@@ -46,6 +46,17 @@ function TimelineDutyDialog() {
                     </div>
                 ))}
             </div>
+            {Array.from({ length: 6 }).map((_, i) => {
+                return (
+                    <div key={i} className="absolute top-[20px] left-[90px] border max-h-[29px] height-[8px]">
+                        dddddddddddd
+                    </div>
+                );
+            })}
+
+            {/* <div className="absolute top-[20px] left-[90px] border max-h-[9px] height-[8px]"> 
+                dddddddddddd
+            </div> */}
         </div>
     );
 }

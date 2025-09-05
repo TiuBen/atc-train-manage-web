@@ -7,26 +7,9 @@ import { SERVER_URL, FETCHER, usePage } from "@utils";
 import { Settings, Edit3 } from "lucide-react";
 import EditDutyRecordSheet from "../../../Dialog/EditDutyRecordSheet";
 import { API_URL } from "../../../../utils/const/Const";
-
-const StyledLikeExcel = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    text-wrap: nowrap;
-
-    td {
-        padding: 0.2rem;
-        border: 1px solid black;
-
-        &:hover {
-            background-color: #e0e0e0;
-        }
-    }
-
-    th {
-        padding: 0.2rem;
-        border: 1px solid black;
-    }
-`;
+import useStore from "../../../../utils/store/userStore";
+import useDialog from "../../../../utils/hooks/useDialog";
+import DetailStatisticsTable from "./DetailStatisticsTable";
 
 /**
  * 格式化数值：保留2位小数，若无有效值则返回0
@@ -51,14 +34,45 @@ function LikeExcel() {
 
     const [dutyRows, setDutyRows] = useState([]);
     const [dutyStatics, setDutyStatics] = useState([]);
+    const { selectedUser } = useStore();
+    const { setDialogPayload } = useDialog();
+
+    const [searchParams, setSearchParams] = useState(null);
+    // 使用useSWR监听searchTerm，当searchTerm为空时不发送请求
+    const { data: selectedUserDutyRows } = useSWR(searchParams ? `${API_URL.duty}?${searchParams}` : null, FETCHER, {
+        // 可选配置：防抖等逻辑通常需要在输入框层面处理，这里可以配置一些SWR选项
+        revalidateOnFocus: true, // 例如，搜索结果可能不需要在窗口聚焦时重新验证
+        fallbackData: [],
+    });
+
+    const { data: selectedUserDutyStatistics } = useSWR(
+        searchParams ? `${API_URL.users}/${searchParams.get("userId")}/dutyStatistics?${searchParams}` : null,
+        FETCHER,
+        {
+            // 可选配置：防抖等逻辑通常需要在输入框层面处理，这里可以配置一些SWR选项
+            revalidateOnFocus: true, // 例如，搜索结果可能不需要在窗口聚焦时重新验证
+            fallbackData: {},
+        }
+    );
+
+    const { data: selectedUserTeachStatistics } = useSWR(
+        searchParams ? `${API_URL.users}/${searchParams.get("userId")}/teachStatistics?${searchParams}` : null,
+        FETCHER,
+        {
+            // 可选配置：防抖等逻辑通常需要在输入框层面处理，这里可以配置一些SWR选项
+            revalidateOnFocus: true, // 例如，搜索结果可能不需要在窗口聚焦时重新验证
+            fallbackData: {},
+        }
+    );
 
     useEffect(() => {
         // append 可以添加多个相同名称的参数
 
-        if (selectedMonth && queryName) {
+        if (selectedMonth && selectedUser) {
             let q = new URLSearchParams();
 
-            q.append("username", queryName);
+            q.append("userId", selectedUser.id);
+            q.append("username", selectedUser.username);
 
             // Append startDate and startTime
             q.append("startDate", dayjs().month(selectedMonth).date(1).format("YYYY-MM-DD"));
@@ -74,38 +88,9 @@ function LikeExcel() {
             );
             q.append("endTime", "00:00:01");
 
-            // 获取具体的本月的数据
-            fetch(`${API_URL.duty}?${q}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    // console.log("data", data);
-                    setDutyRows(data);
-                });
-
-            // 获取统计数据 后台要计算
-            q.append("calculate", true);
-
-            fetch(`${API_URL.users}/${id}/duty?${q}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    // console.log("data", data);
-
-                    setDutyStatics(data);
-                });
-        } else {
-            setDutyRows([]);
+            setSearchParams(q);
         }
-    }, [selectedMonth, queryName, payload]);
+    }, [selectedMonth, selectedUser, payload]);
 
     return (
         <div className="relative  flex flex-col gap-1 text-wrap flex-1 m-2 ">
@@ -128,8 +113,8 @@ function LikeExcel() {
                     }
                 )}
             </div>
-            <div className="flex flex-row justify-start items-start ">
-                <StyledLikeExcel>
+            <div className="flex flex-row justify-start items-start gap-2 ">
+                <table>
                     <thead>
                         <tr>
                             <td className="border border-slate-600 px-2 text-nowrap text-center">修改</td>
@@ -147,39 +132,39 @@ function LikeExcel() {
                             <td className="border border-slate-600 px-2 text-nowrap text-center">
                                 夜班小时 <br /> (0000-0800)
                             </td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">统计</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">各席位总小时 </td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">白班小时 </td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">
-                                {" "}
-                                夜班小时 <br /> (0000-0800)
-                            </td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">备注</td>
                         </tr>
                     </thead>
                     <tbody>
-                        {dutyRows.map((x, index) => {
+                        {selectedUserDutyRows.map((x, index) => {
                             return (
-                                <tr key={index} className="text-sm font-bold hover:bg-slate-400">
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center ">
+                                <tr
+                                    key={index}
+                                    className={`text-sm font-bold group hover:bg-transparent ${
+                                        dayjs(x.outTime).diff(dayjs(x.inTime, "YYYY-MM-DD HH:mm:ss"), "h", true) > 8.0
+                                            ? "text-red-600"
+                                            : ""
+                                    }`}
+                                >
+                                    <td className="border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400">
                                         <button
                                             onClick={() => {
-                                                console.log("clicked "+x.id);
-                                                setPayload({
+                                                console.log("clicked " + x.id);
+                                                setDialogPayload({
                                                     ...payload,
                                                     editSheetDisplay: true,
                                                     editSheetRowId: x.id,
                                                 });
+                                                useStore.setState({ selectedDutyRecord: x });
                                             }}
                                         >
                                             <Edit3 size={16} />
                                         </button>
-                                            {/* <>{x.id}</> */}
+                                        {/* <>{x.id}</> */}
                                     </td>
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center">
+                                    <td className="border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400">
                                         {dayjs(x.inTime).format("YYYY-MM-DD")}
                                     </td>
-                                    <td className="border border-slate-600 px-2 text-nowrap">
+                                    <td className="border border-slate-600 px-2 text-nowrap group-hover:bg-slate-400">
                                         <span
                                             className={`text-xs italic ml-2 ${
                                                 x.relatedDutyTableRowId && x.position !== "领班" ? "bg-slate-400" : ""
@@ -200,209 +185,335 @@ function LikeExcel() {
                                         {x.dutyType === "副班" && <span className="text-xs  ml-2   ">(副班)</span>}
                                     </td>
                                     <td
-                                        className={`border border-slate-600 px-2 text-nowrap text-center ${
+                                        className={`border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400 ${
                                             dayjs(x.inTime).month() !== selectedMonth ? "bg-red-400" : " "
                                         }`}
                                     >
                                         {dayjs(x.inTime).format("YYYY-MM-DD HH:mm:ss")}
                                     </td>
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center">
+                                    <td className="border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400">
                                         {x.outTime !== null ? "完成" : ""}
                                     </td>
                                     <td
-                                        className={`border border-slate-600 px-2 text-nowrap text-center ${
+                                        className={`border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400 ${
                                             dayjs(x.outTime).month() !== selectedMonth ? "bg-red-400" : " "
                                         }`}
                                     >
                                         {dayjs(x.outTime).format("YYYY-MM-DD HH:mm:ss")}
                                     </td>
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center">
+                                    <td
+                                        className={`border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400 `}
+                                    >
                                         {Math.floor(
                                             dayjs(x.outTime).diff(dayjs(x.inTime, "YYYY-MM-DD HH:mm:ss"), "h", true) *
                                                 100
                                         ) / 100}
                                     </td>
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center">
+                                    <td className="border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400">
                                         {x.dayShift === 0 ? "" : x.dayShift}
                                     </td>
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center">
+                                    <td className="border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400">
                                         {x.nightShift === 0 ? "" : x.nightShift}
                                     </td>
-                                    {index === 0 && (
-                                        <>
-                                            <td> 带班主任席</td>{" "}
-                                            <td>{formatDecimal(dutyStatics?.totalCommanderTime?.time)}</td>{" "}
-                                            <td>{formatDecimal(dutyStatics?.totalCommanderTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalCommanderTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 1 && (
-                                        <>
-                                            <td>塔台管制席</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTowerMainTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTowerMainTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTowerMainTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 2 && (
-                                        <>
-                                            <td>塔台协调席</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTowerSubTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTowerSubTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTowerSubTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 3 && (
-                                        <>
-                                            <td>放行席</td>
-                                            <td>{formatDecimal(dutyStatics?.totalDeliveryTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalDeliveryTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalDeliveryTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 4 && (
-                                        <>
-                                            <td>地面席</td>
-                                            <td>{formatDecimal(dutyStatics?.totalGroundTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalGroundTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalGroundTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 5 && (
-                                        <>
-                                            <td>综合协调席</td>
-                                            <td>{formatDecimal(dutyStatics?.totalZongheTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalZongheTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalZongheTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 6 && (
-                                        <>
-                                            <td>现场调度席</td>
-                                            <td>{formatDecimal(dutyStatics?.totalAOCTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 7 && (
-                                        <>
-                                            <td>见习</td>
-                                            <td>{formatDecimal(dutyStatics?.totalStudentTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 8 && (
-                                        <>
-                                            <td>教员</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTeacherTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 9 && (
-                                        <>
-                                            <th colSpan="5">月度总小时统计</th>
-                                        </>
-                                    )}
-                                    {index === 10 && (
-                                        <>
-                                            <th>统计</th>
-                                            <th>各席位总小时</th>
-                                            <th>白班小时</th>
-                                            <th>
-                                                夜班小时 <br /> (0000-0800)
-                                            </th>
-                                            <th>备注</th>
-                                        </>
-                                    )}
-                                    {index === 11 && (
-                                        <>
-                                            <td>席位</td>
-                                            <td>
-                                                {formatDecimal(
-                                                    dutyStatics?.totalCommanderTime?.time +
-                                                        dutyStatics?.totalTowerTime?.time +
-                                                        dutyStatics?.totalGroundTime?.time +
-                                                        dutyStatics?.totalDeliveryTime?.time +
-                                                        dutyStatics?.totalZongheTime?.time
-                                                )}
-                                            </td>
-                                            <td>
-                                                {formatDecimal(
-                                                    dutyStatics?.totalCommanderTime?.dayShift +
-                                                        dutyStatics?.totalTowerTime?.dayShift +
-                                                        dutyStatics?.totalGroundTime?.dayShift +
-                                                        dutyStatics?.totalDeliveryTime?.dayShift +
-                                                        dutyStatics?.totalZongheTime?.dayShift
-                                                )}
-                                            </td>
-                                            <td>
-                                                {formatDecimal(
-                                                    dutyStatics?.totalCommanderTime?.nightShift +
-                                                        dutyStatics?.totalTowerTime?.nightShift +
-                                                        dutyStatics?.totalGroundTime?.nightShift +
-                                                        dutyStatics?.totalDeliveryTime?.nightShift +
-                                                        dutyStatics?.totalZongheTime?.nightShift
-                                                )}
-                                            </td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 12 && (
-                                        <>
-                                            <td>见习</td>
-                                            <td>{formatDecimal(dutyStatics?.totalStudentTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 13 && (
-                                        <>
-                                            <td>教员</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTeacherTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 14 && (
-                                        <>
-                                            <td>现场调度</td>
-                                            <td>{formatDecimal(dutyStatics?.totalAOCTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
-                                    {index === 15 && (
-                                        <>
-                                            <td>月度总小时</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTime?.time)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTime?.dayShift)}</td>
-                                            <td>{formatDecimal(dutyStatics?.totalTime?.nightShift)}</td>
-                                            <td></td>
-                                        </>
-                                    )}
                                 </tr>
                             );
                         })}
                     </tbody>
-                </StyledLikeExcel>
-              
+                </table>
+                <DetailStatisticsTable dutyStatistics={selectedUserDutyStatistics} teachStatistics={ selectedUserTeachStatistics}/>
             </div>
         </div>
     );
 }
 
 export default LikeExcel;
+
+// {index === 0 && (
+//     <>
+//         <td className="border border-slate-600 px-2 text-nowrap text-center">
+//             {" "}
+//             带班主任席
+//         </td>{" "}
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalCommanderTime?.time)}
+//         </td>{" "}
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalCommanderTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalCommanderTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 1 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             塔台管制席
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTowerMainTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTowerMainTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTowerMainTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 2 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             塔台协调席
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTowerSubTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTowerSubTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTowerSubTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 3 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             放行席
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalDeliveryTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalDeliveryTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalDeliveryTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 4 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             地面席
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalGroundTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalGroundTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalGroundTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 5 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             综合协调席
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalZongheTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalZongheTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalZongheTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 6 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             现场调度席
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalAOCTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalAOCTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 7 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             见习
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalStudentTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 8 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             教员
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTeacherTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 9 && (
+//     <>
+//         <th
+//             className=" border border-slate-600 px-2 text-nowrap text-center"
+//             colSpan="5"
+//         >
+//             月度总小时统计
+//         </th>
+//     </>
+// )}
+// {index === 10 && (
+//     <>
+//         <th className=" border border-slate-600 px-2 text-nowrap text-center">
+//             统计
+//         </th>
+//         <th className=" border border-slate-600 px-2 text-nowrap text-center">
+//             各席位总小时
+//         </th>
+//         <th className=" border border-slate-600 px-2 text-nowrap text-center">
+//             白班小时
+//         </th>
+//         <th className=" border border-slate-600 px-2 text-nowrap text-center">
+//             夜班小时 <br /> (0000-0800)
+//         </th>
+//         <th className=" border border-slate-600 px-2 text-nowrap text-center">
+//             备注
+//         </th>
+//     </>
+// )}
+// {index === 11 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             席位
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(
+//                 dutyStatics?.totalCommanderTime?.time +
+//                     dutyStatics?.totalTowerTime?.time +
+//                     dutyStatics?.totalGroundTime?.time +
+//                     dutyStatics?.totalDeliveryTime?.time +
+//                     dutyStatics?.totalZongheTime?.time
+//             )}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(
+//                 dutyStatics?.totalCommanderTime?.dayShift +
+//                     dutyStatics?.totalTowerTime?.dayShift +
+//                     dutyStatics?.totalGroundTime?.dayShift +
+//                     dutyStatics?.totalDeliveryTime?.dayShift +
+//                     dutyStatics?.totalZongheTime?.dayShift
+//             )}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(
+//                 dutyStatics?.totalCommanderTime?.nightShift +
+//                     dutyStatics?.totalTowerTime?.nightShift +
+//                     dutyStatics?.totalGroundTime?.nightShift +
+//                     dutyStatics?.totalDeliveryTime?.nightShift +
+//                     dutyStatics?.totalZongheTime?.nightShift
+//             )}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 12 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             见习
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalStudentTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 13 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             教员
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTeacherTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 14 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             现场调度
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalAOCTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalAOCTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalAOCTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// {index === 15 && (
+//     <>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             月度总小时
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTime?.time)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTime?.dayShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center">
+//             {formatDecimal(dutyStatics?.totalTime?.nightShift)}
+//         </td>
+//         <td className=" border border-slate-600 px-2 text-nowrap text-center"></td>
+//     </>
+// )}
+// </tr>
+// );
+// })}

@@ -12,7 +12,7 @@ import TimelineDutyDialog from "./Dialog/TimelineDutyDialog";
 
 function AppMobile() {
     const { positions, isLoading, error, onDutyUsers, selectedPosition, selectedDutyRecord } = useStore();
-    const [showDetail, setShowDetail] = useState(true);
+    const [showDetail, setShowDetail] = useState(false);
 
     if (error) return <div>failed to load</div>;
     if (isLoading) return <div>loading...</div>;
@@ -20,7 +20,7 @@ function AppMobile() {
     return (
         <Theme accentColor="indigo">
             <DialogContextProvider>
-                {/* <header
+                <header
                     className=" sticky w-full top-0  h-[3rem] text-white bg-blue-900 z-50 "
                     style={{ gridRow: "1" }}
                 >
@@ -45,17 +45,17 @@ function AppMobile() {
                             <ScanFace />
                         </div>
                     </div>
-                </header> */}
+                </header>
                 <>
-                    {/* {!showDetail ? (
-                        <div className="flex flex-row flex-wrap gap-4 p-2 items-start content-start flex-1">
+                    {!showDetail ? (
+                        <div className="flex flex-row flex-wrap gap-4 p-2 m-6 items-start content-start flex-1">
                             {positions.map((item, index) => {
                                 return <Position key={index} {...item} />;
                             })}
                         </div>
                     ) : (
                         <DetailPage />
-                    )} */}
+                    )}
                 </>
                 {/* <div className=" fixed  bottom-0">
                     <div>onDutyUsers:{JSON.stringify(onDutyUsers)}</div>
@@ -65,9 +65,9 @@ function AppMobile() {
                     <div>selectedDutyRecord:{JSON.stringify(selectedDutyRecord)}</div>
                 </div> */}
                 {/* <FaceDialog /> */}
-                {/* {error ? <div>ERROR</div> : isLoading ? <div>Loading</div> : <UserListDialog />} */}
-                {/* <ConfirmGetOutDialog /> */}
-                <TimelineDutyDialog />
+                {error ? <div>ERROR</div> : isLoading ? <div>Loading</div> : <UserListDialog />}
+                <ConfirmGetOutDialog />
+                {/* <TimelineDutyDialog /> */}
             </DialogContextProvider>
         </Theme>
     );
