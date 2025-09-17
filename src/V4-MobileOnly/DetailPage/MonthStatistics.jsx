@@ -5,7 +5,7 @@ import styled from "styled-components";
 import useSWR, { mutate } from "swr";
 import { API_URL } from "../../utils/const/Const";
 import useStore from "../../utils/store/userStore";
-import {formatDecimal} from "../../utils/tools/formatDecimal";
+import { formatDecimal } from "../../utils/tools/formatDecimal";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -13,7 +13,8 @@ const StyledLikeExcel = styled.table`
     background-color: white;
     border-collapse: collapse;
     text-wrap: nowrap;
-    font-size: 0.8rem !important;
+    font-size: 0.75rem !important;
+    line-height: 1rem;
     border: 1px solid black;
     td,
     th {
@@ -34,10 +35,8 @@ const StyledLikeExcel = styled.table`
 
 function UserRow({ year, month, username, userId }) {
     const [dutyStatics, setDutyStatics] = useState({});
-    const [teachStatistics, setTeachStatistics] = useState({});
     const [nightsCount, setNightsCount] = useState({});
     const monthly = dayjs().set("year", year).set("month", month).set("date", 1).format("YYYY-MM");
-
 
     useEffect(() => {
         // append 可以添加多个相同名称的参数
@@ -70,16 +69,6 @@ function UserRow({ year, month, username, userId }) {
                 setDutyStatics(data);
             });
 
-        fetch(`${API_URL.users}/${userId}/teachStatistics?${q}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                setTeachStatistics(data);
-            });
 
         fetch(`${API_URL.users}/${userId}/nightCount?${q}`, {
             method: "GET",
@@ -102,7 +91,7 @@ function UserRow({ year, month, username, userId }) {
                             username: username,
                             userId: userId,
                         },
-                        selectedUserNightCount:{...nightsCount}
+                        selectedUserNightCount: { ...nightsCount },
                     });
                 }}
                 className={`${
@@ -116,30 +105,21 @@ function UserRow({ year, month, username, userId }) {
                 {/* 白天 */}
                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.dayShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalPositionTime?.dayShift)}</td>
-                <td>{formatDecimal(teachStatistics?.totalTeacherTime?.dayShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalTeacherTime?.dayShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.dayShift)}</td>
                 {/* 夜晚 */}
                 <td>{formatDecimal(dutyStatics?.totalCommanderTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalPositionTime?.nightShift)}</td>
-                <td>{formatDecimal(teachStatistics?.totalTeacherTime?.nightShift)}</td>
+                <td>{formatDecimal(dutyStatics?.totalTeacherTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalStudentTime?.nightShift)}</td>
                 <td>{formatDecimal(dutyStatics?.totalAOCTime?.nightShift + dutyStatics?.totalAOCTime?.dayShift)}</td>
 
-                <td className="bg-blue-400 text-white">
-                    {formatDecimal(
-                        dutyStatics?.totalCommanderTime?.dayShift +
-                            +dutyStatics?.totalPositionTime?.dayShift +
-                            teachStatistics?.totalTeacherTime?.dayShift +
-                            dutyStatics?.totalStudentTime?.dayShift +
-                            dutyStatics?.totalCommanderTime?.nightShift +
-                            dutyStatics?.totalPositionTime?.nightShift +
-                            teachStatistics?.totalTeacherTime?.nightShift +
-                            dutyStatics?.totalStudentTime?.nightShift +
-                            dutyStatics?.totalAOCTime?.nightShift +
-                            dutyStatics?.totalAOCTime?.dayShift
-                    )}
+                <td className="bg-blue-400 text-white">{formatDecimal(dutyStatics?.totalTime?.time)}</td>
+                <td>
+                    {(nightsCount?.[username]?.[monthly]?.["夜班段数"] || 0) > 0
+                        ? `${nightsCount?.[username]?.[monthly]?.["夜班段数"]}段`
+                        : ""}
                 </td>
-                <td>{ (nightsCount?.[username]?.[monthly]?.["夜班段数"] || 0) > 0 ? `${nightsCount?.[username]?.[monthly]?.["夜班段数"]}段` : ""}</td>
             </tr>
         </>
     );
@@ -148,7 +128,7 @@ function UserRow({ year, month, username, userId }) {
 function MonthStatistics({ year, month }) {
     const { users } = useStore();
     return (
-        <div className=" overflow-y-auto">
+        <div className="w-[470px] overflow-y-auto">
             <StyledLikeExcel>
                 <thead className="text-center">
                     <tr className="text-center">

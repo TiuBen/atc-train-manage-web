@@ -3,37 +3,18 @@ import styled from "styled-components";
 import { useLocalStorageState } from "ahooks";
 import dayjs from "dayjs";
 import useSWR, { mutate } from "swr";
-import { SERVER_URL, FETCHER, usePage } from "@utils";
+import {  FETCHER, usePage } from "@utils";
 import { Settings, Edit3 } from "lucide-react";
-import EditDutyRecordSheet from "../../../Dialog/EditDutyRecordSheet";
 import { API_URL } from "../../../../utils/const/Const";
 import useStore from "../../../../utils/store/userStore";
 import useDialog from "../../../../utils/hooks/useDialog";
 import DetailStatisticsTable from "./DetailStatisticsTable";
 
-/**
- * 格式化数值：保留2位小数，若无有效值则返回0
- * @param {number|null|undefined} value - 输入值
- * @returns {number} 格式化后的值（或0）
- */
-function formatDecimal(value) {
-    // 检查是否为有效数字（非 null/undefined/NaN，且不为 0）
-    if (value === null || value === undefined || isNaN(value)) {
-        return 0;
-    }
-
-    // 四舍五入到2位小数，并避免 -0 的情况
-    const rounded = Math.round(value * 100) / 100;
-    return rounded === 0 ? "" : rounded; // 明确返回 0（而非 -0）
-}
 
 function LikeExcel() {
     const [selectedMonth, setSelectedMonth] = useState(dayjs().month());
     const { payload, setPayload } = usePage();
-    const { username: queryName, editSheetDisplay, id } = payload;
 
-    const [dutyRows, setDutyRows] = useState([]);
-    const [dutyStatics, setDutyStatics] = useState([]);
     const { selectedUser } = useStore();
     const { setDialogPayload } = useDialog();
 
@@ -55,15 +36,6 @@ function LikeExcel() {
         }
     );
 
-    const { data: selectedUserTeachStatistics } = useSWR(
-        searchParams ? `${API_URL.users}/${searchParams.get("userId")}/teachStatistics?${searchParams}` : null,
-        FETCHER,
-        {
-            // 可选配置：防抖等逻辑通常需要在输入框层面处理，这里可以配置一些SWR选项
-            revalidateOnFocus: true, // 例如，搜索结果可能不需要在窗口聚焦时重新验证
-            fallbackData: {},
-        }
-    );
 
     useEffect(() => {
         // append 可以添加多个相同名称的参数
@@ -117,19 +89,19 @@ function LikeExcel() {
                 <table>
                     <thead>
                         <tr>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">修改</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">日 期</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">岗 位</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">上岗时刻</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">交接班</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">离岗时刻</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">
+                            <td className="border border-slate-600 px-1 text-nowrap text-center">修改</td>
+                            <td className="border border-slate-600 px-1 text-nowrap text-center">日 期</td>
+                            <td className="border border-slate-600 px-1 text-nowrap text-center">岗 位</td>
+                            <td className="border border-slate-600 px-1 text-nowrap text-center ">上岗时刻</td>
+                            <td className="border border-slate-600 px-1 text-nowrap text-center">交接班</td>
+                            <td className="border border-slate-600 px-1 text-nowrap text-center">离岗时刻</td>
+                            <td className="border border-slate-600 px-1 text-nowrap text-center text-xs w-[4rem]">
                                 时段
                                 <br />
                                 工作小时
                             </td>
                             <td className="border border-slate-600 px-2 text-nowrap text-center">白班小时</td>
-                            <td className="border border-slate-600 px-2 text-nowrap text-center">
+                            <td className="border border-slate-600 text-nowrap text-center text-xs w-[4rem]">
                                 夜班小时 <br /> (0000-0800)
                             </td>
                         </tr>
@@ -145,7 +117,7 @@ function LikeExcel() {
                                             : ""
                                     }`}
                                 >
-                                    <td className="border border-slate-600 px-2 text-nowrap text-center group-hover:bg-slate-400">
+                                    <td className="border border-slate-600 px-1 text-nowrap text-center group-hover:bg-slate-400">
                                         <button
                                             onClick={() => {
                                                 console.log("clicked " + x.id);
@@ -220,7 +192,7 @@ function LikeExcel() {
                         })}
                     </tbody>
                 </table>
-                <DetailStatisticsTable dutyStatistics={selectedUserDutyStatistics} teachStatistics={ selectedUserTeachStatistics}/>
+                <DetailStatisticsTable dutyStatistics={selectedUserDutyStatistics}/>
             </div>
         </div>
     );

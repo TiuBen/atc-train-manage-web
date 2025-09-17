@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import styled from "styled-components";
-import { API_URL } from "../../../utils/const/Const";
+import { API_URL,FETCHER } from "../../../utils/const/Const";
 import useStore from "../../../utils/store/userStore";
+import useSWR from "swr";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -22,124 +23,88 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
-function formate() {}
+//  XXXX: {
+//     "2025-05-01": {
+//         "1800-2100": 0,
+//         "2100-2400": 0,
+//         "+1天0000-0830": 0,
+//         "夜班次数": 0,
+//         "夜班档位": 0
+//     },
+//     "2025-05-02": {
+//         "1800-2100": 1.0008333333333332,
+//         "2100-2400": 2.158611111111111,
+//         "+1天0000-0830": 0,
+//         "夜班次数": 1,
+//         "夜班档位": 2
+//     }
+// }
 
-function NightCountByHourSlot() {
-    const length = dayjs().month() + 1;
-    const { users } = useStore();
-    const [nightShiftData, setNightShiftData] = useState({});
+function UserNightCountByHourSlotRow({ userId, username, startDate, startTime, endDate, endTime }) {
+    const YYYYMM = startDate.slice(0, 7);
 
-    const [selectedMonth, setSelectedMonth] = useState(dayjs().format("YYYY-MM"));
-    const [daysArray, setDaysArray] = useState([]);
+    const q = new URLSearchParams({
+        startDate,
+        startTime,
+        endDate,
+        endTime,
+    });
 
-    const currentMonthIndex = dayjs(selectedMonth).month();
-    useEffect(() => {
-        const q = new URLSearchParams();
-        q.append("startDate", dayjs(selectedMonth).format("YYYY-MM-DD"));
-        q.append("startTime", "00:00");
-        q.append("endDate", dayjs(selectedMonth).add(1, "M").format("YYYY-MM-DD"));
-        q.append("endTime", "00:01");
-        // console.log(dayjs(selectedMonth).format("YYYY-MM-DD"));
-        // console.log(dayjs(selectedMonth).add(1, "M").format("YYYY-MM-DD"));
+    const {
+        data: userNightCount,
+        error,
+        isLoading,
+    } = useSWR(userId ? `${API_URL.users}/${userId}/nightCount?${q}` : null, FETCHER, {
+        revalidateOnFocus: false, // 切回页面时不强制刷新
+        dedupingInterval: 60000*60, // 1分钟内相同key只请求一次
+    });
 
-        fetch(`${API_URL.users}/nights?${q}`)
-            .then((res) => res.json())
-            .then((data) => {
-                console.log(data?.nightShiftData);
-                const bySlot = formate(selectedMonth, data?.nightShiftData);
-                setNightShiftData(bySlot);
-
-                // console.log(formate(selectedMonth, data?.nightShiftData));
-            });
-    }, [selectedMonth]);
-
-    // 监听月份变化，更新天数数组
-    useEffect(() => {
-        // console.log(selectedMonth);
-        let daysInMonth = dayjs(selectedMonth).daysInMonth();
-        // console.log(daysInMonth);
-
-        const newDaysArray = Array.from({ length: daysInMonth }, (_, index) => {
-            return dayjs(selectedMonth).startOf("month").add(index, "day").format("YYYY-MM-DD");
-        });
-        setDaysArray(newDaysArray);
-    }, [selectedMonth]);
-
-    //  XXXX: {
-    //     "2025-05-01": {
-    //         "1800-2100": 0,
-    //         "2100-2400": 0,
-    //         "+1天0000-0830": 0,
-    //         "夜班次数": 0,
-    //         "夜班档位": 0
-    //     },
-    //     "2025-05-02": {
-    //         "1800-2100": 1.0008333333333332,
-    //         "2100-2400": 2.158611111111111,
-    //         "+1天0000-0830": 0,
-    //         "夜班次数": 1,
-    //         "夜班档位": 2
-    //     }
-    // }
-
-    function formate(month, nightShiftData) {
-        let bySlot = {};
-        for (const [username, values] of Object.entries(nightShiftData)) {
-            if (!bySlot[username]) {
-                bySlot[username] = {
-                    // "2025-01": {
-                    //     "1800-2100": 0,
-                    //     "2100-2400": 0,
-                    //     "+1天0000-0830": 0,
-                    // },
-                };
-                bySlot[username][month] = {
-                    "1800-2100": 0,
-                    "2100-2400": 0,
-                    "+1天0000-0830": 0,
-                };
-            }
-
-            for (const [key, x] of Object.entries(values)) {
-                if (dayjs(key, "YYYYY-MM-DD").format("YYYY-MM") === month) {
-                    if (x["1800-2100"] >= 0.01) {
-                        bySlot[username][month]["1800-2100"] += 1;
-                    }
-                    if (x["2100-2400"] >= 0.01) {
-                        bySlot[username][month]["2100-2400"] += 1;
-                    }
-                    if (x["+1天0000-0830"] >= 0.01) {
-                        bySlot[username][month]["+1天0000-0830"] += 1;
-                    }
-                } else {
-                    console.log(username);
-                    console.log(values);
-
-                    console.log(key);
-                    console.log(x);
-                }
-            }
-        }
-        return bySlot;
-    }
+    if (isLoading) return <div>加载中...</div>;
+    if (error) return <div>加载失败</div>;
 
     return (
-        <div className=" flex-1 flex flex-col  overflow-auto relative items-stretch ">
-            <h1 className="text-xl font-bold text-blue-700 text-center">2025年夜班次数统计</h1>
-            <div className="relative  flex flex-col gap-1 text-wrap  m-2  ">
+        <tr className="hover:bg-slate-400">
+            <td>{username}</td>
+            <td className="m-0 px-0">{userNightCount?.[username]?.[YYYYMM]?.["1800-2100次数"] || ""}</td>
+            <td className="m-0 px-0">{userNightCount?.[username]?.[YYYYMM]?.["2100-2400次数"] || ""}</td>
+            <td className="m-0 px-0">{userNightCount?.[username]?.[YYYYMM]?.["+1天0000-0830次数"] || ""}</td>
+
+            <td className="m-0 px-0">{`${
+                (userNightCount?.[username]?.[YYYYMM]?.["夜班次数"] || "") &&
+                `${userNightCount[username][YYYYMM]["夜班次数"]}晚/`
+            }          ${
+                (userNightCount?.[username]?.[YYYYMM]?.["夜班段数"] || "") &&
+                `${userNightCount[username][YYYYMM]["夜班段数"]}次`
+            }`}</td>
+            <td className="m-0 px-0">
+                {userNightCount?.[username]?.[YYYYMM]?.["夜班段数"]
+                    ? parseInt(userNightCount?.[username]?.[YYYYMM]?.["夜班段数"] || 0) * 10
+                    : ""}
+            </td>
+        </tr>
+    );
+}
+
+function NightCountByHourSlot() {
+    const { users } = useStore();
+    const [selectedYYYYMMDD, setSelectedYYYYMMDD] = useState(dayjs().set("date", 1));
+
+    return (
+        <div className=" flex-1 flex flex-col  overflow-auto relative items-stretch px-4">
+            <div className="relative  flex flex-col gap-1 text-wrap   ">
                 <div className="w-full flex  ">
                     {["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"].map(
                         (x, index) => {
-                            const monthIndex = index; // 0-11
                             return (
                                 <div
                                     key={index}
-                                    className={`flex-1 border border-black text-center rounded-t-lg hover:font-bold ${
-                                        index === currentMonthIndex ? " bg-inherit font-extrabold  " : "bg-slate-200"
+                                    className={`flex-1 border border-black text-center rounded-t-lg hover:font-bold hover:cursor-pointer ${
+                                        index === dayjs(selectedYYYYMMDD).get("month")
+                                            ? " bg-inherit font-extrabold text-blue-600 "
+                                            : " bg-slate-200"
                                     }`}
                                     onClick={() => {
-                                        const newDate = dayjs(selectedMonth).month(index).format("YYYY-MM");
-                                        setSelectedMonth(newDate);
+                                        setSelectedYYYYMMDD(dayjs().month(index).date(1));
                                     }}
                                 >
                                     {x}
@@ -156,43 +121,25 @@ function NightCountByHourSlot() {
                                 <th> 18:00-21:00</th>
                                 <th> 21:00-24:00</th>
                                 <th> +1天00:00-08:30</th>
-                                <th> 18点-次日次数</th>
-                                <th>总次数/补贴</th>
+                                <th>
+                                    {" "}
+                                    总段数 <br></br>(18:00-次日08:30)
+                                </th>
+                                <th>补贴元</th>
                             </tr>
                         </thead>
                         <tbody>
                             {users.map((x, index) => {
                                 return (
-                                    <tr key={index} className="hover:bg-slate-400">
-                                        <td>{x.username}</td>
-
-                                        <td className="m-0 px-0">
-                                            {nightShiftData?.[x.username]?.[selectedMonth]?.["1800-2100"] === 0
-                                                ? ""
-                                                : nightShiftData?.[x.username]?.[selectedMonth]?.["1800-2100"]}
-                                        </td>
-                                        <td className="m-0 px-0">
-                                            {nightShiftData?.[x.username]?.[selectedMonth]?.["2100-2400"] === 0
-                                                ? ""
-                                                : nightShiftData?.[x.username]?.[selectedMonth]?.["2100-2400"]}
-                                        </td>
-                                        <td className="m-0 px-0">
-                                            {nightShiftData?.[x.username]?.[selectedMonth]?.["+1天0000-0830"] === 0
-                                                ? ""
-                                                : nightShiftData?.[x.username]?.[selectedMonth]?.["+1天0000-0830"]}
-                                        </td>
-                                        <td className="m-0 px-0"></td>
-                                        <td className="m-0 px-0">
-                                            {nightShiftData?.[x.username]?.[selectedMonth]?.["1800-2100"] +
-                                                nightShiftData?.[x.username]?.[selectedMonth]?.["2100-2400"] +
-                                                nightShiftData?.[x.username]?.[selectedMonth]?.["+1天0000-0830"] ===
-                                            0
-                                                ? ""
-                                                : nightShiftData?.[x.username]?.[selectedMonth]?.["1800-2100"] +
-                                                  nightShiftData?.[x.username]?.[selectedMonth]?.["2100-2400"] +
-                                                  nightShiftData?.[x.username]?.[selectedMonth]?.["+1天0000-0830"]}
-                                        </td>
-                                    </tr>
+                                    <UserNightCountByHourSlotRow
+                                        key={index}
+                                        userId={x.id}
+                                        username={x.username}
+                                        startDate={dayjs(selectedYYYYMMDD).set("date", 1).format("YYYY-MM-DD")}
+                                        startTime={"00:00:00"}
+                                        endDate={dayjs(selectedYYYYMMDD).add(1, "month").format("YYYY-MM-DD")}
+                                        endTime={"00:00:01"}
+                                    />
                                 );
                             })}
                         </tbody>
@@ -204,3 +151,53 @@ function NightCountByHourSlot() {
 }
 
 export default NightCountByHourSlot;
+
+// const currentMonthIndex = dayjs(selectedMonth).month();
+// useEffect(() => {
+//     const q = new URLSearchParams();
+//     q.append("startDate", dayjs(selectedMonth).format("YYYY-MM-DD"));
+//     q.append("startTime", "00:00");
+//     q.append("endDate", dayjs(selectedMonth).add(1, "M").format("YYYY-MM-DD"));
+//     q.append("endTime", "00:01");
+//     q.append("type","byHourSlot");
+
+//     fetch(`${API_URL.users}/nightCount?${q}`)
+//         .then((res) => res.json())
+//         .then((data) => {
+//             console.log(data?.nightShiftData);
+//             const bySlot = formate(selectedMonth, data?.nightShiftData);
+//             setNightShiftData(bySlot);
+
+//             // console.log(formate(selectedMonth, data?.nightShiftData));
+//         });
+// }, [selectedMonth]);
+// 监听月份变化，更新天数数组
+//   useEffect(() => {
+//     // console.log(selectedMonth);
+//     let daysInMonth = dayjs(selectedMonth).daysInMonth();
+//     // console.log(daysInMonth);
+
+//     const newDaysArray = Array.from({ length: daysInMonth }, (_, index) => {
+//         return dayjs(selectedMonth).startOf("month").add(index, "day").format("YYYY-MM-DD");
+//     });
+//     setDaysArray(newDaysArray);
+// }, [selectedMonth]);
+// const [userNightCount, setUserNightCount] = useState({});
+// const [YYYYMM, setYYYYMM] = useState(startDate.slice(0, 7));
+
+// useEffect(() => {
+//     const q = new URLSearchParams();
+//     q.append("startDate", startDate);
+//     q.append("startTime", startTime);
+//     q.append("endDate", endDate);
+//     q.append("endTime", endTime);
+
+//     fetch(`${API_URL.users}/${userId}/nightCount?${q}`)
+//         .then((res) => res.json())
+//         .then((data) => {
+//             console.log(data);
+//             setUserNightCount(data);
+//         });
+
+//     setYYYYMM(startDate.slice(0, 7));
+// }, [userId, startDate, startTime, endDate, endTime]);

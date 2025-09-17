@@ -7,8 +7,8 @@ import { API_URL } from "../../../utils/const/Const";
 import useStore from "../../../utils/store/userStore";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import ContentSlider from "../../../../snComponents/snCarousel";
-import {formatDecimal} from "../../../utils/tools/formatDecimal";
-
+import { formatDecimal } from "../../../utils/tools/formatDecimal";
+import { StepBack, StepForward } from "lucide-react";
 
 const StyledLikeExcel = styled.table`
     width: 100%;
@@ -32,7 +32,7 @@ const StyledLikeExcel = styled.table`
     }
 `;
 
-function UserRow({  year, month, username, userId  }) {
+function UserRow({ year, month, username, userId }) {
     const [dutyStatics, setDutyStatics] = useState({});
     // const [teachStatistics, setTeachStatistics] = useState({});
     const [nightsCount, setNightsCount] = useState({});
@@ -100,7 +100,7 @@ function UserRow({  year, month, username, userId  }) {
                             username: username,
                             userId: userId,
                         },
-                        selectedUserNightCount:{...nightsCount}
+                        selectedUserNightCount: { ...nightsCount },
                     });
                 }}
                 className={`${
@@ -137,16 +137,20 @@ function UserRow({  year, month, username, userId  }) {
                             dutyStatics?.totalAOCTime?.dayShift
                     )}
                 </td>
-                <td>{ (nightsCount?.[username]?.[monthly]?.["夜班段数"] || 0) > 0 ? `${nightsCount?.[username]?.[monthly]?.["夜班段数"]}段` : ""}</td>
+                <td>
+                    {(nightsCount?.[username]?.[monthly]?.["夜班段数"] || 0) > 0
+                        ? `${nightsCount?.[username]?.[monthly]?.["夜班段数"]}段`
+                        : ""}
+                </td>
             </tr>
         </>
     );
 }
 
-function MonthStatistics({ year, month}) {
+function MonthStatistics({ year, month }) {
     const { users } = useStore();
     return (
-        <div className=" overflow-y-auto">
+        <div className="max-w-[520px] min-w-[520px] overflow-y-auto">
             <StyledLikeExcel>
                 <thead className="text-center">
                     <tr className="text-center">
@@ -194,32 +198,67 @@ function MonthStatistics({ year, month}) {
 }
 
 function DefaultPage() {
-    const length = dayjs().month() + 1;
+    const items = [...Array(dayjs().month() + 1).keys()];
     const { users } = useStore();
+    const [visibleCount, setVisibleCount] = useState(2); // 默认小屏显示 2 个
+    const [startIndex, setStartIndex] = useState(Math.max(0, dayjs().month()));
+    // 根据窗口大小动态调整 visibleCount
+    useEffect(() => {
+        function handleResize() {
+            if (window.innerWidth < 1200) {
+                setVisibleCount(1);
+            } else if (window.innerWidth < 1750) {
+                setVisibleCount(2);
+            } else {
+                setVisibleCount(3);
+            }
+        }
+        handleResize(); // 初始化时执行一次
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    const endIndex = startIndex + visibleCount;
+    const visibleItems = items.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        // 滚动到可见的项
+    }, [startIndex, endIndex]);
+
+    const handlePrev = () => {
+        setStartIndex((prev) => Math.max(prev - 1, 0));
+    };
+
+    const handleNext = () => {
+        setStartIndex((prev) => Math.min(prev + 1, items.length - visibleCount));
+    };
 
     return (
-        <div className=" flex-1 flex flex-col  overflow-auto relative items-center  ">
-            <h1 className="text-xl font-bold text-blue-700 text-center">2025年整体时间统计</h1>
-            
-            {/* <Carousel className="w-[92%]   m-auto">
-                <CarouselContent className="ml-1">
-                    {Array.from({ length: length }).map((_, index) => (
-                        <CarouselItem key={index} className="pl-1 m-auto max-xl:w-full xl:basis-1/3">
-                            <div className="p-1">
-                                <MonthStatistics key={index} year={2025} month={index} usernames={users} />
-                            </div>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-            </Carousel> */}
-            <div className="w-full p-2 h-full flex flex-row flex-nowrap">
-                    {Array.from({ length: length }).map((_, index) => (
-                        <div className="p-1 pl-1 m-auto inline-flex max-xl:w-full xl:basis-1/3">
-                            <MonthStatistics key={index} year={2025} month={index} usernames={users} />
-                        </div>
-                    ))}
+        <div className=" flex-1 flex flex-col  overflow-clip     ">
+            <h1 className="text-xl font-bold text-gray-700 text-center">2025年整体时间统计</h1>
+
+            <div className=" flex flex-row  flex-nowrap   flex-1 overflow-clip justify-evenly items-center  gap-2 m-2 ">
+                <button
+                    className="text-blue-700 self-stretch border border-transparent rounded hover:text-blue-500 hover:border hover:border-blue-400 px-4 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    disabled={startIndex === 0}
+                    onClick={handlePrev}
+                >
+                    <StepBack size={32} />
+                </button>
+
+                {visibleItems.map((item, index) => (
+                    <div key={index}>
+                        <MonthStatistics key={index} year={2025} month={item} usernames={users} />
+                    </div>
+                ))}
+
+                <button
+                    className="text-blue-700 self-stretch  border border-transparent rounded hover:text-blue-500 hover:border hover:border-blue-400 px-4 disabled:text-gray-500 disabled:cursor-not-allowed"
+                    onClick={handleNext}
+                    disabled={startIndex >= items.length - visibleCount}
+                >
+                    <StepForward size={32}/>
+                </button>
             </div>
         </div>
     );

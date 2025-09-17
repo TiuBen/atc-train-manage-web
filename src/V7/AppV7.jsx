@@ -18,7 +18,7 @@ import DefaultPage from "./Page2/DefaultPage/DefaultPage";
 import SettingPage from "./Page2/SettingPage/SettingPage";
 import Sheet from "./Page2/SheetPage/Sheet";
 import NightPage from "./Page2/NightCount/NightPage";
-import DownloadExcel from "./Page2/DownloadExcel/DownloadExcel";
+import DownloadExcelPage from "./Page2/DownloadExcel/DownloadExcelPage";
 
 function AppV7() {
     const { fetchUsers,fetchPositions,users } = useStore();
@@ -52,7 +52,7 @@ function AppV7() {
                                         <Route path="sheet" element={<Sheet/>} />
                                         <Route path="setting" element={<SettingPage />} />
                                         <Route path="night" element={<NightPage/>} />
-                                        <Route path="excel" element={<DownloadExcel/>} />
+                                        <Route path="excel" element={<DownloadExcelPage/>} />
                                     </Route>
                                 </Route>
                             </Routes>

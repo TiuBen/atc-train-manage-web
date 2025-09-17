@@ -8,7 +8,7 @@ import StatisticSetting from "./StatisticSettingPage/StatisticSetting";
 function SettingPage() {
     // 根据当前路径匹配路由
 
-    const [first, setfirst] = useState(1);
+    const [first, setfirst] = useState(3);
     useEffect(() => {
         console.log(`Type changed to: ${first}`);
     }, [first]);

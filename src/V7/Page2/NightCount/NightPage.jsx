@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import { TabNav, Tabs } from "@radix-ui/themes";
 import NightCountByHourSlot from "./NightCountByHourSlot";
 import NightCountByMonth from "./NightCountByMonth";
+import dayjs from "dayjs";
 
 function NightPage() {
     // 根据当前路径匹配路由
 
-    const [first, setfirst] = useState(1);
+    const [first, setfirst] = useState(2);
     useEffect(() => {
         console.log(`Type changed to: ${first}`);
     }, [first]);
@@ -16,7 +17,6 @@ function NightPage() {
                 return <NightCountByHourSlot />;
             case 2:
                 return <NightCountByMonth />;
-          
 
             default:
                 return <div>Unknown Type</div>;
@@ -24,35 +24,54 @@ function NightPage() {
     };
 
     return (
-        <div className="flex-1">
-            <TabNav.Root>
-                <TabNav.Link
-                    href="/admin/night/1"
-                    active={first === 1}
-                    onClick={(e) => {
-                        setfirst(1);
-                        e.preventDefault();
-                    }}
-                >
-                    <label className="text-2xl font-bold">小时统计</label>
-                </TabNav.Link>
-                <TabNav.Link
-                    href="/admin/night/2"
-                    active={first === 2}
-                    onClick={(e) => {
-                        setfirst(2);
-                        e.preventDefault();
-                    }}
-                >
-                    <label className="text-2xl font-bold">月度统计</label>
-                </TabNav.Link>
-             
-            </TabNav.Root>
-            <div className=" p-4">{renderComponent()}</div>
+        <div className="flex flex-col gap-2 flex-1 ">
+            <div className="flex flex-row items-center px-4">
+                <h1 className=" self-center text-xl font-bold text-blue-700 text-center">
+                    {dayjs().get("year")}年夜班次数统计
+                </h1>
+                <TabNav.Root>
+                    <TabNav.Link
+                        href="/admin/night/1"
+                        active={first === 1}
+                        onClick={(e) => {
+                            setfirst(1);
+                            e.preventDefault();
+                        }}
+                    >
+                        <label className="text-2xl font-bold">小时统计</label>
+                    </TabNav.Link>
+                    <TabNav.Link
+                        href="/admin/night/2"
+                        active={first === 2}
+                        onClick={(e) => {
+                            setfirst(2);
+                            e.preventDefault();
+                        }}
+                    >
+                        <label className="text-2xl font-bold">月度统计</label>
+                    </TabNav.Link>
+                </TabNav.Root>
+            </div>
+
+            <>{renderComponent()}</>
         </div>
     );
 }
 
+export default NightPage;
 
+// {
+//     Array.from({ length: dayjs().month() + 1 }).map((_, index) => (
+//         <DownloadExcel key={index} fileName={`${dayjs().get("year")}年${index + 1}月执勤.xlsx`} />
+//     ));
+// }
 
-export default NightPage
+// {
+//     Array.from({ length: dayjs().month() + 1 }).map((v, index) => {
+//         return (
+//             <div key={index}>
+//                 {v}/{index}
+//             </div>
+//         );
+//     });
+// }

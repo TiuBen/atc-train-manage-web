@@ -16,9 +16,9 @@ import dayjs from "dayjs";
 
   const addOneMonth = () => {
     setMonth((prev) => {
-      if (prev === 12) {
+      if (prev === 11) {
         setYear((prevYear) => prevYear + 1);
-        return 1;
+        return 0;
       }
       return prev + 1;
     });
@@ -26,9 +26,9 @@ import dayjs from "dayjs";
 
   const subOneMonth = () => {
     setMonth((prev) => {
-      if (prev === 1) {
+      if (prev === 0) {
         setYear((prevYear) => prevYear - 1);
-        return 12;
+        return 11;
       }
       return prev - 1;
     });

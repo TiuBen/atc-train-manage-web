@@ -69,13 +69,13 @@ function MonthCalender(props) {
     return (
         <div
             aria-roledescription="month-calendar"
-            className=" outline outline-1  outline-gray-200 grid grid-cols-7  grid-rows-[min-content,min-content] flex-1 h-full"
+            className="  grid grid-cols-7  grid-rows-[min-content,min-content] flex-1  "
             // style={{ gridTemplateRows: "min-content min-content" }}
         >
             <div className="col-span-7 ">{title}</div>
             {["周一", "周二", "周三", "周四", "周五", "周六", "周日"].map((day, index) => {
                 return (
-                    <div key={index} className=" outline outline-1  outline-gray-200  text-nowrap font-bold ">
+                    <div key={index} className="outline outline-1  outline-gray-300 text-nowrap font-bold ">
                         {day}
                     </div>
                 );
@@ -87,10 +87,10 @@ function MonthCalender(props) {
                 return (
                     <div
                         key={index}
-                        className=" outline outline-1  outline-gray-200 hover:bg-blue-50 cursor-default flex flex-col  items-stretch"
+                        className="outline outline-1  outline-gray-300    border-gray-500  hover:bg-blue-50 cursor-default flex flex-col  items-stretch"
                     >
                         <div
-                            className={` text-nowrap hover:font-bold mr-[1px] px-4  text-center ${
+                            className={` text-nowrap hover:font-bold ] px-4  text-center ${
                                 dayjs(date).isSame(Date.now(), "day") ? "bg-blue-600 text-cyan-50 " : ""
                             } `}
                         >
@@ -109,3 +109,4 @@ function MonthCalender(props) {
 }
 
 export { MonthCalender };
+//  border-l border-t border-b-[1px]  mt-[-1px] 

@@ -39,12 +39,19 @@ const useStore = create((set, get) => ({
 
             const [positionsRes, usersRes, groupedUsersRes, onDutyUsersRes] = await Promise.all([
                 fetch(`${API_URL.positions}?display=true`).then((r) => r.json()),
-                fetch(API_URL.users + `?fields=${encodeURIComponent("id,username")}`).then((r) => r.json()),
+                fetch(API_URL.users + `?fields=${encodeURIComponent("id,team,username,rank")}`).then((r) => r.json()),
                 fetch(`${API_URL.users}?fields=${encodeURIComponent("id,username,team,position")}&groupBy=team`).then(
                     (r) => r.json()
                 ),
                 fetch(`${API_URL.duty}?outTime=null`).then((r) => r.json()),
             ]);
+            // const [positionsRes, usersRes, groupedUsersRes] = await Promise.all([
+            //     fetch(`${API_URL.positions}?display=true`).then((r) => r.json()),
+            //     fetch(API_URL.users + `?fields=${encodeURIComponent("id,username")}`).then((r) => r.json()),
+            //     fetch(`${API_URL.users}?fields=${encodeURIComponent("id,username,team,position")}&groupBy=team`).then(
+            //         (r) => r.json()
+            //     ),
+            // ]);
 
             // positions
             set({ positions: positionsRes });
@@ -53,7 +60,6 @@ const useStore = create((set, get) => ({
             // users
             set({ users: usersRes });
             // localStorage.setItem("users", JSON.stringify(positionsRes));
-
 
             // groupedUsers & detailUsers
             const groupedUsers = groupedUsersRes;
@@ -283,13 +289,16 @@ const useStore = create((set, get) => ({
         fetch(`${API_URL.duty}?outTime=null`)
             .then((res) => res.json())
             .then((data) => {
-                const prev = get().onDutyUsers;
-                if (JSON.stringify(prev) !== JSON.stringify(data)) {
-                    set({ onDutyUsers: data });
-                }
+                // const prev = get().onDutyUsers;
+                // if (JSON.stringify(prev) !== JSON.stringify(data)) {
+                //     set({ onDutyUsers: data });
+                // }
+                set({ onDutyUsers: data });
+
             });
     },
 
+   
     // 获取某个月的数据
 
     // 获取席位

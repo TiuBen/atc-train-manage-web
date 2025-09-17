@@ -55,11 +55,9 @@ function Staff(props) {
     const [canLongPress, setCanLongPress] = useState(false);
 
     // 执勤时间
-    const date1 = dayjs(inTime);
-    const [inDutyTime, setInDutyTime] = useState(formatDuration(date1));
+    const [inDutyTime, setInDutyTime] = useState(0);
     // 带教时间
-    const date2 = dayjs(roleStartTime);
-    const [inRoleTime, setInRoleTime] = useState(formatDuration(date2));
+    const [inRoleTime, setInRoleTime] = useState(0);
 
     const [isOver2Hours, setIsOver2Hours] = useState(dayjs(Date.now()).diff(inTime, "hours", true) >= 2.17);
     const ref = useRef(null);
@@ -86,7 +84,9 @@ function Staff(props) {
 
     useEffect(() => {
         setInDutyTime(formatDuration(inTime));
-        setInRoleTime(formatDuration(roleStartTime));
+        if (Array.isArray(roleStartTime)) {
+            setInRoleTime(formatDuration(roleStartTime.at(-1)));
+        }
 
         const timerId = setInterval(() => {
             if (dayjs(Date.now()).diff(inTime, "hours", true) >= 2.17) {
@@ -94,7 +94,9 @@ function Staff(props) {
             }
 
             setInDutyTime(formatDuration(inTime));
-            setInRoleTime(formatDuration(roleStartTime));
+            if (Array.isArray(roleStartTime)) {
+                setInRoleTime(formatDuration(roleStartTime.at(-1)));
+            }
         }, 15 * 1000);
 
         return () => clearInterval(timerId);
@@ -116,7 +118,7 @@ function Staff(props) {
                 setCanLongPress(false);
             }
         }
-    }, [detailUsers, roleType, userId,position]);
+    }, [detailUsers, roleType, userId, position]);
 
     return (
         <>

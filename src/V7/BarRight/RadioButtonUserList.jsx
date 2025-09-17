@@ -7,7 +7,7 @@ function RadioButtonUserList() {
     const {users,selectedUser}=useStore()
 
     return (
-        <div className="flex flex-row flex-wrap text-nowrap flex-1  content-start gap-1 m-2 ">
+        <div className="text-nowrap   content-start gap-1 m-1 grid grid-cols-2 w-[11rem]">
             {users.map((item, i) => {
                 return (
                     <label
