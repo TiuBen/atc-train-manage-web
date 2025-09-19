@@ -29,6 +29,7 @@ const API_URL= {
     "roles":`${SERVER_URL}/roles`,
     "excel":`${SERVER_URL}/download-excel`,
     "events":`${SERVER_URL}/events`,
+    "files":`${SERVER_URL}/files`
 }; 
 
 
