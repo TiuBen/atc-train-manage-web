@@ -3,16 +3,18 @@ import { TabNav, Tabs } from "@radix-ui/themes";
 import { FileDown } from "lucide-react";
 import dayjs from "dayjs";
 import { API_URL, FETCHER } from "../../../utils/const/Const";
+import { BookX } from "lucide-react";
+import { useLongPress } from "ahooks";
 
 function DownloadExcel({
     fileName, // 下载的文件名
-    disabled = false,
+    startDate, // 开始日期
+    endDate, // 结束日期
+    needMonth, // 需要的月份
 }) {
     const [exists, setExists] = useState(false);
     const [regenerating, setRegenerating] = useState(false);
-    const timerRef = useRef(null);
-
-    const [loading, setLoading] = useState(false);
+    const ref = useRef(null);
 
     // 组件加载时检查文件是否存在
     useEffect(() => {
@@ -24,6 +26,7 @@ function DownloadExcel({
 
     // 下载文件
     const handleDownload = async () => {
+        console.log("handleDownload");
         if (!exists) return;
         const res = await fetch(`${API_URL}/download?fileName=${fileName}`);
         const blob = await res.blob();
@@ -35,98 +38,56 @@ function DownloadExcel({
         window.URL.revokeObjectURL(url);
     };
     // 长按开始（发起重新生成）
-    const handleMouseDown = () => {
-        timerRef.current = setTimeout(() => {
+    useLongPress(
+        () => {
+            console.log("长按开始（发起重新生成）");
             setRegenerating(true);
-            fetch(`${API_URL}/regenerate?fileName=${fileName}`, { method: "POST" })
-                .then(() => {
-                    // 模拟等待后端生成完成，再次检查文件是否存在
-                    setTimeout(() => {
-                        fetch(`${API_URL}/exists?fileName=${fileName}`)
-                            .then((res) => res.json())
-                            .then((data) => {
-                                setExists(data.exists);
-                                setRegenerating(false);
-                            });
-                    }, 2000);
+            const encodedFileName = encodeURIComponent(fileName);
+            fetch(`${API_URL.files}/regenerate?fileName=${encodedFileName}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    startDate: startDate,
+                    startTime: "00:00:01",
+                    endDate: endDate,
+                    endTime: "00:00:01",
+                    needMonth: needMonth,
+                }),
+            })
+                .then((res) => {
+                    return res.json();
                 })
-                .catch(() => setRegenerating(false));
-        }, 800); // 长按 800ms 触发
-    };
-
-    // 鼠标抬起（如果没到长按时间，就算普通点击）
-    const handleMouseUp = () => {
-        clearTimeout(timerRef.current);
-        if (!regenerating && exists) {
-            handleDownload();
+                .then((data) => {
+                    console.log(data);
+                    setRegenerating(false);
+                    fetch(`${API_URL.files}/exists?fileName=${encodedFileName}`)
+                        .then((res) => res.json())
+                        .then((data) => setExists(data.exists))
+                        .catch(() => setExists(false));
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        },
+        ref,
+        {
+            threshold: 800,
         }
-    };
-
-    // const handleDownload = async () => {
-    //     setLoading(true);
-    //     try {
-    //         // 带文件名传递给后端
-    //         const res = await fetch(`${API_URL.excel}?fileName=${encodeURIComponent(fileName)}`, {
-    //             method: "GET",
-    //             headers: {
-    //                 Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    //             },
-    //         });
-
-    //         if (res.status === 202) {
-    //             // 后端说还在处理 → 轮询
-    //             const { taskId } = await res.json();
-    //             await pollForFile(taskId);
-    //         } else if (res.ok) {
-    //             await triggerDownload(res, fileName);
-    //         } else {
-    //             throw new Error("下载失败");
-    //         }
-    //     } catch (err) {
-    //         console.error("Excel 下载失败:", err);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    const pollForFile = async (taskId) => {
-        let done = false;
-        while (!done) {
-            await new Promise((r) => setTimeout(r, 1000)); // 每 3 秒轮询
-            const res = await fetch(`${API_URL.excel}/status/${taskId}`);
-            if (res.ok) {
-                const blob = await res.blob();
-                await triggerDownload(blob, fileName);
-                done = true;
-            }
-        }
-    };
-
-    const triggerDownload = async (resOrBlob, fileName) => {
-        const blob = resOrBlob instanceof Response ? await resOrBlob.blob() : resOrBlob;
-        const href = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = href;
-        link.download = fileName;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(href);
-    };
+    );
 
     return (
         <button
             type="button"
-            onMouseDown={handleMouseDown}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={() => clearTimeout(timerRef.current)}
-            className={`px-4 py-2 rounded-xl border transition-all 
-        ${exists ? "border-blue-500 text-blue-600" : "border-gray-400 text-gray-400"}
-        ${regenerating ? "bg-blue-100 animate-pulse shadow-[0_0_15px_#3b82f6]" : ""}
+            ref={ref}
+            onClick={handleDownload}
+
+            className={`px-4 py-1 rounded border transition-all flex flex-row items-center justify-center gap-2
+        ${exists ? "border-blue-500 text-blue-600 cur" : "border-gray-400 text-red-400 cursor-not-allowed"}
+        ${regenerating ? "bg-red-100 animate-pulse shadow-[0_0_5px_#3b82f6] cursor-wait" : ""}
       `}
         >
-            {regenerating ? "正在生成..." : exists ? "下载文件" : "文件不存在"}
-            <FileDown size={"1em"} />
+            {regenerating ? "正在生成..." : exists ? <FileDown size={"1em"} /> : <BookX size={"1.5em"} color="red" />}
+
             <span className=" font-medium">{fileName}</span>
         </button>
     );
@@ -145,9 +106,15 @@ function DownloadExcelPage() {
                         <TabNav.Link style={{ visibility: "hidden" }}></TabNav.Link>
                     </TabNav.Root>
                 </div>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-4 justify-center px-4">
                     {Array.from({ length: dayjs().month() + 1 }).map((_, index) => (
-                        <DownloadExcel key={index} fileName={`${dayjs().get("year")}年${index + 1}月执勤.xlsx`} />
+                        <DownloadExcel
+                            key={index}
+                            fileName={`${dayjs().get("year")}年${index + 1}月执勤.xlsx`}
+                            needMonth={dayjs().set("month", index).format("YYYY-MM")}
+                            startDate={dayjs().set("month", index).set("date", 1).format("YYYY-MM-DD")}
+                            endDate={dayjs().set("month", index).add(1, "month").set("date", 1).format("YYYY-MM-DD")}
+                        />
                     ))}
                 </div>
             </div>
@@ -156,3 +123,55 @@ function DownloadExcelPage() {
 }
 
 export default DownloadExcelPage;
+
+// const handleDownload = async () => {
+//     setLoading(true);
+//     try {
+//         // 带文件名传递给后端
+//         const res = await fetch(`${API_URL.excel}?fileName=${encodeURIComponent(fileName)}`, {
+//             method: "GET",
+//             headers: {
+//                 Accept: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+//             },
+//         });
+
+//         if (res.status === 202) {
+//             // 后端说还在处理 → 轮询
+//             const { taskId } = await res.json();
+//             await pollForFile(taskId);
+//         } else if (res.ok) {
+//             await triggerDownload(res, fileName);
+//         } else {
+//             throw new Error("下载失败");
+//         }
+//     } catch (err) {
+//         console.error("Excel 下载失败:", err);
+//     } finally {
+//         setLoading(false);
+//     }
+// };
+
+// const pollForFile = async (taskId) => {
+//     let done = false;
+//     while (!done) {
+//         await new Promise((r) => setTimeout(r, 1000)); // 每 3 秒轮询
+//         const res = await fetch(`${API_URL.excel}/status/${taskId}`);
+//         if (res.ok) {
+//             const blob = await res.blob();
+//             await triggerDownload(blob, fileName);
+//             done = true;
+//         }
+//     }
+// };
+
+// const triggerDownload = async (resOrBlob, fileName) => {
+//     const blob = resOrBlob instanceof Response ? await resOrBlob.blob() : resOrBlob;
+//     const href = URL.createObjectURL(blob);
+//     const link = document.createElement("a");
+//     link.href = href;
+//     link.download = fileName;
+//     document.body.appendChild(link);
+//     link.click();
+//     document.body.removeChild(link);
+//     URL.revokeObjectURL(href);
+// };

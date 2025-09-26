@@ -22,15 +22,16 @@ const POSITIONS = [
     "进近低扇",
 ];
 
-const API_URL= {
-    "positions": `${SERVER_URL}/positions`,
-    "users":`${SERVER_URL}/users`,
-    "duty":`${SERVER_URL}/duty`,
-    "roles":`${SERVER_URL}/roles`,
-    "excel":`${SERVER_URL}/download-excel`,
-    "events":`${SERVER_URL}/events`,
-    "files":`${SERVER_URL}/files`
-}; 
+const API_URL = {
+    API_URL: `${SERVER_URL}`,
 
+    positions: `${SERVER_URL}/positions`,
+    users: `${SERVER_URL}/users`,
+    duty: `${SERVER_URL}/duty`,
+    roles: `${SERVER_URL}/roles`,
+    excel: `${SERVER_URL}/download-excel`,
+    events: `${SERVER_URL}/events`,
+    files: `${SERVER_URL}/files`,
+};
 
-export { SERVER_URL,FETCHER,POSITIONS,API_URL };
+export { SERVER_URL, FETCHER, POSITIONS, API_URL };

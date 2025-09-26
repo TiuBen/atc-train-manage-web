@@ -122,7 +122,6 @@ function NightCountByHourSlot() {
                                 <th> 21:00-24:00</th>
                                 <th> +1天00:00-08:30</th>
                                 <th>
-                                    {" "}
                                     总段数 <br></br>(18:00-次日08:30)
                                 </th>
                                 <th>补贴元</th>

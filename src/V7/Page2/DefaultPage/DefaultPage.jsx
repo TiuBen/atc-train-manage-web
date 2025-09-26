@@ -9,6 +9,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import ContentSlider from "../../../../snComponents/snCarousel";
 import { formatDecimal } from "../../../utils/tools/formatDecimal";
 import { StepBack, StepForward } from "lucide-react";
+import TestB from "../DownloadExcel/TestB";
 
 const StyledLikeExcel = styled.table`
     width: 100%;

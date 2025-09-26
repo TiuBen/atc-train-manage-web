@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Theme } from "@radix-ui/themes";
 
 import { Route, Outlet, BrowserRouter, Routes, Link } from "react-router-dom";
-import {  DialogContextProvider, PageContextProvider } from "@utils";
+import { DialogContextProvider, PageContextProvider } from "@utils";
 import Skeleton from "./Skeleton/Skeleton";
 import LeftBar from "./BarLeft/LeftBar";
 import BottomBar from "./BarBottom/BottomBar";
@@ -19,46 +19,46 @@ import SettingPage from "./Page2/SettingPage/SettingPage";
 import Sheet from "./Page2/SheetPage/Sheet";
 import NightPage from "./Page2/NightCount/NightPage";
 import DownloadExcelPage from "./Page2/DownloadExcel/DownloadExcelPage";
+import { API_URL } from "../utils/const/Const";
 
 function AppV7() {
-    const { fetchUsers,fetchPositions,users } = useStore();
+    const { fetchUsers, fetchPositions, users } = useStore();
     // useEffect(() => {
     //     fetchUsers();
     //     fetchPositions();
     // }, [fetchUsers,fetchPositions]);
+
+
+
     return (
         <PageContextProvider>
             <DialogContextProvider>
-                 {/* {JSON.stringify(users)} */}
-                    <Theme accentColor="indigo">
-                        <BrowserRouter>
-                            <Routes>
-                                <Route
-                                    path="/"
-                                    element={
-                                        <Skeleton
-                                            topNav={<TopNav />}
-                                            LeftSidebar={<LeftBar />}
-                                            bottomBar={<BottomBar />}
-                                        />
-                                    }
-                                >
-                                    <Route index element={<MonthPage/>} />
+                {/* {JSON.stringify(users)} */}
+                <Theme accentColor="indigo">
+                    <BrowserRouter>
+                        <Routes>
+                            <Route
+                                path="/"
+                                element={
+                                    <Skeleton topNav={<TopNav />} LeftSidebar={<LeftBar />} bottomBar={<BottomBar />} />
+                                }
+                            >
+                                <Route index element={<MonthPage />} />
 
-                                    <Route path="duty" element={<DutyPageMain/>} />
-                                    <Route path="calendar" element={<MonthPage />} />
-                                    <Route path="admin">
-                                        <Route index element={<DefaultPage/>} />
-                                        <Route path="sheet" element={<Sheet/>} />
-                                        <Route path="setting" element={<SettingPage />} />
-                                        <Route path="night" element={<NightPage/>} />
-                                        <Route path="excel" element={<DownloadExcelPage/>} />
-                                    </Route>
+                                <Route path="duty" element={<DutyPageMain />} />
+                                <Route path="calendar" element={<MonthPage />} />
+                                <Route path="admin">
+                                    <Route index element={<DefaultPage />} />
+                                    <Route path="sheet" element={<Sheet />} />
+                                    <Route path="setting" element={<SettingPage />} />
+                                    <Route path="night" element={<NightPage />} />
+                                    <Route path="excel" element={<DownloadExcelPage />} />
                                 </Route>
-                            </Routes>
-                        </BrowserRouter>
-                        <EditDutyRecordSheet />
-                    </Theme>
+                            </Route>
+                        </Routes>
+                    </BrowserRouter>
+                    <EditDutyRecordSheet />
+                </Theme>
             </DialogContextProvider>
         </PageContextProvider>
     );
