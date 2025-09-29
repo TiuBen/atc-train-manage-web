@@ -1,4 +1,16 @@
-import { ClipboardPenLine, MessageCircle, Sheet, UserRoundCog, BicepsFlexed, CalendarDays,Settings,MoonStar,FileDown } from "lucide-react";
+import {
+    ClipboardPenLine,
+    MessageCircle,
+    Sheet,
+    UserRoundCog,
+    BicepsFlexed,
+    CalendarDays,
+    Settings,
+    MoonStar,
+    FileDown,
+    PanelLeftClose,
+    PanelRightClose
+} from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -92,19 +104,19 @@ function LeftBar(props) {
                     href: "admin/excel",
                     Icon: (props) => <FileDown {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
-                }
+                },
             ],
         },
     ];
 
     return (
         <aside
-            className={`relative overflow-visible   ${
-                isLeftSidebarOpen ? "w-[8rem]" : "w-[4rem]"
-            }  flex flex-row bg-blue-600  text-blue-50`}
+            className={`relative  m-0  gap-8 border border-red-400  flex flex-col items-stretch bg-blue-600  text-blue-50 ${
+                isLeftSidebarOpen ? " w-{12rem}" : "w-[4rem]"
+            } `}
         >
             <div
-                className="flex flex-col items-start gap-2 mx-2 mt-2 text-accent font-bold "
+                className="flex flex-col flex-1 items-start gap-2 px-4 pt-4 text-accent font-bold "
                 // style={{ color: "var(--accent-9)" }}
             >
                 {items.map((item, index) => {
@@ -123,11 +135,11 @@ function LeftBar(props) {
                 })}
             </div>
             <button
-                className={` w-[1rem] hover:cursor-ew-resize  bg-blue-600 shadow-md  `}
+                className={`p-0 m-0 self-center    hover:cursor-ew-resize  shadow-md  hover:bg-blue-300 duration-200`}
                 onClick={() => {
                     setLeftSidebarOpen(!isLeftSidebarOpen);
                 }}
-            ></button>
+            ><PanelLeftClose size={"2rem"}/> </button>
         </aside>
     );
 }

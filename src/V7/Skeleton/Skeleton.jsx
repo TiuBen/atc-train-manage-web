@@ -29,13 +29,13 @@ function Skeleton({
                     </header>
                 }
 
-                <div className="flex flex-1 overflow-hidden">
+                <div className="flex flex-1 flex-row overflow-hidden">
                     {/* Left Sidebar */}
 
                     <>{LeftSidebar}</>
 
                     {/* Main Content */}
-                    <main className="flex flex-1 overflow-auto relative">{<Outlet />}</main>
+                    <main className="border border-yellow-400  w-full h-full  relative">{<Outlet />}</main>
 
                     {/* Right Sidebar */}
                     {/* {rightSidebar!==null ? (
