@@ -235,10 +235,10 @@ function DefaultPage() {
     };
 
     return (
-        <div className=" flex-1 flex flex-col  overflow-clip     ">
+        <div className=" flex-1 flex flex-col   w-full  relative  ">
             <h1 className="text-xl font-bold text-gray-700 text-center">2025年整体时间统计</h1>
 
-            <div className=" flex flex-row  flex-nowrap   flex-1 overflow-clip justify-evenly items-center  gap-2 m-2 ">
+            <div className=" flex flex-row  flex-nowrap   flex-1 overflow-auto justify-evenly items-center  gap-2 m-2 ">
                 <button
                     className="text-blue-700 self-stretch border border-transparent rounded hover:text-blue-500 hover:border hover:border-blue-400 px-4 disabled:text-gray-500 disabled:cursor-not-allowed"
                     disabled={startIndex === 0}

@@ -114,94 +114,99 @@ function EditDutyRecord() {
                 </div>
                 <div className="flex flex-row items-start gap-2">
                     <label className=" font-bold">席位</label>
-                    <div className=" flex flex-row flex-wrap gap-2 items-start">
-                        {positions.map((item, index) => {
-                            const p = item.position;
-                            return (
-                                //
-                                <div
-                                    key={index}
-                                    className="flex flex-col gap-1 justify-start   border border-gray-200 bg-gray-100 px-[0.5rem] py-1 rounded"
-                                >
-                                    <label className="inline-flex gap-1 items-center">
-                                        <input
-                                            value={item.position}
-                                            type="radio"
-                                            name="position-radio"
-                                            checked={item.position === editingDutyRecord?.position}
-                                            onChange={(e) => {
-                                                setEditingDutyRecord((prev) => {
-                                                    if (item.canTeach) {
-                                                        return { ...prev, position: e.target.value };
-                                                    } else {
-                                                        return {
-                                                            ...prev,
-                                                            position: e.target.value,
-                                                            roleType: null,
-                                                            relatedDutyTableRowId: null,
-                                                        };
-                                                    }
-                                                });
-                                            }}
-                                        />
-                                        {item.position}
-                                    </label>
-                                    {item.dutyType && (
-                                        <div className="flex flex-col border border-gray-200 px-[0.2rem] rounded">
-                                            {["主班", "副班"].map((x, i) => {
-                                                return (
-                                                    <label key={i} className="inline-flex gap-1">
-                                                        <input
-                                                            type="radio"
-                                                            checked={
-                                                                x === editingDutyRecord?.dutyType &&
-                                                                item.position === editingDutyRecord?.position
-                                                            }
-                                                            value={x}
-                                                            name={`${index}isMainOrCo-radio`}
-                                                            onChange={(e) => {
-                                                                setEditingDutyRecord((prev) => {
-                                                                    return { ...prev, dutyType: e.target.value };
-                                                                });
-                                                            }}
-                                                        />
-                                                        {x}
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                    {item.canTeach !== 0 && (
-                                        <div className="flex flex-col border border-gray-200 px-[0.2rem] rounded">
-                                            {["教员", "见习"].map((y, i) => {
-                                                return (
-                                                    <label key={i} className="inline-flex gap-1">
-                                                        <input
-                                                            type="radio"
-                                                            value={y}
-                                                            checked={
-                                                                y === editingDutyRecord?.roleType &&
-                                                                item.position === editingDutyRecord?.position
-                                                            }
-                                                            name={`${index}isTeacherOrStudent`}
-                                                            onChange={(e) => {
-                                                                setEditingDutyRecord({
-                                                                    ...editingDutyRecord,
-                                                                    roleType: e.target.value,
-                                                                });
-                                                            }}
-                                                        />
-                                                        {y}
-                                                    </label>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
+                    <div className=" flex flex-col flex-wrap gap-2 items-start">
+                        <div className=" flex flex-row flex-wrap gap-2 items-start">
+                            {positions.map((item, index) => {
+                                const p = item.position;
+                                return (
+                                    //
+                                    <div
+                                        key={index}
+                                        className="flex flex-col gap-1 justify-start   border border-gray-200 bg-gray-100 px-[0.5rem] py-1 rounded"
+                                    >
+                                        <label className="inline-flex gap-1 items-center">
+                                            <input
+                                                value={item.position}
+                                                type="radio"
+                                                name="position-radio"
+                                                checked={item.position === editingDutyRecord?.position}
+                                                onChange={(e) => {
+                                                    setEditingDutyRecord((prev) => {
+                                                        if (item.canTeach) {
+                                                            return { ...prev, position: e.target.value };
+                                                        } else {
+                                                            return {
+                                                                ...prev,
+                                                                position: e.target.value,
+                                                                roleType: null,
+                                                                relatedDutyTableRowId: null,
+                                                            };
+                                                        }
+                                                    });
+                                                }}
+                                            />
+                                            {item.position}
+                                        </label>
+                                        {item.dutyType && (
+                                            <div className="flex flex-col border border-gray-200 px-[0.2rem] rounded">
+                                                {["主班", "副班"].map((x, i) => {
+                                                    return (
+                                                        <label key={i} className="inline-flex gap-1">
+                                                            <input
+                                                                type="radio"
+                                                                checked={
+                                                                    x === editingDutyRecord?.dutyType &&
+                                                                    item.position === editingDutyRecord?.position
+                                                                }
+                                                                value={x}
+                                                                name={`${index}isMainOrCo-radio`}
+                                                                onChange={(e) => {
+                                                                    setEditingDutyRecord((prev) => {
+                                                                        return { ...prev, dutyType: e.target.value };
+                                                                    });
+                                                                }}
+                                                            />
+                                                            {x}
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                        {item.canTeach !== 0 && (
+                                            <div className="flex flex-col border border-gray-200 px-[0.2rem] rounded">
+                                                {["教员", "见习"].map((y, i) => {
+                                                    return (
+                                                        <label key={i} className="inline-flex gap-1">
+                                                            <input
+                                                                type="radio"
+                                                                value={y}
+                                                                checked={
+                                                                    y === editingDutyRecord?.roleType &&
+                                                                    item.position === editingDutyRecord?.position
+                                                                }
+                                                                name={`${index}isTeacherOrStudent`}
+                                                                onChange={(e) => {
+                                                                    setEditingDutyRecord({
+                                                                        ...editingDutyRecord,
+                                                                        roleType: e.target.value,
+                                                                    });
+                                                                }}
+                                                            />
+                                                            {y}
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
+                                    </div>
 
-                                //
-                            );
-                        })}
+                                    //
+                                );
+                            })}
+                        </div>
+                        <label className="text-justify text-blue-600  font-semibold">
+                            不要勾选 教员或见习
+                        </label>
                     </div>
                 </div>
                 <div className="flex flex-row  items-start gap-4 ">
@@ -357,44 +362,39 @@ function EditDutyRecord() {
                                 <span className="text-sm text-red-500">(教员或学员的数据,需要修改对应项)</span>
                             </label>
                             <div className="flex flex-row ">
-                                {(editingDutyRecord?.relatedDutyTableRowId ?? "")
-                                    .split(";")
-                                    .filter(Boolean)
-                                    .map((rId, index) => {
-                                        return (
-                                            <label
-                                                key={index}
-                                                className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                                {editingDutyRecord?.relatedDutyTableRowId?.map((rId, index) => {
+                                    return (
+                                        <label
+                                            key={index}
+                                            className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                                        >
+                                            {rId}
+                                            <button
+                                                className="ml-1 text-red-300 hover:text-red-600 hover:font-extrabold"
+                                                onClick={() => {
+                                                    // 获取当前标签数组
+                                                    const currentTags = (editingDutyRecord?.relatedDutyTableRowId || "")
+                                                        .split(";")
+                                                        .filter(Boolean);
+
+                                                    // 过滤掉要删除的标签
+
+                                                    const updatedTags = currentTags.filter((_, i) => i !== index);
+                                                    const newValue =
+                                                        updatedTags.length > 0 ? updatedTags.join(";") : null;
+
+                                                    // 更新状态
+                                                    setEditingDutyRecord((prev) => ({
+                                                        ...prev,
+                                                        relatedDutyTableRowId: newValue,
+                                                    }));
+                                                }}
                                             >
-                                                {rId}
-                                                <button
-                                                    className="ml-1 text-red-300 hover:text-red-600 hover:font-extrabold"
-                                                    onClick={() => {
-                                                        // 获取当前标签数组
-                                                        const currentTags = (
-                                                            editingDutyRecord?.relatedDutyTableRowId || ""
-                                                        )
-                                                            .split(";")
-                                                            .filter(Boolean);
-
-                                                        // 过滤掉要删除的标签
-
-                                                        const updatedTags = currentTags.filter((_, i) => i !== index);
-                                                        const newValue =
-                                                            updatedTags.length > 0 ? updatedTags.join(";") : null;
-
-                                                        // 更新状态
-                                                        setEditingDutyRecord((prev) => ({
-                                                            ...prev,
-                                                            relatedDutyTableRowId: newValue,
-                                                        }));
-                                                    }}
-                                                >
-                                                    X
-                                                </button>
-                                            </label>
-                                        );
-                                    })}
+                                                X
+                                            </button>
+                                        </label>
+                                    );
+                                })}
                                 {isEditing === false ? (
                                     <label className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                                         <button
@@ -429,7 +429,6 @@ function EditDutyRecord() {
                 </div>
                 <div className="flex flex-row gap-4 justify-end">
                     <Button
-                       
                         disabled={!canSave || errorLog}
                         onClick={() => {
                             fetch(API_URL.duty + "/" + selectedDutyRecord.id, {
@@ -454,9 +453,7 @@ function EditDutyRecord() {
                     >
                         保存修改
                     </Button>
-                    <Button color="red" >
-                        删除此条目
-                    </Button>
+                    <Button color="red">删除此条目</Button>
                 </div>
             </div>
         </Theme>

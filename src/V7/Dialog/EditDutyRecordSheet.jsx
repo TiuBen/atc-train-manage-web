@@ -38,7 +38,7 @@ function EditDutyRecordSheet() {
                     </Button>
                 </Dialog.Title>
                 <Dialog.Description className="text-sm text-blue-600 font-light italic" >
-                    小心修改执勤记录,如果此条目为教员或见习,请先修改学员记录。
+                    小心修改执勤记录,如果此条目为教员,请先修改学员记录。
                 </Dialog.Description>
                 <EditDutyRecord />
            

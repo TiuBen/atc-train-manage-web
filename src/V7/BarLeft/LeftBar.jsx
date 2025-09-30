@@ -45,7 +45,7 @@ const LeftNavItem = ({ title, href, Icon, active, isExpanded, subNav }) => {
 
     return (
         <Link to={href} title={href} className={`self-center flex gap-1 items-center  flex-col `}>
-            <Icon size={"2.5rem"} />
+            <Icon size={"2rem"} />
             <h2 className={`  text-sm`}>{title}</h2>
         </Link>
     );
@@ -111,12 +111,12 @@ function LeftBar(props) {
 
     return (
         <aside
-            className={`relative  m-0  gap-8 border border-red-400  flex flex-col items-stretch bg-blue-600  text-blue-50 ${
-                isLeftSidebarOpen ? " w-{12rem}" : "w-[4rem]"
+            className={` m-0  flex flex-row  bg-blue-600  text-blue-50 ${
+                isLeftSidebarOpen ? "w-{12rem}" : "w-[5rem]"
             } `}
         >
             <div
-                className="flex flex-col flex-1 items-start gap-2 px-4 pt-4 text-accent font-bold "
+                className="flex flex-col items-start gap-2 p-4 text-accent font-bold "
                 // style={{ color: "var(--accent-9)" }}
             >
                 {items.map((item, index) => {
@@ -135,11 +135,11 @@ function LeftBar(props) {
                 })}
             </div>
             <button
-                className={`p-0 m-0 self-center    hover:cursor-ew-resize  shadow-md  hover:bg-blue-300 duration-200`}
+                className={`w-[0.6rem]  hover:cursor-ew-resize  shadow-md  font-mono font-semibold hover:bg-blue-300 duration-200`}
                 onClick={() => {
                     setLeftSidebarOpen(!isLeftSidebarOpen);
                 }}
-            ><PanelLeftClose size={"2rem"}/> </button>
+            > {isLeftSidebarOpen?<>&lt;</>:<>&gt;</> } </button>
         </aside>
     );
 }
