@@ -194,14 +194,17 @@ function LikeExcel() {
                                     "border border-slate-600 px-1 text-nowrap text-center hover:bg-blue-500 hover:text-white  items-center justify-center"
                                 }
                             >
-                                 <button className="" onClick={() => setDialogPayload({ ...payload, editSheetDisplay: true })}>
-                    <Plus size={16} />
-                </button>
+                                <button
+                                    className=""
+                                    onClick={() => setDialogPayload({ ...payload, editSheetDisplay: true })}
+                                >
+                                    <Plus size={16} />
+                                </button>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-               
+
                 <DetailStatisticsTable dutyStatistics={selectedUserDutyStatistics} />
             </div>
         </div>
