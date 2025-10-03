@@ -9,7 +9,7 @@ import {
     MoonStar,
     FileDown,
     PanelLeftClose,
-    PanelRightClose
+    PanelRightClose,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -111,8 +111,8 @@ function LeftBar(props) {
 
     return (
         <aside
-            className={` m-0  flex flex-row  bg-blue-600  text-blue-50 ${
-                isLeftSidebarOpen ? "w-{12rem}" : "w-[5rem]"
+            className={` h-[calc(100vh-4.5rem)] overflow-y-auto flex flex-row  bg-blue-600  text-blue-50 ${
+                isLeftSidebarOpen ? "w-{12rem}" : ""
             } `}
         >
             <div
@@ -139,7 +139,10 @@ function LeftBar(props) {
                 onClick={() => {
                     setLeftSidebarOpen(!isLeftSidebarOpen);
                 }}
-            > {isLeftSidebarOpen?<>&lt;</>:<>&gt;</> } </button>
+            >
+                {" "}
+                {isLeftSidebarOpen ? <>&lt;</> : <>&gt;</>}{" "}
+            </button>
         </aside>
     );
 }

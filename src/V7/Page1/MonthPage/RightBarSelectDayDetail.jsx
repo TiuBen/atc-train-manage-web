@@ -78,7 +78,7 @@ function RightBarSelectDayDetail() {
                 <div>loading....</div>
             ) : (
                 <div className="flex flex-col flex-1  flex-nowrap text-sm  ">
-                    {users.map((item, index) => {
+                    {users?.map((item, index) => {
                         return <UserRow key={index} userId={item.id} month={dayjs().get("month")} username={item.username} />;
                     })}
                 </div>

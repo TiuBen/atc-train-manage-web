@@ -183,7 +183,7 @@ function DetailStatisticsTable({dutyStatistics}) {
                     <tr className="hover:bg-slate-400">
                         <td className=" border border-slate-600 px-1 text-nowrap text-sm text-center">见习</td>
                         <td className=" border border-slate-600 px-1 text-nowrap text-sm text-center">
-                            {formatDecimal(dutyStatistics?.totalStudentTime?.dayShift)}
+                            {formatDecimal(dutyStatistics?.totalStudentTime?.time)}
                             {/* {formatDecimal(totalTeacherTime?.time)} */}
                         </td>
                         <td className=" border border-slate-600 px-1 text-nowrap text-sm text-center">

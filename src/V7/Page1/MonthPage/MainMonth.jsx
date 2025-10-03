@@ -58,7 +58,7 @@ function TimeLineSidebar({ date }) {
     );
 }
 
-function MonthPage() {
+function MainMonth() {
     const { year, month, addOneMonth, subOneMonth } = useCalendar();
 
     // useEffect(() => {
@@ -120,4 +120,4 @@ function MonthPage() {
     );
 }
 
-export default MonthPage;
+export default MainMonth;

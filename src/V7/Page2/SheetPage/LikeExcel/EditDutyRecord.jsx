@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import useStore from "../../../../utils/store/userStore.js";
 dayjs.extend(duration);
+import useDialog from "../../../../utils/hooks/useDialog.js";
 
 function EditDutyRecord() {
     const { selectedDutyRecord, positions } = useStore();
@@ -28,6 +29,8 @@ function EditDutyRecord() {
     const [newRelatedDutyRecordId, setNewRelatedDutyRecordId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const inputRef = useRef(null);
+    const { dialogPayload,setDialogPayload } = useDialog();
+
 
     useEffect(() => {
         setEditingDutyRecord(selectedDutyRecord);
@@ -204,9 +207,7 @@ function EditDutyRecord() {
                                 );
                             })}
                         </div>
-                        <label className="text-justify text-blue-600  font-semibold">
-                            不要勾选 教员或见习
-                        </label>
+                        <label className="text-justify text-blue-600  font-semibold">不要勾选 教员或见习</label>
                     </div>
                 </div>
                 <div className="flex flex-row  items-start gap-4 ">
@@ -441,10 +442,11 @@ function EditDutyRecord() {
                                 .then((response) => response.json())
                                 .then((data) => {
                                     console.log("Success:", data);
-                                    if (data.success) {
-                                        mutate();
-                                    }
+                                    // if (data.success) {
+                                    //     mutate();
+                                    // }
                                     setErrorLog("");
+                                    setDialogPayload({ editSheetDisplay: false });
                                 })
                                 .catch((error) => {
                                     console.error("Error:", error);
@@ -453,7 +455,28 @@ function EditDutyRecord() {
                     >
                         保存修改
                     </Button>
-                    <Button color="red">删除此条目</Button>
+                    <Button
+                        color="red"
+                        onClick={() => {
+                            fetch(API_URL.duty + "/" + selectedDutyRecord.id, {
+                                method: "DELETE",
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    console.log("Success:", data);
+                                    // if (data.success) {
+                                    //     mutate();
+                                    // }
+                                    setErrorLog("");
+                                })
+                                .catch((error) => {
+                                    console.error("Error:", error);
+                                });
+                                setDialogPayload({ editSheetDisplay: false });
+                        }}
+                    >
+                        删除此条目
+                    </Button>
                 </div>
             </div>
         </Theme>
