@@ -20,11 +20,13 @@ function Skeleton({
 
     return (
         <>
-            <div className="grid grid-rows-[3rem,1fr,1.5rem] grid-cols-[min-content_1fr] h-[100vh] w-[100vw] overflow-hidden">
+            <div className="grid grid-rows-[3rem,1fr,1.5rem] grid-cols-[min-content_1fr] w-[100vw] h-[100vh] overflow-clip ">
                 <header className=" col-span-2">{topNav}</header>
-                <nav className=" h-[calc(100vh-4.5rem)] overflow-y-auto">{LeftSidebar}</nav>
-                <main className="w-full h-full  relative">{<Outlet />}</main>
-                <footer className="col-span-2">{bottomBar}</footer>
+                <nav className="  ">{LeftSidebar}</nav>
+                <main className=" overflow-auto ">
+                   <Outlet />
+                </main>
+                <footer className="col-span-2 ">{bottomBar}</footer>
             </div>
         </>
     );

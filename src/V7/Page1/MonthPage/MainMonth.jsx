@@ -68,8 +68,8 @@ function MainMonth() {
     const [date, setDate] = useState("");
 
     return (
-        <div className="flex flex-row flex-1  ">
-            <div className="flex-1 p-2 ">
+        <div className=" flex flex-row flex-1 items-stretch w-full h-full ">
+            <div className="flex-1 p-2 items-stretch justify-stretch ">
                 <MonthCalender
                     title={
                         <div className="flex flex-row flex-1 flex-shrink-0 items-center justify-between p-2">
@@ -93,6 +93,15 @@ function MainMonth() {
                                 >
                                     下一月
                                 </Button>
+                                <Button
+                                    color="red"
+                                    size="1"
+                                    onClick={() => {
+                                        addOneMonth();
+                                    }}
+                                >
+                                    查看
+                                </Button>
                             </div>
 
                             <div className="text-sm text-gray-500">共31天</div>
@@ -115,7 +124,7 @@ function MainMonth() {
                     }}
                 />
             </div>
-          <RightBarSelectDayDetail />
+          {/* <RightBarSelectDayDetail /> */}
         </div>
     );
 }

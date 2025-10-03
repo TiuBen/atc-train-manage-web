@@ -13,6 +13,7 @@ import EditDutyRecordSheet from "./Dialog/EditDutyRecordSheet";
 import EditPositionDialog from "./Dialog/EditPositionDialog";
 import PositionList from "./CommonComponent/PositionList";
 import MonthPage from "./Page1/MonthPage";
+import MainMonth from "./Page1/MonthPage/MainMonth";
 import DutyPageMain from "./Page1/OnDutyPage/DutyPageMain";
 import DefaultPage from "./Page2/DefaultPage/DefaultPage";
 import SettingPage from "./Page2/SettingPage/SettingPage";
@@ -47,7 +48,7 @@ function AppV7() {
                                 <Route index element={<MonthPage />} />
 
                                 <Route path="duty" element={<DutyPageMain />} />
-                                <Route path="calendar" element={<MonthPage />} />
+                                <Route path="calendar" element={<MainMonth />} />
                                 <Route path="admin" element={<Page2 />}>
                                     <Route index element={<DefaultPage />} />
                                     <Route path="sheet" element={<Sheet />} />
