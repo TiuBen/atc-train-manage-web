@@ -146,7 +146,7 @@ function Staff(props) {
 
                     <img
                         className={`max-w-[5rem] max-h-[4rem]  aspect-auto `}
-                        src={SERVER_URL + "/" + username + ".jpg"}
+                        src={`${SERVER_URL}/images/${username}.jpg`  }
                         alt={username}
                     />
                 </div>

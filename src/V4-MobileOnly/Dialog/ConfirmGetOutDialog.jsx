@@ -54,7 +54,8 @@ function ConfirmGetOutDialog() {
                     <img
                         size={"9"}
                         className=" h-[6rem]"
-                        src={SERVER_URL + "/" + selectedDutyRecord?.username + ".jpg"}
+                        // src={SERVER_URL + "/" + selectedDutyRecord?.username + ".jpg"}
+                        src={`${SERVER_URL}/images/${selectedDutyRecord?.username}.jpg`  }
                         alt={selectedDutyRecord?.username}
                     />
                     <Button

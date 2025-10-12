@@ -1,6 +1,6 @@
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-// const SERVER_URL = "http://localhost:3105/api";
-// const SERVER_URL = ":3105/api";
+// const SERVER_URL = "http://localhost:3105";
+// const SERVER_URL = ":3105";
 
 const FETCHER = (...args) => fetch(...args).then((res) => res.json());
 
@@ -25,13 +25,13 @@ const POSITIONS = [
 const API_URL = {
     API_URL: `${SERVER_URL}`,
 
-    positions: `${SERVER_URL}/positions`,
-    users: `${SERVER_URL}/users`,
-    duty: `${SERVER_URL}/duty`,
-    roles: `${SERVER_URL}/roles`,
-    excel: `${SERVER_URL}/download-excel`,
-    events: `${SERVER_URL}/events`,
-    files: `${SERVER_URL}/files`,
+    positions: `${SERVER_URL}/api/positions`,
+    users: `${SERVER_URL}/api/users`,
+    duty: `${SERVER_URL}/api/duty`,
+    roles: `${SERVER_URL}/api/roles`,
+    excel: `${SERVER_URL}/api/download-excel`,
+    events: `${SERVER_URL}/api/events`,
+    files: `${SERVER_URL}/api/files`,
 };
 
 export { SERVER_URL, FETCHER, POSITIONS, API_URL };
