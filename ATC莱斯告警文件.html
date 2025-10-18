@@ -187,22 +187,39 @@
                 </label>
             );
         }
-        const laisiAlert = [{ alertEN: "RSI", alertCN: "限制区侵入告警",groundAlert:true ,airAlert:true},
-        { alertEN: "RWU", alertCN: "跑道状态不符告警" }, { alertEN: "APM", alertCN: "进近下滑道偏离告警" },
-        { alertEN: "TUB", alertCN: "尾流告警" }, { alertEN: "RED",alertCN:"闯停止排灯告警" }, { alertEN: "RIW", alertCN: "跑道保护区侵入告警" },
-        { alertEN: "CNA ", alertCN: "穿越与落地冲突告警" }, { alertEN: "ADS", alertCN: "落地与起飞冲突告警" },
-        { alertEN: "DUS", alertCN: "起飞与未脱离冲突告警" }, { alertEN: "CND", alertCN: "穿越与起飞冲突告警" },
-        { alertEN: "SEN", alertCN: "敏感区侵入告警" }, { alertEN: "NTZ", alertCN: "非侵入区告警" },
-        { alertEN: "CLAM", alertCN: "指令高度不一致告警" }, { alertEN: "DUPS", alertCN: "二次代码重复告警" },
-        { alertEN: "TCW", alertCN: "滑行道冲突告警" }, { alertEN: "RTW", alertCN: "偏离路由告警" },
-        { alertEN: "LND ", alertCN: "LND 指令不符告警" }, { alertEN: "LIN", alertCN: "LIN 指令不符告警" },
-        { alertEN: "DEP", alertCN: "DEP 指令不符告警" }, { alertEN: "ADR", alertCN: "地址码不符告警" },
-        { alertEN: "BRK", alertCN: "起飞中断告警" }, { alertEN: "MIS", alertCN: "复飞告警" },
-        { alertEN: "DIF", alertCN: "相关不一致告警" }, { alertEN: "DUPC", alertCN: "航班号重复告警" },
-        { alertEN: "DUPA", alertCN: "地址码重复告警" }, { alertEN: " DTZ", alertCN: "起飞偏航告警" },
-        { alertEN: "SSR", alertCN: "二次代码不符告警" }, { alertEN: "CSD", alertCN: "航班号不一致" },
-        { alertEN: "OVS", alertCN: "超速告警" }, { alertEN: "FSSA", alertCN: "FSSA 意图高度不一致告警" },
-        { alertEN: "BPM", alertCN: "QNH 不一致告警" }, { alertEN: "PBN",alertCN: "PBN 许可告警" }, { alertEN: "ADSB",alertCN: "ADSB 许可告警" }];
+        const laisiAlert = [{ alertEN: "RSI", alertCN: "限制区侵入告警", groundAlert: true, airAlert: true },
+        { alertEN: "RWU", alertCN: "跑道状态不符告警",groundAlert: true, airAlert: true },
+         { alertEN: "APM", alertCN: "进近下滑道偏离告警",groundAlert: true, airAlert: true },
+        { alertEN: "TUB", alertCN: "尾流告警",groundAlert: true, airAlert: true },
+        { alertEN: "RED", alertCN: "闯停止排灯告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "RIW", alertCN: "跑道保护区侵入告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "CNA ", alertCN: "穿越与落地冲突告警" ,groundAlert: true, airAlert: true},
+         { alertEN: "ADS", alertCN: "落地与起飞冲突告警",groundAlert: true, airAlert: true },
+        { alertEN: "DUS", alertCN: "起飞与未脱离冲突告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "CND", alertCN: "穿越与起飞冲突告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "SEN", alertCN: "敏感区侵入告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "NTZ", alertCN: "非侵入区告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "CLAM", alertCN: "指令高度不一致告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "DUPS", alertCN: "二次代码重复告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "TCW", alertCN: "滑行道冲突告警" }, 
+        { alertEN: "RTW", alertCN: "偏离路由告警" },
+        { alertEN: "LND ", alertCN: "LND 指令不符告警",groundAlert: true, airAlert: true }, 
+        { alertEN: "LIN", alertCN: "LIN 指令不符告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "DEP", alertCN: "DEP 指令不符告警",groundAlert: true, airAlert: true }, 
+        { alertEN: "ADR", alertCN: "地址码不符告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "BRK", alertCN: "起飞中断告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "MIS", alertCN: "复飞告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "DIF", alertCN: "相关不一致告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "DUPC", alertCN: "航班号重复告警" ,groundAlert: true, airAlert: true},
+        { alertEN: "DUPA", alertCN: "地址码重复告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: " DTZ", alertCN: "起飞偏航告警",groundAlert: true, airAlert: true },
+        { alertEN: "SSR", alertCN: "二次代码不符告警" ,groundAlert: true, airAlert: true},
+         { alertEN: "CSD", alertCN: "航班号不一致",groundAlert: true, airAlert: true },
+        { alertEN: "OVS", alertCN: "超速告警" }, 
+        { alertEN: "FSSA", alertCN: "FSSA 意图高度不一致告警",groundAlert: true, airAlert: true},
+        { alertEN: "BPM", alertCN: "QNH 不一致告警" ,groundAlert: true, airAlert: true}, 
+        { alertEN: "PBN", alertCN: "PBN 许可告警" ,groundAlert: true, airAlert: true},
+         { alertEN: "ADSB", alertCN: "ADSB 许可告警" ,groundAlert: true, airAlert: true}];
 
 
         function AddAlertButton() {
@@ -210,12 +227,12 @@
                 < >
                     {
                         laisiAlert.map((alert, index) => {
-                            return <div style={{ display: 'flex', flexDirection: 'row', flexWrap: "none", width: "300px",textWrap: "nowrap",gap:"0.5rem" }}> 
-                            <Switch size="lg" key={index} label={alert.alertEN} /> 
+                            return <div style={{ display: 'flex', flexDirection: 'row', flexWrap: "none", width: "300px", textWrap: "nowrap", gap: "0.5rem" }}>
+                                <Switch size="lg" key={index} label={alert.alertEN} checked={alert.groundAlert} />
 
-                                {alert.alertCN} 
-                                
-                                </div>
+                                {alert.alertCN}
+
+                            </div>
                         })
                     }
                 </>
