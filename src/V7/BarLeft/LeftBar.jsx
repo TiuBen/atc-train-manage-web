@@ -10,6 +10,7 @@ import {
     FileDown,
     PanelLeftClose,
     PanelRightClose,
+    ChartLine
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -73,6 +74,12 @@ function LeftBar(props) {
                     Icon: (props) => <CalendarDays {...props} strokeWidth={1.5} />,
                     active: false,
                 },
+                {
+                    title: "统计",
+                    href: "/night",
+                    Icon: (props) => <ChartLine {...props} size={"1.5em"} strokeWidth={1.5} />,
+                    active: false,
+                },
             ],
         },
         {
@@ -93,12 +100,7 @@ function LeftBar(props) {
                     Icon: (props) => <Settings {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
                 },
-                {
-                    title: "夜班统计",
-                    href: "admin/night",
-                    Icon: (props) => <MoonStar {...props} size={"1.5em"} strokeWidth={1.5} />,
-                    active: false,
-                },
+
                 {
                     title: "导出",
                     href: "admin/excel",

@@ -18,11 +18,14 @@ import DutyPageMain from "./Page1/OnDutyPage/DutyPageMain";
 import DefaultPage from "./Page2/DefaultPage/DefaultPage";
 import SettingPage from "./Page2/SettingPage/SettingPage";
 import Sheet from "./Page2/SheetPage/Sheet";
-import NightPage from "./Page2/NightCount/NightPage";
+import NightPage from "./Page1/NightCount/NightPage";
 import DownloadExcelPage from "./Page2/DownloadExcel/DownloadExcelPage";
 import { API_URL } from "../utils/const/Const";
 import AddNewDutyRecordDialog from "./Dialog/AddNewDutyRecordDialog";
 import Page2 from "./Page2/Page2";
+import TimeLinePage from "./Page1/DefaultPage/TimeLinePage";
+import ProtectedRoute from "./Skeleton/ProtectedRoute";
+import LoginPage from "./Skeleton/LoginPage";
 
 function AppV7() {
     const { fetchUsers, fetchPositions, users } = useStore();
@@ -32,6 +35,20 @@ function AppV7() {
     // }, [fetchUsers,fetchPositions]);
 
     const [navWidth, setNavWidth] = useState("8rem");
+
+    // const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    // useEffect(() => {
+    //     // 检查本地 token 是否存在
+    //     const token = localStorage.getItem("token");
+    //     if (token) setIsLoggedIn(true);
+    // }, []);
+
+    // const handleLogout = () => {
+    //     localStorage.removeItem("token");
+    //     setIsLoggedIn(false);
+    // };
+
     return (
         <PageContextProvider>
             <DialogContextProvider>
@@ -45,15 +62,23 @@ function AppV7() {
                                     <Skeleton topNav={<TopNav />} LeftSidebar={<LeftBar />} bottomBar={<BottomBar />} />
                                 }
                             >
-                                <Route index element={<MonthPage />} />
+                                <Route index element={<TimeLinePage />} />
 
                                 <Route path="duty" element={<DutyPageMain />} />
                                 <Route path="calendar" element={<MainMonth />} />
-                                <Route path="admin" element={<Page2 />}>
+                                <Route path="login" element={<LoginPage />} />
+                                <Route path="night" element={<NightPage />} />
+                                <Route
+                                    path="admin/*"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Page2 />
+                                        </ProtectedRoute>
+                                    }
+                                >
                                     <Route index element={<DefaultPage />} />
                                     <Route path="sheet" element={<Sheet />} />
                                     <Route path="setting" element={<SettingPage />} />
-                                    <Route path="night" element={<NightPage />} />
                                     <Route path="excel" element={<DownloadExcelPage />} />
                                 </Route>
                             </Route>
@@ -69,9 +94,8 @@ function AppV7() {
 
 export default AppV7;
 
-
-
-{/* <div className="grid grid-rows-[3rem_1fr_1.5rem] grid-cols-[auto_1fr] h-[100vh] w-[100vw] overflow-hidden">
+{
+    /* <div className="grid grid-rows-[3rem_1fr_1.5rem] grid-cols-[auto_1fr] h-[100vh] w-[100vw] overflow-hidden">
 <header className="col-span-2 bg-yellow-200">header</header>
 <nav className={`w-[${navWidth}] bg-green-200 h-[calc(100vh-4.5rem)] overflow-y-auto`}>
     nav
@@ -190,4 +214,5 @@ export default AppV7;
         <p>用户 12</p>
     </div>
 </div>
-</div> */}
+</div> */
+}

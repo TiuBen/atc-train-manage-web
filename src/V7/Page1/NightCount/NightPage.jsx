@@ -3,11 +3,12 @@ import { TabNav, Tabs } from "@radix-ui/themes";
 import NightCountByHourSlot from "./NightCountByHourSlot";
 import NightCountByMonth from "./NightCountByMonth";
 import dayjs from "dayjs";
+import DefaultPage from "./DefaultPage";
 
 function NightPage() {
     // 根据当前路径匹配路由
 
-    const [first, setfirst] = useState(2);
+    const [first, setfirst] = useState(3);
     useEffect(() => {
         console.log(`Type changed to: ${first}`);
     }, [first]);
@@ -19,15 +20,15 @@ function NightPage() {
                 return <NightCountByMonth />;
 
             default:
-                return <div>Unknown Type</div>;
+                return <DefaultPage />;
         }
     };
 
     return (
         <div className="flex flex-col gap-2 flex-1 ">
-            <div className="flex flex-row items-center px-4">
-                <h1 className=" self-center text-xl font-bold text-blue-700 text-center">
-                    {dayjs().get("year")}年夜班次数统计
+            <div className="flex flex-row items-center px-4 ">
+                <h1 className=" self-center text-2xl font-bold text-blue-700 text-center">
+                    {dayjs().get("year")}年每月统计
                 </h1>
                 <TabNav.Root>
                     <TabNav.Link
@@ -38,7 +39,7 @@ function NightPage() {
                             e.preventDefault();
                         }}
                     >
-                        <label className="text-2xl font-bold">小时统计</label>
+                        <label className="text-2xl font-bold">夜班时段</label>
                     </TabNav.Link>
                     <TabNav.Link
                         href="/admin/night/2"
@@ -48,7 +49,17 @@ function NightPage() {
                             e.preventDefault();
                         }}
                     >
-                        <label className="text-2xl font-bold">月度统计</label>
+                        <label className="text-2xl font-bold">夜班频次</label>
+                    </TabNav.Link>
+                    <TabNav.Link
+                        href="/admin/night/3"
+                        active={first === 3}
+                        onClick={(e) => {
+                            setfirst(3);
+                            e.preventDefault();
+                        }}
+                    >
+                        <label className="text-2xl font-bold">当月时长</label>
                     </TabNav.Link>
                 </TabNav.Root>
             </div>

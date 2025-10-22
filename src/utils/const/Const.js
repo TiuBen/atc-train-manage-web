@@ -24,7 +24,9 @@ const POSITIONS = [
 
 const API_URL = {
     API_URL: `${SERVER_URL}`,
-
+    login: `${SERVER_URL}/api/login`,
+    logout: `${SERVER_URL}/api/logout`,
+    log: `${SERVER_URL}/api/log`,
     positions: `${SERVER_URL}/api/positions`,
     users: `${SERVER_URL}/api/users`,
     duty: `${SERVER_URL}/api/duty`,
