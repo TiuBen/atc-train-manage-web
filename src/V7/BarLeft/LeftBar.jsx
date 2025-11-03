@@ -103,7 +103,7 @@ function LeftBar(props) {
 
                 {
                     title: "导出",
-                    href: "admin/excel",
+                    href: "/admin/excel",
                     Icon: (props) => <FileDown {...props} size={"1.5em"} strokeWidth={1.5} />,
                     active: false,
                 },

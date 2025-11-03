@@ -69,7 +69,7 @@ function AppV7() {
                                 <Route path="login" element={<LoginPage />} />
                                 <Route path="night" element={<NightPage />} />
                                 <Route
-                                    path="admin/*"
+                                    path="admin"
                                     element={
                                         <ProtectedRoute>
                                             <Page2 />

@@ -58,7 +58,7 @@ function UserSettingPage() {
                                         key={i}
                                         style={{ gap: "0.25rem" }}
                                         className=" hover:font-bold hover:text-blue-700"
-                                        checked={selectedUser?.id === i+1}
+                                        checked={selectedUser?.id === i}
                                     >
                                         {item.username}
                                     </RadioGroup.Item>
