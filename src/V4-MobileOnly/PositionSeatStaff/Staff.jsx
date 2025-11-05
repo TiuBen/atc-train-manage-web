@@ -100,7 +100,7 @@ function Staff(props) {
         }, 15 * 1000);
 
         return () => clearInterval(timerId);
-    }, [props]);
+    }, [inTime, roleStartTime]);
 
     // 专门检测能否 带培
     useEffect(() => {
