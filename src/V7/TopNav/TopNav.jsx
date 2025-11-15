@@ -27,6 +27,9 @@ function TopNav() {
         navigate("/");
     };
 
+    const {login,logout}=useAuth();
+
+
     return (
         <div className="flex flex-row h-full items-center justify-between  flex-1 bg-blue-800 text-white">
             <h3 className="text-xl mx-4 font-bold  flex gap-2">

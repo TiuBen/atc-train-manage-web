@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import useStore from "../../utils/store/userStore";
 
+import UserStore from "../../store/UserStore"
+
 // function RadioButtonUserList({ queryName, onClick }) {
 function RadioButtonUserList() {
-    const { users, selectedUser } = useStore();
+    // const { users, selectedUser } = useStore();
+    const {users,selectedUser}=UserStore();
 
     return (
         <aside className="grid grid-cols-2 w-[13rem] overflow-auto min-h-0  content-start gap-1 p-2 ">
@@ -18,7 +21,7 @@ function RadioButtonUserList() {
                             value={item.username}
                             checked={item === selectedUser}
                             onChange={(e) => {
-                                useStore.setState({ selectedUser: item });
+                                UserStore.setState({ selectedUser: item });
                             }}
                         />
                         {item.username}

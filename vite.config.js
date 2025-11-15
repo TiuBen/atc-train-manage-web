@@ -39,7 +39,7 @@ export default defineConfig(({ command, mode }) => {
                 },  
             },
         },
-        base: "./",
+        base: "/",
         build: {
             outDir: "dist",
             assetsDir: "src",
