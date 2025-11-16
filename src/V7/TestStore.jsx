@@ -28,7 +28,7 @@ function TestStore() {
 
     return (
         <div>
-            <button onClick={() => setSize(size + 1)} className="px-4 py-2 bg-blue-600 text-white rounded">
+            <button onClick={() => setSize(  1)} className="px-4 py-2 bg-blue-600 text-white rounded">
                 手动加载下一页
             </button>
             {isLoadingInitial && <div>初始化加载中...</div>}
