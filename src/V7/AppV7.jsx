@@ -71,9 +71,9 @@ function AppV7() {
                                 <Route
                                     path="admin"
                                     element={
-                                        <ProtectedRoute>
                                             <Page2 />
-                                        </ProtectedRoute>
+                                        // <ProtectedRoute>
+                                        // </ProtectedRoute>
                                     }
                                 >
                                     <Route index element={<DefaultPage />} />

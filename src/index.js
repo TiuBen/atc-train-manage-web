@@ -16,8 +16,8 @@ import TestStore from "./V7/TestStore.jsx";
 
 createRoot(document.getElementById("root")).render(
     // <AppMobile />
-    // <AppV7 />
-    <TestStore />
+    <AppV7 />
+    // <TestStore />
 
     // <AppV3 />
     // <AppV5 />

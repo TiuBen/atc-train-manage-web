@@ -29,8 +29,7 @@ function EditDutyRecord() {
     const [newRelatedDutyRecordId, setNewRelatedDutyRecordId] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const inputRef = useRef(null);
-    const { dialogPayload,setDialogPayload } = useDialog();
-
+    const { dialogPayload, setDialogPayload } = useDialog();
 
     useEffect(() => {
         setEditingDutyRecord(selectedDutyRecord);
@@ -363,39 +362,69 @@ function EditDutyRecord() {
                                 <span className="text-sm text-red-500">(教员或学员的数据,需要修改对应项)</span>
                             </label>
                             <div className="flex flex-row ">
-                                {editingDutyRecord?.relatedDutyTableRowId?.map((rId, index) => {
-                                    return (
-                                        <label
-                                            key={index}
-                                            className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
-                                        >
-                                            {rId}
-                                            <button
-                                                className="ml-1 text-red-300 hover:text-red-600 hover:font-extrabold"
-                                                onClick={() => {
-                                                    // 获取当前标签数组
-                                                    const currentTags = (editingDutyRecord?.relatedDutyTableRowId || "")
-                                                        .split(";")
-                                                        .filter(Boolean);
-
-                                                    // 过滤掉要删除的标签
-
-                                                    const updatedTags = currentTags.filter((_, i) => i !== index);
-                                                    const newValue =
-                                                        updatedTags.length > 0 ? updatedTags.join(";") : null;
-
-                                                    // 更新状态
-                                                    setEditingDutyRecord((prev) => ({
-                                                        ...prev,
-                                                        relatedDutyTableRowId: newValue,
-                                                    }));
-                                                }}
+                                {Array.isArray(editingDutyRecord?.relatedDutyTableRowId) ? (
+                                    editingDutyRecord?.relatedDutyTableRowId?.map((rId, index) => {
+                                        return (
+                                            <label
+                                                key={index}
+                                                className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
                                             >
-                                                X
-                                            </button>
-                                        </label>
-                                    );
-                                })}
+                                                {rId}
+                                                <button
+                                                    className="ml-1 text-red-300 hover:text-red-600 hover:font-extrabold"
+                                                    onClick={() => {
+                                                        // 获取当前标签数组
+                                                        const currentTags = (
+                                                            editingDutyRecord?.relatedDutyTableRowId || ""
+                                                        )
+                                                            .split(";")
+                                                            .filter(Boolean);
+
+                                                        // 过滤掉要删除的标签
+
+                                                        const updatedTags = currentTags.filter((_, i) => i !== index);
+                                                        const newValue =
+                                                            updatedTags.length > 0 ? updatedTags.join(";") : null;
+
+                                                        // 更新状态
+                                                        setEditingDutyRecord((prev) => ({
+                                                            ...prev,
+                                                            relatedDutyTableRowId: newValue,
+                                                        }));
+                                                    }}
+                                                >
+                                                    X
+                                                </button>
+                                            </label>
+                                        );
+                                    })
+                                ) : (
+                                    <label className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                        {editingDutyRecord?.relatedDutyTableRowId}
+                                        <button
+                                            className="ml-1 text-red-300 hover:text-red-600 hover:font-extrabold"
+                                            onClick={() => {
+                                                // 获取当前标签数组
+                                                // const currentTags = (editingDutyRecord?.relatedDutyTableRowId || "")
+                                                //     .split(";")
+                                                //     .filter(Boolean);
+
+                                                // // 过滤掉要删除的标签
+
+                                                // const updatedTags = currentTags.filter((_, i) => i !== index);
+                                                // const newValue = updatedTags.length > 0 ? updatedTags.join(";") : null;
+
+                                                // // 更新状态
+                                                // setEditingDutyRecord((prev) => ({
+                                                //     ...prev,
+                                                //     relatedDutyTableRowId: newValue,
+                                                // }));
+                                            }}
+                                        >
+                                            X
+                                        </button>
+                                    </label>
+                                )}
                                 {isEditing === false ? (
                                     <label className="flex flex-row flex-nowrap  items-center border-[1px] border-blue-200 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
                                         <button
@@ -472,7 +501,7 @@ function EditDutyRecord() {
                                 .catch((error) => {
                                     console.error("Error:", error);
                                 });
-                                setDialogPayload({ editSheetDisplay: false });
+                            setDialogPayload({ editSheetDisplay: false });
                         }}
                     >
                         删除此条目

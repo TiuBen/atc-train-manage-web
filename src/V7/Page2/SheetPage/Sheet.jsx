@@ -34,7 +34,8 @@ function Sheet() {
 
     useEffect(() => {
         // append 可以添加多个相同名称的参数
-
+        console.log("selectedMonth", selectedMonth);
+        console.log("selectedUser", selectedUser);
         if (selectedMonth && selectedUser) {
             let q = new URLSearchParams();
 
