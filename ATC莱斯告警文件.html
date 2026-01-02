@@ -187,39 +187,40 @@
                 </label>
             );
         }
-        const laisiAlert = [{ alertEN: "RSI", alertCN: "限制区侵入告警", groundAlert: true, airAlert: true },
-        { alertEN: "RWU", alertCN: "跑道状态不符告警",groundAlert: true, airAlert: true },
-         { alertEN: "APM", alertCN: "进近下滑道偏离告警",groundAlert: true, airAlert: true },
-        { alertEN: "TUB", alertCN: "尾流告警",groundAlert: true, airAlert: true },
-        { alertEN: "RED", alertCN: "闯停止排灯告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "RIW", alertCN: "跑道保护区侵入告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "CNA ", alertCN: "穿越与落地冲突告警" ,groundAlert: true, airAlert: true},
-         { alertEN: "ADS", alertCN: "落地与起飞冲突告警",groundAlert: true, airAlert: true },
-        { alertEN: "DUS", alertCN: "起飞与未脱离冲突告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "CND", alertCN: "穿越与起飞冲突告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "SEN", alertCN: "敏感区侵入告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "NTZ", alertCN: "非侵入区告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "CLAM", alertCN: "指令高度不一致告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "DUPS", alertCN: "二次代码重复告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "TCW", alertCN: "滑行道冲突告警" }, 
-        { alertEN: "RTW", alertCN: "偏离路由告警" },
-        { alertEN: "LND ", alertCN: "LND 指令不符告警",groundAlert: true, airAlert: true }, 
-        { alertEN: "LIN", alertCN: "LIN 指令不符告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "DEP", alertCN: "DEP 指令不符告警",groundAlert: true, airAlert: true }, 
-        { alertEN: "ADR", alertCN: "地址码不符告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "BRK", alertCN: "起飞中断告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "MIS", alertCN: "复飞告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "DIF", alertCN: "相关不一致告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "DUPC", alertCN: "航班号重复告警" ,groundAlert: true, airAlert: true},
-        { alertEN: "DUPA", alertCN: "地址码重复告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: " DTZ", alertCN: "起飞偏航告警",groundAlert: true, airAlert: true },
-        { alertEN: "SSR", alertCN: "二次代码不符告警" ,groundAlert: true, airAlert: true},
-         { alertEN: "CSD", alertCN: "航班号不一致",groundAlert: true, airAlert: true },
-        { alertEN: "OVS", alertCN: "超速告警" }, 
-        { alertEN: "FSSA", alertCN: "FSSA 意图高度不一致告警",groundAlert: true, airAlert: true},
-        { alertEN: "BPM", alertCN: "QNH 不一致告警" ,groundAlert: true, airAlert: true}, 
-        { alertEN: "PBN", alertCN: "PBN 许可告警" ,groundAlert: true, airAlert: true},
-         { alertEN: "ADSB", alertCN: "ADSB 许可告警" ,groundAlert: true, airAlert: true}];
+        const laisiAlert =
+            [{ alertEN: "RSI", alertCN: "限制区侵入告警", alert: true },
+            { alertEN: "RWU", alertCN: "跑道状态不符告警", alert: true },
+            { alertEN: "APM", alertCN: "进近下滑道偏离告警", alert: true, },
+            { alertEN: "TUB", alertCN: "尾流告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "RED", alertCN: "闯停止排灯告警", alert: true },
+            { alertEN: "RIW", alertCN: "跑道保护区侵入告警", alert: true , onlyAudio: "Audio"},
+            { alertEN: "CNA ", alertCN: "穿越与落地冲突告警", alert: false },
+            { alertEN: "ADS", alertCN: "落地与起飞冲突告警", alert: true },
+            { alertEN: "DUS", alertCN: "起飞与未脱离冲突告警", alert: true },
+            { alertEN: "CND", alertCN: "穿越与起飞冲突告警", alert: false },
+            { alertEN: "SEN", alertCN: "敏感区侵入告警", alert: true ,onlyAudio: "Audio"},
+            { alertEN: "NTZ", alertCN: "非侵入区告警", alert: false },
+            { alertEN: "CLAM", alertCN: "指令高度不一致告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "DUPS", alertCN: "二次代码重复告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "TCW", alertCN: "滑行道冲突告警", alert: false },
+            { alertEN: "RTW", alertCN: "偏离路由告警", alert: false },
+            { alertEN: "LND ", alertCN: "LND 指令不符告警", alert: true },
+            { alertEN: "LIN", alertCN: "LIN 指令不符告警", alert: true },
+            { alertEN: "DEP", alertCN: "DEP 指令不符告警", alert: true },
+            { alertEN: "ADR", alertCN: "地址码不符告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "BRK", alertCN: "起飞中断告警", alert: true },
+            { alertEN: "MIS", alertCN: "复飞告警", alert: true },
+            { alertEN: "DIF", alertCN: "相关不一致告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "DUPC", alertCN: "航班号重复告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "DUPA", alertCN: "地址码重复告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: " DTZ", alertCN: "起飞偏航告警", alert: true },
+            { alertEN: "SSR", alertCN: "二次代码不符告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "CSD", alertCN: "航班号不一致", alert: true , onlyAudio: "Audio"},
+            { alertEN: "OVS", alertCN: "超速告警", alert: false },
+            { alertEN: "FSSA", alertCN: "FSSA 意图高度不一致告警", alert: true, onlyAudio: "Audio" },
+            { alertEN: "BPM", alertCN: "QNH 不一致告警", alert: true , onlyAudio: "Audio"},
+            { alertEN: "PBN", alertCN: "PBN 许可告警", alert: true , onlyAudio: "Audio"},
+            { alertEN: "ADSB", alertCN: "ADSB 许可告警", alert: true, onlyAudio: "Audio" }];
 
 
         function AddAlertButton() {
@@ -227,11 +228,42 @@
                 < >
                     {
                         laisiAlert.map((alert, index) => {
+                            // 检查是否有 onlyAudio 属性
+                            const hasOnlyAudio = alert.onlyAudio !== undefined;
+                            // 检查 alert 是否为 false
+                            const isAlertFalse = alert.alert === false;
+
+                            // 根据条件确定背景色
+                            let labelStyle = {};
+                            if (hasOnlyAudio) {
+                                labelStyle = {
+                                    backgroundColor: "#ffff00", // 黄色背景
+                                    color: "#000000",
+                                    fontWeight: "bold",
+                                    cursor: "not-allowed",
+                                    textAlign: "center",
+                                    display:"flex",
+                                    alignItems:"center"
+                                };
+                            } else if (isAlertFalse) {
+                                labelStyle = {
+                                    backgroundColor: "#ff0000", // 红色背景
+                                    color: "#ffffff",
+                                    display:"flex",
+                                    alignItems:"center"
+                                };
+                            } else {
+                                labelStyle = {
+                                    display:"flex",
+                                    alignItems:"center"
+                                };
+                            }
+
                             return <div style={{ display: 'flex', flexDirection: 'row', flexWrap: "none", width: "300px", textWrap: "nowrap", gap: "0.5rem" }}>
-                                <Switch size="lg" key={index} label={alert.alertEN} checked={alert.groundAlert} />
-
-                                {alert.alertCN}
-
+                                <Switch size="lg" key={index} label={alert.alertEN} checked={alert.alert} />
+                                <label style={labelStyle} >
+                                    {alert.alertCN}
+                                </label>
                             </div>
                         })
                     }
@@ -247,6 +279,9 @@
                     <header>
                         <h1>莱斯告警</h1>
                     </header>
+                    <h1 style={{ background: "red" }}> 红色底色表示关闭 </h1>
+                    <h1 style={{ background: "yellow" }}> 黄色底色表示只开启声音 </h1>
+                    <h1 > 默认声光都打开 </h1>
                     <div className="button-container">
                         <AddAlertButton />
 
