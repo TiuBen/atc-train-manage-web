@@ -69,3 +69,49 @@ export function createGPSToScreen(GPSpoint, mapConfig) {
         };
     };
 }
+
+export function dmsGPSPointToScreen(dmsGPSPoint, mapConfig) {
+    const { centerLat, centerLon, centerScreenX, centerScreenY, GRID_SIZE_PX, GRID_DEGREE ,zoom} = mapConfig;
+    const pxPerDeg = (GRID_SIZE_PX / GRID_DEGREE) * zoom;
+
+    return {
+        x: centerScreenX + (dmsGPSPoint.lon - centerLon)  * pxPerDeg,
+        y: centerScreenY +  ( centerLat -dmsGPSPoint.lat)* pxPerDeg,
+        display: dmsGPSPoint?.display,
+        pointName: dmsGPSPoint?.pointName,
+    };
+}
+
+
+export function createProjectionCache(geoPoints, mapSetting) {
+    let cachedPoints = {};
+    let lastSnapshot = "";
+
+    function snapshot() {
+        return (
+            mapSetting.centerLat.toFixed(6) + "|" +
+            mapSetting.centerLon.toFixed(6) + "|" +
+            mapSetting.zoom.toFixed(4)
+        );
+    }
+
+    function updateIfNeeded() {
+        const s = snapshot();
+        if (s === lastSnapshot) return cachedPoints;
+
+        cachedPoints = {};
+        Object.keys(geoPoints).forEach((key) => {
+            cachedPoints[key] = dmsGPSPointToScreen(
+                geoPoints[key],
+                mapSetting
+            );
+        });
+
+        lastSnapshot = s;
+        return cachedPoints;
+    }
+
+    return {
+        getScreenPoints: updateIfNeeded,
+    };
+}

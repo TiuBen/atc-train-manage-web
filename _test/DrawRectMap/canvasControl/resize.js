@@ -1,4 +1,4 @@
-export function bindResize(canvas, viewport, worldScale, render) {
+export function bindResize(canvas, render) {
     function resize() {
         // const dpr = window.devicePixelRatio || 1;
         // const rect = canvas.getBoundingClientRect();

@@ -1,17 +1,16 @@
 import { createGPSToScreen } from "../projection/geoProject.js";
 import { mapSetting } from "../config/mapSetting.js";
+import { dmsGPSPointToScreen} from "../projection/geoProject.js";
 
-const pointConverter = createGPSToScreen(mapSetting);
-export function drawPoints(ctx, points) {
+export function drawPoints(ctx, screenXYPoints) {
     ctx.save();
 
-    ctx.fillStyle = "#4dabf7";
-
-    points.forEach((p) => {
-        const s = pointConverter(p.lat, p.lon);
+    ctx.fillStyle = "#d62828";
+    Object.values(screenXYPoints).forEach((p) =>{
         ctx.beginPath();
-        ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
         ctx.fill();
     });
+
     ctx.restore();
 }
